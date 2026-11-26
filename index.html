@@ -3,7 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>MIXCIN 活動管理與團員系統</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2A3038">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MIXCIN">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="https://i.meee.com.tw/xyOLC8D.png">
+  <script>
+    // LINE / IG / FB 等 App 內建瀏覽器會被 Google 擋登入：LINE 可自動改用外部瀏覽器開啟
+    (function () {
+      var ua = navigator.userAgent || '';
+      window.__inApp = /Line\/|FBAN|FBAV|FB_IAB|Instagram|MicroMessenger|KAKAOTALK|Threads|Barcelona/i.test(ua);
+      if (/Line\//i.test(ua) && !/[?&]openExternalBrowser=1/.test(location.search)) {
+        location.replace(location.href.split('#')[0] + (location.search ? '&' : '?') + 'openExternalBrowser=1');
+      }
+    })();
+  </script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -54,6 +70,7 @@
 
     /* ---------- 頂部列 ---------- */
     .mx-topbar {
+      padding-top: max(10px, env(safe-area-inset-top)) !important;
       background: #FFFFFF;
       border-bottom: 1px solid var(--mx-sand);
       padding: 10px 24px;
@@ -495,7 +512,18 @@
         <span class="hero-badge">MEMBERS ONLY</span>
         <h1>MIXCIN <span style="color:var(--mx-red)">競演團</span> 系統</h1>
         <div class="lead-text">本系統僅限 MIXCIN 團員、家長與工作人員使用。請先以 Google 帳號登入。</div>
+        <div class="notice notice-red mb-3 d-none" id="gateInApp">
+          <i class="bi bi-phone"></i>
+          <div>
+            <b>請改用 Safari 或 Chrome 開啟</b>
+            <div class="small mt-1">在 LINE、IG、FB 裡面開啟時，Google 不允許登入。請點右上角「⋯」或分享按鈕，選「在瀏覽器中開啟 / 用 Safari 開啟」。</div>
+            <button type="button" class="btn btn-sm btn-ink mt-2" onclick="copySiteLink()"><i class="bi bi-link-45deg me-1"></i>複製網址</button>
+          </div>
+        </div>
         <div class="gate-login-btn" id="gateLoginBtn"></div>
+        <div class="small mt-3 text-center d-none" id="gateA2hs" style="color:var(--mx-muted)">
+          <i class="bi bi-box-arrow-up me-1"></i>iPhone 小技巧：在 Safari 點「分享」→「加入主畫面」，以後就像 App 一樣一鍵開啟。
+        </div>
         <div class="notice mt-3 d-none" id="gateLoginNoBtn">
           <i class="bi bi-box-arrow-up-right"></i>
           <div>請改用家長專用網址登入：<br><a href="https://michael0931107.github.io/mixcin-system/" target="_blank" rel="noopener">michael0931107.github.io/mixcin-system</a></div>
@@ -1413,6 +1441,16 @@
       toast('已登出');
     }
 
+    function copySiteLink() {
+      const url = 'https://michael0931107.github.io/mixcin-system/';
+      const done = () => toast('網址已複製，請貼到 Safari 開啟');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done).catch(() => prompt('請複製這個網址', url));
+      } else {
+        prompt('請複製這個網址', url);
+      }
+    }
+
     function showGate(step) {
       document.getElementById('gate').classList.toggle('d-none', !step);
       document.getElementById('appRoot').classList.toggle('d-none', !!step);
@@ -1451,6 +1489,11 @@
       // 入口：未登入 → 登入頁；已登入但非會員 → 註冊頁
       if (!loggedIn) {
         document.getElementById('gateLoginNoBtn').classList.toggle('d-none', !!GOOGLE_CLIENT_ID);
+        document.getElementById('gateInApp').classList.toggle('d-none', !window.__inApp);
+        document.getElementById('gateLoginBtn').classList.toggle('d-none', !!window.__inApp);
+        const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const standalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+        document.getElementById('gateA2hs').classList.toggle('d-none', !isIos || standalone || !!window.__inApp);
         document.getElementById('gatePrivacyLink').href = GOOGLE_CLIENT_ID ? 'privacy.html' : 'https://michael0931107.github.io/mixcin-system/privacy.html';
         showGate('gateLogin');
         renderLoginButton();
