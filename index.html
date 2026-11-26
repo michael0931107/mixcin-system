@@ -327,6 +327,37 @@
     .mx-toast.err { background: var(--mx-red-deep); }
     @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
+    /* ---------- 入口頁 ---------- */
+    .gate {
+      min-height: calc(100vh - 57px);
+      background: var(--mx-charcoal);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 18px; position: relative; overflow: hidden;
+    }
+    .gate::after {
+      content: 'MIXCIN'; position: absolute; right: -30px; bottom: -50px;
+      font-size: 200px; font-weight: 900; letter-spacing: -6px;
+      color: rgba(255, 255, 255, .035); pointer-events: none; line-height: 1;
+    }
+    .gate-card {
+      background: #fff; color: var(--mx-ink); border-radius: 16px;
+      width: 100%; max-width: 460px; padding: 34px 30px; position: relative; z-index: 1;
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .5);
+    }
+    .gate-card h1 { font-size: 26px; font-weight: 900; margin: 6px 0 6px; }
+    .gate-card .lead-text { color: var(--mx-muted); font-size: 14px; margin-bottom: 22px; }
+    .gate-step { display: none; }
+    .gate-step.on { display: block; }
+    .gate-login-btn { display: flex; justify-content: center; min-height: 44px; }
+    .gate-foot { font-size: 12px; color: var(--mx-silver); margin-top: 22px; line-height: 1.6; }
+
+    .acc-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid #EEEBE7; font-size: 14px;
+    }
+    .acc-row:last-child { border-bottom: none; }
+
     .mx-footer { text-align: center; font-size: 11px; letter-spacing: .25em; color: var(--mx-silver); margin-top: 48px; }
 
     @media (max-width: 576px) {
@@ -355,13 +386,60 @@
       <div class="user-pill d-none d-sm-inline-flex" id="userPill">
         <span class="dot"></span><span id="userBadge">連線中…</span>
       </div>
-      <div id="gsiButton"></div>
       <button type="button" class="btn-ghost d-none" id="btnSignOut" onclick="signOut()">
         <i class="bi bi-box-arrow-right me-1"></i>登出
       </button>
     </div>
   </header>
 
+  <!-- 入口：未登入 / 未註冊時只會看到這裡 -->
+  <section class="gate" id="gate">
+    <div class="gate-card">
+      <div class="gate-step on" id="gateLoading">
+        <div class="text-center py-4" style="color:var(--mx-muted)">
+          <span class="spinner-border spinner-border-sm me-2"></span>確認登入狀態中…
+        </div>
+      </div>
+
+      <div class="gate-step" id="gateLogin">
+        <span class="hero-badge">MEMBERS ONLY</span>
+        <h1>MIXCIN <span style="color:var(--mx-red)">競演團</span> 系統</h1>
+        <div class="lead-text">本系統僅限 MIXCIN 團員、家長與工作人員使用。請先以 Google 帳號登入。</div>
+        <div class="gate-login-btn" id="gateLoginBtn"></div>
+        <div class="notice mt-3 d-none" id="gateLoginNoBtn">
+          <i class="bi bi-box-arrow-up-right"></i>
+          <div>請改用家長專用網址登入：<br><a href="https://michael0931107.github.io/mixcin-system/" target="_blank" rel="noopener">michael0931107.github.io/mixcin-system</a></div>
+        </div>
+        <div class="gate-foot">登入僅會取得您的 Email 以確認身分。<a href="privacy.html" target="_blank" rel="noopener" id="gatePrivacyLink">隱私權政策</a></div>
+      </div>
+
+      <div class="gate-step" id="gateRegister">
+        <span class="hero-badge">MEMBER SIGN UP</span>
+        <h1>會員註冊</h1>
+        <div class="lead-text">您的帳號 <b id="gateEmail"></b> 尚未註冊。請輸入團員（孩子）的本名與生日，需與學院名單相符才能註冊。</div>
+        <form id="registerForm" novalidate>
+          <div class="mb-3">
+            <label class="form-label">團員本名</label>
+            <input type="text" class="form-control" name="name" maxlength="50" placeholder="請填寫身分證上的姓名" autocomplete="off">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">團員生日</label>
+            <input type="date" class="form-control" name="birthday">
+          </div>
+          <button type="submit" class="btn btn-mixcin w-100 py-3"><i class="bi bi-person-check-fill me-1"></i>完成註冊</button>
+        </form>
+        <div class="notice mt-3" style="font-size:13px;">
+          <i class="bi bi-info-circle-fill"></i>
+          <div>如果孩子已經由家人註冊過，請請對方登入後到「團員資料 → 帳號綁定」新增您的 Email，就不用再註冊。</div>
+        </div>
+        <div class="text-center mt-3">
+          <button type="button" class="btn-ghost" onclick="signOut()"><i class="bi bi-arrow-left-right me-1"></i>換一個帳號登入</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="appRoot" class="d-none">
   <!-- 深色主視覺 + 導覽 -->
   <section class="mx-hero">
     <div class="container-xl px-3 px-md-4">
@@ -431,7 +509,7 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">報名者 / 團員本名</label>
-                <input type="text" class="form-control" id="regNameInput" name="name" placeholder="孩子的全名" maxlength="50" required>
+                <input type="text" class="form-control" id="regNameInput" name="name" placeholder="孩子的全名" maxlength="50" required readonly>
               </div>
               <div class="col-md-6 mb-3">
                 <label class="form-label">聯絡電話</label>
@@ -459,25 +537,13 @@
         </div>
 
         <div style="max-width: 820px;">
-          <div id="memberLoginNotice" class="notice notice-red mb-3 d-none">
-            <i class="bi bi-lock-fill"></i>
-            <div>
-              <div class="fw-bold text-dark mb-1">請先登入 Google 帳號</div>
-              <div id="memberLoginMsg">登入後才能查看與編輯團員資料。</div>
-              <div class="small mt-2" style="color:var(--mx-silver)" id="originHint"></div>
-            </div>
-          </div>
-
           <div id="parentMultiChildBox" class="mx-card p-3 mb-3 d-none">
             <label class="form-label"><i class="bi bi-person-hearts me-1" style="color:var(--mx-red)"></i>家長帳號：請選擇要檢視 / 維護的孩子</label>
             <select class="form-select" id="parentChildSelect" onchange="onSelectParentChild()"></select>
           </div>
 
           <div id="adminMemberSwitchBox" class="mx-card p-3 mb-3 d-none">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <label class="form-label m-0"><i class="bi bi-shield-lock-fill me-1" style="color:var(--mx-red)"></i>管理者：切換查看 / 校正團員資料</label>
-              <button type="button" class="btn-mini" onclick="startNewMember()"><i class="bi bi-plus-lg me-1"></i>新增團員</button>
-            </div>
+            <label class="form-label"><i class="bi bi-shield-lock-fill me-1" style="color:var(--mx-red)"></i>員工：切換查看 / 校正團員資料</label>
             <select class="form-select" id="adminMemberSelect" onchange="onAdminSelectMember()"></select>
           </div>
 
@@ -489,39 +555,40 @@
             <div class="hint">孩子與家長登入都綁定同一個學號，可用來查詢考核成績。</div>
           </div>
 
+          <!-- 帳號綁定 -->
+          <div class="mx-card p-4 mb-3" id="accountsCard">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="panel-title m-0"><i class="bi bi-people-fill me-1"></i>帳號綁定</div>
+              <span class="small" style="color:var(--mx-muted)" id="accountsHint"></span>
+            </div>
+            <div id="accountsList"><div class="small" style="color:var(--mx-muted)">載入中…</div></div>
+            <div class="input-group mt-3 d-none" id="accountsAddBox">
+              <input type="email" class="form-control" id="accountsAddInput" placeholder="輸入家人的 Google Email">
+              <button class="btn btn-ink" type="button" onclick="addAccount()"><i class="bi bi-plus-lg me-1"></i>新增綁定</button>
+            </div>
+          </div>
+
           <form id="memberForm" class="mx-card p-4" novalidate>
             <fieldset id="memberFieldset">
               <input type="hidden" name="studentNo" id="memberStudentNoHidden">
 
-              <div class="panel-title"><i class="bi bi-envelope-check-fill me-1"></i>Google 帳號綁定</div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">團員（孩子）Google Email</label>
-                  <input type="email" class="form-control" name="email" id="memberChildEmail" placeholder="孩子的 Google 帳號" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">家長 Google Email</label>
-                  <input type="email" class="form-control" name="parentEmail" id="memberParentEmail" placeholder="家長常用的 Gmail">
-                </div>
-              </div>
-
-              <hr style="border-color:var(--mx-sand); opacity:1;">
               <div class="panel-title"><i class="bi bi-person-vcard-fill me-1"></i>基本資料</div>
+              <div class="small mb-3" style="color:var(--mx-muted)" id="staffOnlyHint">本名、生日、團隊為註冊驗證資料，如需更正請洽工作人員。</div>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">所屬團隊</label>
-                  <select class="form-select" name="team" id="memberTeamSelect" required></select>
+                  <select class="form-select staff-only" name="team" id="memberTeamSelect" required></select>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">團員本名</label>
-                  <input type="text" class="form-control" name="name" maxlength="50" placeholder="請輸入姓名" required>
+                  <input type="text" class="form-control staff-only" name="name" maxlength="50" placeholder="請輸入姓名" required>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">出生年月日</label>
-                  <input type="date" class="form-control" name="birthday" required>
+                  <input type="date" class="form-control staff-only" name="birthday" required>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">身分證字號（保險用）</label>
@@ -738,12 +805,48 @@
               </table>
             </div>
           </div>
+
+          <!-- 會員名單註冊狀況 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-2">
+              <div>
+                <div class="eyebrow">Member Roster</div>
+                <h4 class="fw-bold m-0">註冊名單與狀態</h4>
+              </div>
+              <span class="small" style="color:var(--mx-muted)">名單請在試算表的 Roster 工作表新增（本名、生日、團隊）</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-middle mb-0 table-custom" style="min-width:720px">
+                <thead><tr><th>本名</th><th>生日</th><th>團隊</th><th>學號</th><th>已綁定帳號</th></tr></thead>
+                <tbody id="rosterTableBody"><tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">載入中…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 員工管理（Admin） -->
+          <div class="mx-card p-4 mt-4 d-none" id="staffAdminCard">
+            <div class="mb-3">
+              <div class="eyebrow">Staff Access</div>
+              <h4 class="fw-bold m-0">員工帳號管理</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">Admin 可以新增 / 移除員工，也能把其他人設為 Admin，讓他們一起管理員工名單。</div>
+            </div>
+            <div class="row g-2 align-items-end mb-3">
+              <div class="col-md-5"><label class="form-label">Google Email</label><input type="email" class="form-control" id="staffEmailInput" placeholder="name@gmail.com"></div>
+              <div class="col-md-3"><label class="form-label">姓名</label><input type="text" class="form-control" id="staffNameInput" maxlength="50"></div>
+              <div class="col-md-2"><label class="form-label">權限</label>
+                <select class="form-select" id="staffRoleInput"><option value="Staff">Staff</option><option value="Admin">Admin</option></select>
+              </div>
+              <div class="col-md-2"><button type="button" class="btn btn-mixcin w-100" onclick="saveStaffMember()">新增 / 更新</button></div>
+            </div>
+            <div id="staffList"></div>
+          </div>
         </div>
       </div>
 
     </div>
     <div class="mx-footer">MIXCIN DANCE ACADEMY · TAIPEI · TOKYO · SHENZHEN</div>
   </main>
+  </div>
 
   <!-- 活動詳細資料彈窗 -->
   <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
@@ -774,11 +877,11 @@
     // 基本設定與狀態
     // ==========================================
     // ==========================================
-    // 系統設定：部署到 GitHub Pages 時只需要改這兩行
+    // 系統設定
     // ==========================================
     const CONFIG = {
       GAS_URL: 'https://script.google.com/macros/s/AKfycbwjBvrp9TxpCakHTgBK3QrIi1qCz_0H50zrhEFSYw9v3kQ-PkHI9MBoyn-0qAGwVuYM/exec',
-      GOOGLE_CLIENT_ID: '53536119728-1b1r6dqhth33901hdojo6k3rlnfq64op.apps.googleusercontent.com'   // 貼上 Google Cloud 建立的用戶端 ID（xxxx.apps.googleusercontent.com）
+      GOOGLE_CLIENT_ID: '53536119728-1b1r6dqhth33901hdojo6k3rlnfq64op.apps.googleusercontent.com'
     };
     const GOOGLE_CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID.trim();
 
@@ -820,15 +923,23 @@
     // 呼叫 Apps Script 後端（doPost）
     const API_ARGS = {
       getSession: ['idToken'],
+      registerMember: ['name', 'birthday', 'idToken'],
       getEvents: ['idToken'],
-      getTeamsAndMembers: ['idToken'],
+      saveEvent: ['eventData', 'idToken'],
       getLinkedMembersForCurrentUser: ['idToken'],
-      getAllMembersForAdmin: ['idToken'],
       getMemberProfile: ['targetStudentNo', 'idToken'],
       saveMemberProfile: ['formData', 'idToken'],
-      saveEvent: ['eventData', 'idToken'],
-      queryScoreByStudentNo: ['studentNo', 'birthday'],
-      submitPublicRegistration: ['regData']
+      getAccountLinks: ['studentNo', 'idToken'],
+      addAccountLink: ['studentNo', 'email', 'idToken'],
+      removeAccountLink: ['studentNo', 'email', 'idToken'],
+      queryScoreByStudentNo: ['studentNo', 'birthday', 'idToken'],
+      getAllMembersForAdmin: ['idToken'],
+      submitRegistration: ['regData', 'idToken'],
+      getTeamsAndMembers: ['idToken'],
+      listStaff: ['idToken'],
+      saveStaff: ['staff', 'idToken'],
+      removeStaff: ['email', 'idToken'],
+      getRosterStatus: ['idToken']
     };
 
     function api(fn, ...args) {
@@ -888,13 +999,12 @@
     // ==========================================
     // 啟動
     // ==========================================
+    let appStarted = false;
+
     window.addEventListener('load', function () {
       fillTeamSelect(document.getElementById('regTeamSelect'), ['無團隊/個人'].concat(MEMBER_TEAMS));
       document.getElementById('regTeamSelect').options[0].text = '無團隊 / 個人代表';
       fillTeamSelect(document.getElementById('memberTeamSelect'), MEMBER_TEAMS, '請選擇團隊…');
-      document.getElementById('originHint').textContent = '';
-
-      initCalendar();
       renderCategoryFields();
       refreshIdentity();
       initGoogleLogin();
@@ -913,6 +1023,7 @@
           client_id: GOOGLE_CLIENT_ID,
           callback: function (resp) {
             idToken = resp.credential || '';
+            showGate('gateLoading');
             refreshIdentity();
           },
           auto_select: true
@@ -924,17 +1035,26 @@
     }
 
     function renderLoginButton() {
-      const box = document.getElementById('gsiButton');
-      box.innerHTML = '';
-      if (!GOOGLE_CLIENT_ID || session.email || !(window.google && google.accounts)) return;
-      google.accounts.id.renderButton(box, { theme: 'outline', size: 'medium', shape: 'pill', text: 'signin', locale: 'zh-TW' });
+      const box = document.getElementById('gateLoginBtn');
+      if (!GOOGLE_CLIENT_ID || !(window.google && google.accounts) || box.dataset.done) return;
+      google.accounts.id.renderButton(box, { theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', locale: 'zh-TW', width: 280 });
+      box.dataset.done = '1';
     }
 
     function signOut() {
       idToken = '';
+      session = { email: '', isStaff: false, isMember: false, role: 'Guest', loginAvailable: session.loginAvailable };
       if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+      applyIdentityUI();
       toast('已登出');
-      refreshIdentity();
+    }
+
+    function showGate(step) {
+      document.getElementById('gate').classList.toggle('d-none', !step);
+      document.getElementById('appRoot').classList.toggle('d-none', !!step);
+      ['gateLoading', 'gateLogin', 'gateRegister'].forEach(id => {
+        document.getElementById(id).classList.toggle('on', id === step);
+      });
     }
 
     function refreshIdentity() {
@@ -946,61 +1066,96 @@
             toast('登入驗證失敗或已逾時，請重新登入', true);
           }
           applyIdentityUI();
-          loadEvents();
-          if (session.isStaff) {
-            loadAdminMembersList();
-            api('getTeamsAndMembers', idToken).then(m => { globalTeamMap = m || {}; }).catch(() => {});
-          }
-          if (session.email) loadLinkedMembers();
-          else resetMemberForm();
         })
         .catch(function (err) {
-          document.getElementById('userBadge').innerText = '連線失敗';
-          toast(errMsg(err), true);
-          loadEvents();
+          showGate('gateLogin');
+          toast('連線失敗：' + errMsg(err), true);
         });
     }
 
     function applyIdentityUI() {
       const loggedIn = !!session.email;
-      const pill = document.getElementById('userPill');
-      pill.classList.toggle('is-in', loggedIn);
-      document.getElementById('userBadge').innerText = loggedIn ? session.email : '訪客';
+      const allowed = session.isStaff || session.isMember;
 
+      document.getElementById('userPill').classList.toggle('is-in', loggedIn);
+      document.getElementById('userBadge').innerText = loggedIn ? session.email : '尚未登入';
       const chip = document.getElementById('roleChip');
       chip.classList.toggle('d-none', !session.isStaff);
       chip.innerText = session.role || '';
-
       document.getElementById('btnSignOut').classList.toggle('d-none', !idToken);
-      renderLoginButton();
 
+      // 入口：未登入 → 登入頁；已登入但非會員 → 註冊頁
+      if (!loggedIn) {
+        document.getElementById('gateLoginNoBtn').classList.toggle('d-none', !!GOOGLE_CLIENT_ID);
+        document.getElementById('gatePrivacyLink').href = GOOGLE_CLIENT_ID ? 'privacy.html' : 'https://michael0931107.github.io/mixcin-system/privacy.html';
+        showGate('gateLogin');
+        renderLoginButton();
+        return;
+      }
+      if (!allowed) {
+        document.getElementById('gateEmail').textContent = session.email;
+        showGate('gateRegister');
+        return;
+      }
+      showGate(null);
+      startApp();
+    }
+
+    function startApp() {
       // 員工後台
       document.getElementById('staffWorkArea').classList.toggle('d-none', !session.isStaff);
       document.getElementById('staffLockBox').classList.toggle('d-none', session.isStaff);
       document.getElementById('roleBadge').innerText = session.role || 'Staff';
-      document.getElementById('staffLockMsg').innerHTML = loggedIn
-        ? `您的帳號 <b style="color:#fff">${esc(session.email)}</b> 尚未登記在員工白名單。<br>請管理員在試算表的 Staff 工作表加入此 Email 後重新整理。`
-        : '請先用右上角按鈕登入 Google 帳號。';
+      document.getElementById('staffLockMsg').innerHTML =
+        `您的帳號 <b style="color:#fff">${esc(session.email)}</b> 不在員工名單中。<br>如需權限，請洽 Admin 在員工後台新增您的 Email。`;
+      document.getElementById('staffAdminCard').classList.toggle('d-none', !session.isAdmin);
 
       // 團員資料
-      const notice = document.getElementById('memberLoginNotice');
-      notice.classList.toggle('d-none', loggedIn);
-      document.getElementById('memberLoginMsg').innerText = !session.loginAvailable
-        ? '目前系統尚未開放一般帳號登入，請洽詢管理員。'
-        : (GOOGLE_CLIENT_ID
-          ? '請按右上角「登入」，用孩子或家長的 Google 帳號登入後即可查看與編輯。'
-          : '請改用家長專用網址登入：https://michael0931107.github.io/mixcin-system/');
-      document.getElementById('originHint').textContent = (!session.loginAvailable && session.isStaff === false)
-        ? '（系統設定用來源網址：' + location.origin + '）' : '';
-      document.getElementById('memberFieldset').disabled = !loggedIn;
-
       document.getElementById('adminMemberSwitchBox').classList.toggle('d-none', !session.isStaff);
+      document.querySelectorAll('#memberForm .staff-only').forEach(el => {
+        if (el.tagName === 'SELECT') el.disabled = !session.isStaff; else el.readOnly = !session.isStaff;
+      });
+      document.getElementById('staffOnlyHint').classList.toggle('d-none', session.isStaff);
       document.getElementById('memberEvalScore').readOnly = !session.isStaff;
       document.getElementById('memberEvalNotes').readOnly = !session.isStaff;
       document.getElementById('evalEditNotice').innerText = session.isStaff
-        ? '您具有管理者權限，可以直接輸入或修改考核成績與評語。'
-        : '團員與家長僅供查閱，成績由管理者登記。';
+        ? '您具有員工權限，可以直接輸入或修改考核成績與評語。'
+        : '團員與家長僅供查閱，成績由工作人員登記。';
+      document.getElementById('regNameInput').readOnly = !session.isStaff;
+
+      if (!appStarted) {
+        initCalendar();
+        appStarted = true;
+      } else {
+        calendar.updateSize();
+      }
+      loadEvents();
+      loadLinkedMembers();
+      if (session.isStaff) {
+        loadAdminMembersList();
+        loadRosterStatus();
+        api('getTeamsAndMembers', idToken).then(m => { globalTeamMap = m || {}; }).catch(() => {});
+      }
+      if (session.isAdmin) loadStaffList();
     }
+
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = e.target.name.value.trim();
+      const birthday = e.target.birthday.value;
+      if (!name) return toast('請填寫團員本名', true);
+      if (!birthday) return toast('請填寫團員生日', true);
+      const btn = e.target.querySelector('button[type=submit]');
+      setBusy(btn, true, '驗證中…');
+      api('registerMember', name, birthday, idToken)
+        .then(function (res) {
+          toast('註冊成功！學號：' + res.studentNo);
+          e.target.reset();
+          refreshIdentity();
+        })
+        .catch(err => toast(errMsg(err), true))
+        .finally(() => setBusy(btn, false));
+    });
 
     // ==========================================
     // 行事曆
@@ -1121,12 +1276,12 @@
         notes: form.notes.value.trim()
       };
       if (!payload.eventId) return toast('請選擇活動', true);
-      if (!payload.name) return toast('請填寫報名者姓名', true);
+      if (!payload.name) return toast(myLinkedList.length > 1 ? '請先選擇要報名的孩子' : '請填寫報名者姓名', true);
       if (!payload.phone) return toast('請填寫聯絡電話', true);
 
       const btn = form.querySelector('button[type=submit]');
       setBusy(btn, true, '送出中…');
-      api('submitPublicRegistration', payload)
+      api('submitRegistration', payload, idToken)
         .then(function (res) {
           toast(res && res.duplicated ? '您已經報名過這個活動了' : '報名成功！');
           form.reset();
@@ -1156,11 +1311,9 @@
       api('getLinkedMembersForCurrentUser', idToken)
         .then(function (list) {
           myLinkedList = list || [];
-          const parentBox = document.getElementById('parentMultiChildBox');
-          const regBox = document.getElementById('regChildSelectorBox');
           const many = myLinkedList.length > 1;
-          parentBox.classList.toggle('d-none', !many);
-          regBox.classList.toggle('d-none', !many);
+          document.getElementById('parentMultiChildBox').classList.toggle('d-none', !many);
+          document.getElementById('regChildSelectorBox').classList.toggle('d-none', !many);
 
           if (many) {
             document.getElementById('parentChildSelect').innerHTML = myLinkedList.map((m, i) =>
@@ -1174,8 +1327,6 @@
             if (!many) autoFillRegFormWithMember(myLinkedList[0]);
           } else {
             resetMemberForm();
-            document.getElementById('memberChildEmail').value = session.email;
-            document.getElementById('displayStudentNo').innerText = '儲存後自動產生';
           }
         })
         .catch(err => toast(errMsg(err), true));
@@ -1189,13 +1340,9 @@
     function resetMemberForm() {
       document.getElementById('memberForm').reset();
       document.getElementById('memberStudentNoHidden').value = '';
-      document.getElementById('displayStudentNo').innerText = session.email ? '儲存後自動產生' : '—';
-    }
-
-    function startNewMember() {
-      document.getElementById('adminMemberSelect').value = '';
-      resetMemberForm();
-      document.getElementById('memberChildEmail').focus();
+      document.getElementById('displayStudentNo').innerText = '—';
+      document.getElementById('memberFieldset').disabled = true;
+      document.getElementById('accountsCard').classList.add('d-none');
     }
 
     function renderMemberFormWithData(p) {
@@ -1204,10 +1351,10 @@
       ['team', 'name', 'birthday', 'idNumber', 'phone', 'zipCode', 'address', 'parentContact', 'evalScore', 'evalNotes'].forEach(k => {
         if (form[k]) form[k].value = p[k] || '';
       });
-      document.getElementById('memberChildEmail').value = p.email || '';
-      document.getElementById('memberParentEmail').value = p.parentEmail || '';
       document.getElementById('memberStudentNoHidden').value = p.studentNo || '';
-      document.getElementById('displayStudentNo').innerText = p.studentNo || '儲存後自動產生';
+      document.getElementById('displayStudentNo').innerText = p.studentNo || '—';
+      document.getElementById('memberFieldset').disabled = false;
+      loadAccounts(p.studentNo);
     }
 
     function loadAdminMembersList() {
@@ -1223,7 +1370,7 @@
 
     function onAdminSelectMember() {
       const no = document.getElementById('adminMemberSelect').value;
-      if (!no) return startNewMember();
+      if (!no) return loadLinkedMembers();
       api('getMemberProfile', no, idToken)
         .then(p => p ? renderMemberFormWithData(p) : toast('查無此團員', true))
         .catch(err => toast(errMsg(err), true));
@@ -1231,24 +1378,77 @@
 
     document.getElementById('memberForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      if (!session.email) return toast('請先登入 Google 帳號', true);
-      const data = Object.fromEntries(new FormData(e.target).entries());
-      if (!data.team) return toast('請選擇所屬團隊', true);
-      if (!data.name || !data.birthday || !data.phone) return toast('請填寫姓名、生日與聯絡電話', true);
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+      // 停用的欄位不會出現在 FormData，補回來給員工使用
+      data.team = form.team.value;
+      if (!data.studentNo) return toast('沒有可儲存的團員資料', true);
+      if (!data.phone) return toast('請填寫聯絡電話', true);
 
-      const btn = e.target.querySelector('button[type=submit]');
+      const btn = form.querySelector('button[type=submit]');
       setBusy(btn, true, '儲存中…');
       api('saveMemberProfile', data, idToken)
-        .then(function (res) {
-          toast('資料已儲存，專屬學號：' + res.studentNo);
-          document.getElementById('displayStudentNo').innerText = res.studentNo;
-          document.getElementById('memberStudentNoHidden').value = res.studentNo;
-          loadLinkedMembers();
-          if (session.isStaff) loadAdminMembersList();
+        .then(function () {
+          toast('資料已儲存');
+          if (session.isStaff && document.getElementById('adminMemberSelect').value) {
+            loadAdminMembersList();
+          } else {
+            loadLinkedMembers();
+          }
         })
         .catch(err => toast('儲存失敗：' + errMsg(err), true))
         .finally(() => setBusy(btn, false));
     });
+
+    // ---------- 帳號綁定 ----------
+    let accountsStudentNo = '';
+
+    function loadAccounts(studentNo) {
+      accountsStudentNo = studentNo || '';
+      const card = document.getElementById('accountsCard');
+      if (!studentNo) return card.classList.add('d-none');
+      card.classList.remove('d-none');
+      document.getElementById('accountsList').innerHTML = '<div class="small" style="color:var(--mx-muted)">載入中…</div>';
+      api('getAccountLinks', studentNo, idToken)
+        .then(function (res) {
+          const list = res.accounts || [];
+          document.getElementById('accountsHint').textContent = res.canManage ? '您可以新增或移除家人的帳號' : '只有主帳號可以管理綁定';
+          document.getElementById('accountsAddBox').classList.toggle('d-none', !res.canManage);
+          document.getElementById('accountsList').innerHTML = list.length ? list.map(a => `
+            <div class="acc-row">
+              <div>
+                <span class="tag ${a.role === '主帳號' ? 'tag-red' : 'tag-gray'} me-2">${esc(a.role)}</span>${esc(a.email)}
+                ${a.email === session.email ? '<span class="small ms-1" style="color:var(--mx-muted)">（您）</span>' : ''}
+              </div>
+              ${res.canManage && (a.role !== '主帳號' || session.isStaff)
+                ? `<button type="button" class="btn btn-sm btn-line" onclick="removeAccount('${esc(a.email)}')">移除</button>` : ''}
+            </div>`).join('') : '<div class="small" style="color:var(--mx-muted)">尚未綁定任何帳號</div>';
+        })
+        .catch(err => {
+          document.getElementById('accountsList').innerHTML = '';
+          toast(errMsg(err), true);
+        });
+    }
+
+    function addAccount() {
+      const input = document.getElementById('accountsAddInput');
+      const email = input.value.trim();
+      if (!email) return toast('請輸入要綁定的 Email', true);
+      api('addAccountLink', accountsStudentNo, email, idToken)
+        .then(res => {
+          toast(res.already ? '這個帳號已經綁定了' : '已新增綁定，對方登入後就能使用');
+          input.value = '';
+          loadAccounts(accountsStudentNo);
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function removeAccount(email) {
+      if (email === session.email && !session.isStaff) return toast('無法移除自己的帳號', true);
+      api('removeAccountLink', accountsStudentNo, email, idToken)
+        .then(() => { toast('已移除 ' + email); loadAccounts(accountsStudentNo); })
+        .catch(err => toast(errMsg(err), true));
+    }
 
     function parseZipCode3() {
       const addr = document.getElementById('memberAddress').value.trim();
@@ -1274,7 +1474,7 @@
       if (!bday) return toast('請輸入團員生日', true);
 
       const card = document.getElementById('queryResultCard');
-      api('queryScoreByStudentNo', no, bday)
+      api('queryScoreByStudentNo', no, bday, idToken)
         .then(function (res) {
           if (!res) {
             card.classList.add('d-none');
@@ -1288,6 +1488,80 @@
           card.classList.remove('d-none');
           card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ==========================================
+    // 員工後台：名單狀態與員工管理
+    // ==========================================
+    function loadRosterStatus() {
+      api('getRosterStatus', idToken)
+        .then(function (list) {
+          const tbody = document.getElementById('rosterTableBody');
+          if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">名單是空的，請在試算表的 Roster 工作表加入可註冊的團員</td></tr>';
+            return;
+          }
+          const done = list.filter(r => r.accounts.length).length;
+          tbody.innerHTML = list.map(r => `
+            <tr>
+              <td class="fw-bold">${esc(r.name)}</td>
+              <td>${esc(r.birthday)}</td>
+              <td>${esc(r.team)}</td>
+              <td>${r.studentNo ? esc(r.studentNo) : '<span style="color:var(--mx-silver)">—</span>'}</td>
+              <td>${r.accounts.length ? r.accounts.map(a => `<div class="small">${esc(a)}</div>`).join('') : '<span class="tag tag-soft">尚未註冊</span>'}</td>
+            </tr>`).join('') +
+            `<tr><td colspan="5" class="small" style="color:var(--mx-muted)">共 ${list.length} 位，已註冊 ${done} 位</td></tr>`;
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function loadStaffList() {
+      api('listStaff', idToken)
+        .then(function (list) {
+          document.getElementById('staffList').innerHTML = list.map(s => `
+            <div class="acc-row">
+              <div>
+                <span class="tag ${s.role === 'Admin' ? 'tag-red' : 'tag-ink'} me-2">${esc(s.role)}</span>
+                <b>${esc(s.name || '（未填姓名）')}</b>
+                <span class="ms-2" style="color:var(--mx-muted)">${esc(s.email)}</span>
+                ${s.isSelf ? '<span class="small ms-1" style="color:var(--mx-muted)">（您）</span>' : ''}
+              </div>
+              ${s.isSelf ? '' : `<div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-line" onclick="toggleStaffRole('${esc(s.email)}','${esc(s.name)}','${s.role === 'Admin' ? 'Staff' : 'Admin'}')">${s.role === 'Admin' ? '改為 Staff' : '設為 Admin'}</button>
+                <button type="button" class="btn btn-sm btn-line" onclick="removeStaffMember('${esc(s.email)}')">移除</button>
+              </div>`}
+            </div>`).join('');
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function saveStaffMember() {
+      const staff = {
+        email: document.getElementById('staffEmailInput').value.trim(),
+        name: document.getElementById('staffNameInput').value.trim(),
+        role: document.getElementById('staffRoleInput').value
+      };
+      if (!staff.email) return toast('請輸入員工 Email', true);
+      api('saveStaff', staff, idToken)
+        .then(res => {
+          toast(res.updated ? '已更新員工權限' : '已新增員工');
+          document.getElementById('staffEmailInput').value = '';
+          document.getElementById('staffNameInput').value = '';
+          loadStaffList();
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function toggleStaffRole(email, name, role) {
+      api('saveStaff', { email: email, name: name, role: role }, idToken)
+        .then(() => { toast('已更新為 ' + role); loadStaffList(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function removeStaffMember(email) {
+      api('removeStaff', email, idToken)
+        .then(() => { toast('已移除 ' + email); loadStaffList(); })
         .catch(err => toast(errMsg(err), true));
     }
 
