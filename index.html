@@ -625,6 +625,10 @@
 
         <div class="row g-3">
           <div class="col-lg-7">
+            <div class="mx-card p-4 mb-3 d-none" id="myRehCard" style="border-left:4px solid var(--mx-gold)">
+              <div class="board-head"><span><i class="bi bi-music-note-beamed" style="color:var(--mx-gold)"></i>我的排練 <span class="tag tag-red ms-1 d-none" id="myRehNew"></span></span><a href="#" onclick="markRehSeen();return false;" id="myRehSeenBtn" class="d-none">全部標為已讀</a></div>
+              <div id="myRehList" class="board-list"></div>
+            </div>
             <div class="mx-card p-4 mb-3">
               <div class="board-head"><span><i class="bi bi-flag-fill"></i>任務欄</span><a href="#" onclick="goTab('tab-tasks');return false;">全部任務 →</a></div>
               <div id="homeTasks" class="board-list"></div>
@@ -1062,6 +1066,17 @@
                   </div>
                   <div id="rehearsalRows"></div>
                   <div class="small" style="color:var(--mx-muted)">選好教室後按儲存，就會登記到該教室的 Google 日曆（選「全開」會同時登記大、小教室）。日期留空的列不會儲存。</div>
+                  <div class="row g-2 align-items-center mt-2">
+                    <div class="col-md-5">
+                      <label class="form-label small mb-1"><i class="bi bi-bell-fill me-1" style="color:var(--mx-gold)"></i>排練通知對象</label>
+                      <select class="form-select form-select-sm" id="notifyModeSelect">
+                        <option value="group">活動組別的全部團員</option>
+                        <option value="registered">只通知已報名的團員</option>
+                        <option value="none">不通知</option>
+                      </select>
+                    </div>
+                    <div class="col-md-7 small" style="color:var(--mx-muted)">團員（含綁定的家長帳號）會收到 Google 日曆邀請，排練會出現在他們手機的日曆裡，並顯示在系統首頁「我的排練」。改時間、換教室或刪除時會自動通知。之後才加入的團員，重新按一次儲存就會補寄。</div>
+                  </div>
                 </div>
 
                 <div id="dynamicFields"></div>
@@ -2047,6 +2062,8 @@
           setDmBadge(m ? h.unreadMessages : 0);
           document.getElementById('consentAlert').classList.toggle('d-none', !h.pendingConsent);
 
+          renderMyRehearsals(h.myRehearsals || []);
+
           document.getElementById('homeTaskCount').innerText = h.openTasks.filter(t => t.myStatus === '進行中').length;
           document.getElementById('homeTasks').innerHTML = h.openTasks.length ? h.openTasks.map(t => `
             <div class="board-item">${dateBox(t.deadline)}
@@ -2081,6 +2098,37 @@
             : '<div class="small" style="color:var(--mx-silver)">還沒有人獲得積分</div>';
         })
         .catch(err => toast(errMsg(err), true));
+    }
+
+    // ---------- 我的排練（系統內通知） ----------
+    let myRehCache = [];
+    function rehSeenKey() { return 'mx_reh_seen_' + (currentNo || 'me'); }
+    function rehSeenAt() { try { return localStorage.getItem(rehSeenKey()) || ''; } catch (e) { return ''; } }
+    function markRehSeen() {
+      const latest = myRehCache.reduce((m, r) => (r.updatedAt > m ? r.updatedAt : m), '');
+      try { localStorage.setItem(rehSeenKey(), latest); } catch (e) { /* 無法儲存就略過 */ }
+      renderMyRehearsals(myRehCache);
+    }
+    function renderMyRehearsals(list) {
+      myRehCache = list;
+      const card = document.getElementById('myRehCard');
+      card.classList.toggle('d-none', !list.length);
+      if (!list.length) return;
+      const seen = rehSeenAt();
+      let fresh = 0;
+      document.getElementById('myRehList').innerHTML = list.map(r => {
+        let tag = '';
+        if (r.createdAt && r.createdAt > seen) { tag = '<span class="tag tag-red">新</span>'; fresh++; }
+        else if (r.updatedAt && r.updatedAt > seen) { tag = '<span class="tag tag-gold">時間/地點有更動</span>'; fresh++; }
+        return `<div class="board-item">${dateBox(r.date)}
+          <div class="flex-grow-1"><b>${esc(r.title)}</b>
+            <div class="small" style="color:var(--mx-muted)">${esc(r.start)}–${esc(r.end)} · ${esc(r.where)}${r.note ? ` · ${esc(r.note)}` : ''}</div></div>
+          ${tag}</div>`;
+      }).join('');
+      const badge = document.getElementById('myRehNew');
+      badge.classList.toggle('d-none', !fresh);
+      badge.textContent = fresh + ' 則新通知';
+      document.getElementById('myRehSeenBtn').classList.toggle('d-none', !fresh);
     }
 
     function setDmBadge(n) {
@@ -2904,6 +2952,7 @@
       const cf = ev.customFields || {};
       document.getElementById('openForRegSelect').value = cf.openForReg || 'yes';
       resetRehearsals(cf.rehearsals || []);
+      document.getElementById('notifyModeSelect').value = cf.notifyMode || 'group';
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
 
       if (ev.category === '商業演出') {
@@ -2986,6 +3035,7 @@
       document.getElementById('formTitle').textContent = '活動登記與追蹤設定';
       renderCategoryFields();
       resetRehearsals();
+      document.getElementById('notifyModeSelect').value = 'group';
     }
 
     document.getElementById('staffEventForm').addEventListener('submit', function (e) {
@@ -3000,6 +3050,7 @@
 
       let teams = '尚未確定 / 籌備中', participants = '', customFields = { openForReg: openForReg };
       try { customFields.rehearsals = collectRehearsals(); } catch (err) { return toast(err.message, true); }
+      customFields.notifyMode = document.getElementById('notifyModeSelect').value;
 
       // 保留原本的日曆同步 ID
       const old = globalEvents.find(x => x.eventId === form.eventId.value);
@@ -3053,6 +3104,8 @@
       api('saveEvent', payload, idToken)
         .then(function (res) {
           toast(res && res.calendarSynced ? '活動已儲存並同步到 Google 日曆' : '活動已儲存（日曆未同步）');
+          if (res && res.invited) toast(`已將排練邀請寄給 ${res.invited} 個帳號`);
+          else if (res && customFields.rehearsals.length && res.notifyMode !== 'none') toast('⚠ 找不到要通知的團員：請確認活動有勾選組別，或已有團員報名', true);
           (res && res.warnings || []).forEach(w => toast('⚠ ' + w, true));
           resetStaffForm();
           loadEvents();
