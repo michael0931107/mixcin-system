@@ -189,6 +189,7 @@
       font-weight: 700; border-radius: 8px; padding: 9px 18px;
     }
     .btn-line:hover { border-color: var(--mx-red); color: var(--mx-red); }
+    .btn-check:checked + .btn-line { background: var(--mx-charcoal); border-color: var(--mx-charcoal); color: #fff; }
     .btn-mini {
       background: #fff; color: var(--mx-red); border: 1.5px solid var(--mx-red);
       font-weight: 700; font-size: 12.5px; border-radius: 6px; padding: 4px 10px;
@@ -358,6 +359,95 @@
     }
     .acc-row:last-child { border-bottom: none; }
 
+    /* ---------- 布告欄元件 ---------- */
+    .mx-tabs .nav-link i { margin-right: 7px; font-size: 14px; }
+    .mx-tabs .nav-link.active i { color: var(--mx-red); }
+    .nav-badge { display: inline-block; min-width: 18px; padding: 1px 6px; margin-left: 6px; border-radius: 9px; background: var(--mx-red); color: #fff; font-size: 11px; line-height: 16px; }
+    .as-box { min-width: 220px; }
+    .as-box .form-select { background-color: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.2); }
+    .as-box option { color: var(--mx-ink); }
+    .stat-tile { background: #fff; border: 1px solid var(--mx-sand); border-radius: var(--mx-radius); padding: 16px 18px; cursor: default; height: 100%; }
+    .stat-tile[onclick] { cursor: pointer; }
+    .stat-tile.dark { background: var(--mx-charcoal); border-color: var(--mx-charcoal); color: #fff; }
+    .stat-tile .k { font-size: 12px; color: var(--mx-muted); font-weight: 700; letter-spacing: .06em; }
+    .stat-tile.dark .k { color: var(--mx-mist); }
+    .stat-tile .v { font-size: 30px; font-weight: 900; color: var(--mx-red); line-height: 1.2; margin-top: 4px; }
+    .board-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 900; font-size: 15px; }
+    .board-head i { color: var(--mx-red); margin-right: 6px; }
+    .board-head a { font-size: 12.5px; font-weight: 700; text-decoration: none; }
+    .board-head.light { color: #fff; }
+    .board-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--mx-sand); font-size: 14px; }
+    .board-item:last-child { border-bottom: none; }
+    .board-item .date { flex: none; width: 52px; text-align: center; background: var(--mx-paper); border-radius: 6px; padding: 4px 0; font-size: 11px; color: var(--mx-muted); font-weight: 700; line-height: 1.25; }
+    .board-item .date b { display: block; font-size: 18px; color: var(--mx-ink); }
+    .board-empty { color: var(--mx-silver); font-size: 13.5px; padding: 8px 0; }
+    .lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 14px; }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-rank { width: 24px; font-weight: 900; color: var(--mx-mist); text-align: center; }
+    .lb-row:nth-child(1) .lb-rank { color: var(--mx-gold); }
+    .lb-pts { margin-left: auto; font-weight: 900; color: var(--mx-red); }
+    .soon-tile { background: #fff; border: 1.5px dashed var(--mx-sand); border-radius: var(--mx-radius); padding: 18px; text-align: center; cursor: pointer; height: 100%; display: flex; flex-direction: column; gap: 2px; }
+    .soon-tile i { font-size: 26px; color: var(--mx-red); }
+    .soon-tile span { font-size: 12px; color: var(--mx-muted); }
+    .soon-tile.locked { cursor: default; opacity: .7; }
+    .soon-tile.locked i { color: var(--mx-silver); }
+
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--mx-sand); color: var(--mx-muted); display: inline-flex; align-items: center; justify-content: center; flex: none; overflow: hidden; font-weight: 900; }
+    .avatar img, .avatar-xl img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-sm { width: 30px; height: 30px; font-size: 12px; }
+    .avatar-xl { width: 92px; height: 92px; border-radius: 50%; background: rgba(255,255,255,.1); color: var(--mx-mist); display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; flex: none; border: 3px solid var(--mx-red); }
+    .profile-hero { background: var(--mx-charcoal); color: #fff; border-radius: var(--mx-radius); padding: 22px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+    .profile-name { font-size: 26px; font-weight: 900; }
+    .btn-ghost-light { border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 999px; }
+    .btn-ghost-light:hover { border-color: var(--mx-red); color: #fff; background: var(--mx-red); }
+    .rank-badge { font-size: 11.5px; font-weight: 900; padding: 3px 9px; border-radius: 999px; }
+    .rank-銅牌 { background: #F3E2D3; color: #7A4A22; }
+    .rank-銀牌 { background: #E9ECEF; color: #4A525C; }
+    .rank-金牌 { background: #F6EFD6; color: #7A5F0E; }
+    .rank-白金 { background: linear-gradient(135deg, #EEF2F6, #D9E1EA); color: #2A3038; border: 1px solid #C5CED9; }
+
+    .fam-card { background: #fff; border: 1px solid var(--mx-sand); border-radius: var(--mx-radius); padding: 18px; height: 100%; text-align: center; }
+    .fam-card .avatar { width: 72px; height: 72px; font-size: 26px; margin-bottom: 8px; }
+    .fam-card .nm { font-weight: 900; font-size: 16px; }
+    .fam-card .meta { font-size: 12.5px; color: var(--mx-muted); margin: 4px 0 8px; }
+    .fam-card .intro { font-size: 13px; color: var(--mx-slate); text-align: left; background: var(--mx-paper); border-radius: 8px; padding: 8px 10px; margin-top: 8px; white-space: pre-wrap; }
+    .fam-card .acts { margin-top: 10px; display: flex; gap: 6px; justify-content: center; }
+
+    .post-card { background: #fff; border: 1px solid var(--mx-sand); border-radius: var(--mx-radius); padding: 16px 18px; margin-bottom: 12px; }
+    .post-card.mention-me { border-left: 4px solid var(--mx-red); }
+    .post-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .post-meta .who { font-weight: 900; }
+    .post-meta .when { font-size: 12px; color: var(--mx-silver); }
+    .post-body { white-space: pre-wrap; word-break: break-word; font-size: 14.5px; }
+    .mention { color: var(--mx-red-deep); font-weight: 700; background: var(--mx-red-soft); border-radius: 4px; padding: 0 3px; }
+    .reply-box { margin-top: 10px; padding-left: 14px; border-left: 2px solid var(--mx-sand); }
+    .reply { padding: 8px 0; font-size: 14px; }
+    .mention-wrap { position: relative; }
+    .mention-pop { position: absolute; left: 0; top: 100%; z-index: 20; background: #fff; border: 1px solid var(--mx-sand); border-radius: 8px; box-shadow: var(--mx-shadow); min-width: 220px; max-height: 220px; overflow: auto; }
+    .mention-pop div { padding: 8px 12px; cursor: pointer; font-size: 14px; }
+    .mention-pop div:hover, .mention-pop div.on { background: var(--mx-red-soft); }
+
+    .thread-item { display: flex; gap: 10px; align-items: center; padding: 10px 8px; border-radius: 8px; cursor: pointer; }
+    .thread-item:hover, .thread-item.on { background: var(--mx-paper); }
+    .thread-item .sub { font-size: 12.5px; color: var(--mx-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dm-panel { display: flex; flex-direction: column; height: 520px; }
+    .dm-head { padding: 14px 18px; border-bottom: 1px solid var(--mx-sand); font-weight: 900; display: flex; align-items: center; gap: 10px; }
+    .dm-body { flex: 1; overflow-y: auto; padding: 16px 18px; background: #FBFAF8; }
+    .dm-foot { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--mx-sand); }
+    .bubble { max-width: 76%; padding: 9px 13px; border-radius: 14px; margin-bottom: 8px; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
+    .bubble.me { margin-left: auto; background: var(--mx-red); color: #fff; border-bottom-right-radius: 4px; }
+    .bubble.them { background: #fff; border: 1px solid var(--mx-sand); border-bottom-left-radius: 4px; }
+    .bubble .t { display: block; font-size: 10.5px; opacity: .7; margin-top: 3px; }
+
+    .task-card { background: #fff; border: 1px solid var(--mx-sand); border-radius: var(--mx-radius); padding: 18px; margin-bottom: 12px; }
+    .task-card.closed { opacity: .6; }
+    .task-pts { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+    .shop-card { background: #fff; border: 1px solid var(--mx-sand); border-radius: var(--mx-radius); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+    .shop-img { aspect-ratio: 4 / 3; background: var(--mx-paper); display: flex; align-items: center; justify-content: center; color: var(--mx-silver); font-size: 40px; }
+    .shop-img img { width: 100%; height: 100%; object-fit: cover; }
+    .shop-body { padding: 14px 16px; flex: 1; display: flex; flex-direction: column; }
+    .shop-cost { font-weight: 900; color: var(--mx-red); font-size: 18px; }
+
     .mx-footer { text-align: center; font-size: 11px; letter-spacing: .25em; color: var(--mx-silver); margin-top: 48px; }
 
     @media (max-width: 576px) {
@@ -426,6 +516,15 @@
             <label class="form-label">團員生日</label>
             <input type="date" class="form-control" name="birthday">
           </div>
+          <div class="mb-3">
+            <label class="form-label d-block">我是</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="relation" id="relSelf" value="本人" checked>
+              <label class="btn btn-line" for="relSelf">團員本人</label>
+              <input type="radio" class="btn-check" name="relation" id="relParent" value="家長">
+              <label class="btn btn-line" for="relParent">家長</label>
+            </div>
+          </div>
           <button type="submit" class="btn btn-mixcin w-100 py-3"><i class="bi bi-person-check-fill me-1"></i>完成註冊</button>
         </form>
         <div class="notice mt-3" style="font-size:13px;">
@@ -443,16 +542,28 @@
   <!-- 深色主視覺 + 導覽 -->
   <section class="mx-hero">
     <div class="container-xl px-3 px-md-4">
-      <span class="hero-badge">EST. 2013 · TEAM SYSTEM</span>
-      <h1 class="hero-title">MIXCIN <em>競演團</em> 活動管理</h1>
-      <p class="hero-sub">行事曆、活動報名、團員資料與考核查詢，一站完成。</p>
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+        <div>
+          <span class="hero-badge">MIXCIN BOARD</span>
+          <h1 class="hero-title">競演團<em>大家庭</em></h1>
+          <p class="hero-sub" id="heroSub">歡迎回來！</p>
+        </div>
+        <div class="as-box d-none" id="asBox">
+          <label class="small d-block mb-1" style="color:var(--mx-mist)">目前使用身分</label>
+          <select class="form-select form-select-sm" id="asSelect" onchange="onChangeAs()"></select>
+        </div>
+      </div>
 
       <ul class="nav mx-tabs" id="mainTab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button"><span class="tab-no">01</span>活動行事曆</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-register" data-bs-toggle="tab" type="button"><span class="tab-no">02</span>活動報名</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-member" data-bs-toggle="tab" type="button"><span class="tab-no">03</span>團員資料</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-eval" data-bs-toggle="tab" type="button"><span class="tab-no">04</span>考核查詢</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-staff" data-bs-toggle="tab" type="button"><span class="tab-no">05</span>員工後台</button></li>
+        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-home" data-bs-toggle="tab" type="button"><i class="bi bi-grid-1x2-fill"></i>布告欄</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-tasks" data-bs-toggle="tab" type="button"><i class="bi bi-flag-fill"></i>任務</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button" id="calTabBtn"><i class="bi bi-calendar3"></i>活動日曆</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-family" data-bs-toggle="tab" type="button"><i class="bi bi-people-fill"></i>大家庭</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-forum" data-bs-toggle="tab" type="button"><i class="bi bi-chat-square-text-fill"></i>討論區</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-dm" data-bs-toggle="tab" type="button"><i class="bi bi-envelope-heart-fill"></i>悄悄話<span class="nav-badge d-none" id="dmBadge"></span></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-shop" data-bs-toggle="tab" type="button"><i class="bi bi-bag-heart-fill"></i>積分商店</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-member" data-bs-toggle="tab" type="button"><i class="bi bi-person-badge-fill"></i>我的檔案</button></li>
+        <li class="nav-item d-none" id="staffTabItem"><button class="nav-link" data-bs-target="#tab-staff" data-bs-toggle="tab" type="button"><i class="bi bi-shield-lock-fill"></i>員工後台</button></li>
       </ul>
     </div>
   </section>
@@ -460,242 +571,391 @@
   <main class="container-xl px-3 px-md-4">
     <div class="tab-content">
 
-      <!-- 01 活動行事曆 -->
-      <div class="tab-pane fade show active" id="tab-calendar">
+      <!-- 布告欄首頁 -->
+      <div class="tab-pane fade show active" id="tab-home">
+        <div class="sec-head">
+          <div class="sec-no">00</div>
+          <div>
+            <div class="eyebrow">Bulletin Board</div>
+            <h2 class="sec-title">布告欄</h2>
+            <div class="sec-sub">最新任務、活動、討論和提到你的留言都在這裡。</div>
+          </div>
+        </div>
+
+        <div id="consentAlert" class="notice notice-red mb-3 d-none">
+          <i class="bi bi-shield-exclamation"></i>
+          <div><b>有工作人員申請查閱孩子的悄悄話</b>，請到「悄悄話」頁面審核。</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-lg-3"><div class="stat-tile"><div class="k">我的積分</div><div class="v" id="homePoints">—</div></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-tile dark" onclick="goTab('tab-dm')"><div class="k">未讀悄悄話</div><div class="v" id="homeUnread">—</div></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-tile" onclick="goTab('tab-tasks')"><div class="k">進行中的任務</div><div class="v" id="homeTaskCount">—</div></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-tile"><div class="k">目前位階</div><div class="v" id="homeRank">—</div></div></div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="mx-card p-4 mb-3">
+              <div class="board-head"><span><i class="bi bi-flag-fill"></i>任務欄</span><a href="#" onclick="goTab('tab-tasks');return false;">全部任務 →</a></div>
+              <div id="homeTasks" class="board-list"></div>
+            </div>
+            <div class="mx-card p-4 mb-3">
+              <div class="board-head"><span><i class="bi bi-calendar-event-fill"></i>近期活動與比賽</span><a href="#" onclick="goTab('tab-calendar');return false;">看日曆 →</a></div>
+              <div id="homeEvents" class="board-list"></div>
+            </div>
+            <div class="mx-card p-4">
+              <div class="board-head"><span><i class="bi bi-chat-square-text-fill"></i>討論區最新</span><a href="#" onclick="goTab('tab-forum');return false;">進入討論區 →</a></div>
+              <div id="homePosts" class="board-list"></div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="mx-card p-4 mb-3">
+              <div class="board-head"><span><i class="bi bi-at"></i>提到你的留言</span></div>
+              <div id="homeMentions" class="board-list"></div>
+            </div>
+            <div class="mx-card-dark p-4 mb-3">
+              <div class="board-head light"><span><i class="bi bi-trophy-fill" style="color:var(--mx-gold)"></i>積分排行榜</span></div>
+              <div id="homeLeaderboard"></div>
+            </div>
+            <div class="row g-3">
+              <div class="col-6"><div class="soon-tile" onclick="goTab('tab-shop')"><i class="bi bi-bag-heart-fill"></i><b>積分商店</b><span>即將開放兌換</span></div></div>
+              <div class="col-6"><div class="soon-tile locked"><i class="bi bi-shield-shaded"></i><b>公會</b><span>敬請期待</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 任務 -->
+      <div class="tab-pane fade" id="tab-tasks">
         <div class="sec-head">
           <div class="sec-no">01</div>
           <div>
-            <div class="eyebrow">Team Calendar</div>
-            <h2 class="sec-title">團隊行事曆</h2>
-            <div class="sec-sub">點任一日期數字可切換到當天檢視，點活動可看詳細資訊。</div>
+            <div class="eyebrow">Missions</div>
+            <h2 class="sec-title">任務欄</h2>
+            <div class="sec-sub">承接任務、完成挑戰就能拿積分；承接後失敗會扣分，想清楚再接喔！</div>
           </div>
         </div>
-        <div class="legend">
-          <span><i style="background:#E8475A"></i>商業演出</span>
-          <span><i style="background:#2A3038"></i>街舞賽事</span>
-          <span><i style="background:#9AA1AA"></i>其他</span>
+        <div class="row g-3">
+          <div class="col-lg-8"><div id="taskList"></div></div>
+          <div class="col-lg-4">
+            <div class="mx-card p-4">
+              <div class="board-head"><span><i class="bi bi-calendar-event-fill"></i>活動與比賽</span></div>
+              <div id="taskEventList" class="board-list"></div>
+            </div>
+          </div>
         </div>
-        <div class="mx-card p-3 p-md-4"><div id="calendar"></div></div>
       </div>
 
-      <!-- 02 活動報名 -->
-      <div class="tab-pane fade" id="tab-register">
+      <!-- 活動日曆 + 報名 -->
+      <div class="tab-pane fade" id="tab-calendar">
         <div class="sec-head">
           <div class="sec-no">02</div>
           <div>
-            <div class="eyebrow">Event Registration</div>
-            <h2 class="sec-title">活動報名登記</h2>
-            <div class="sec-sub">只會顯示開放前台報名、且尚未結束的活動。</div>
+            <div class="eyebrow">Team Calendar</div>
+            <h2 class="sec-title">活動與比賽日曆</h2>
+            <div class="sec-sub">點活動可看詳細資訊；右邊可以直接報名開放中的活動。</div>
           </div>
         </div>
-
-        <div class="mx-card p-4" style="max-width: 680px;">
-          <div id="regChildSelectorBox" class="mb-3 d-none">
-            <label class="form-label"><i class="bi bi-people-fill me-1" style="color:var(--mx-red)"></i>您綁定了多位孩子，請選擇要報名的孩子</label>
-            <select class="form-select" id="regChildSelect" onchange="onSelectRegChild()"></select>
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div class="legend">
+              <span><i style="background:#E8475A"></i>商業演出</span>
+              <span><i style="background:#2A3038"></i>街舞賽事</span>
+              <span><i style="background:#9AA1AA"></i>其他</span>
+            </div>
+            <div class="mx-card p-3 p-md-4"><div id="calendar"></div></div>
           </div>
-
-          <form id="regForm" novalidate>
-            <div class="mb-3">
-              <label class="form-label">選擇活動</label>
-              <select class="form-select" id="regEventSelect" name="eventId" required>
-                <option value="">載入活動中…</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">所屬團隊</label>
-              <select class="form-select" id="regTeamSelect" name="team" required></select>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">報名者 / 團員本名</label>
-                <input type="text" class="form-control" id="regNameInput" name="name" placeholder="孩子的全名" maxlength="50" required readonly>
+          <div class="col-lg-4">
+            <div class="mx-card p-4">
+              <div class="panel-title"><i class="bi bi-pencil-square me-1"></i>活動報名</div>
+              <div id="regChildSelectorBox" class="mb-3 d-none">
+                <label class="form-label">要報名的孩子</label>
+                <select class="form-select" id="regChildSelect" onchange="onSelectRegChild()"></select>
               </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">聯絡電話</label>
-                <input type="tel" class="form-control" id="regPhoneInput" name="phone" placeholder="0912345678" maxlength="20" required>
-              </div>
+              <form id="regForm" novalidate>
+                <div class="mb-3">
+                  <label class="form-label">選擇活動</label>
+                  <select class="form-select" id="regEventSelect" name="eventId" required><option value="">載入活動中…</option></select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">所屬團隊</label>
+                  <select class="form-select" id="regTeamSelect" name="team" required></select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">團員本名</label>
+                  <input type="text" class="form-control" id="regNameInput" name="name" maxlength="50" required readonly>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">聯絡電話</label>
+                  <input type="tel" class="form-control" id="regPhoneInput" name="phone" placeholder="0912345678" maxlength="20" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">備註</label>
+                  <textarea class="form-control" name="notes" rows="2" maxlength="500"></textarea>
+                </div>
+                <button type="submit" class="btn btn-mixcin w-100 py-2"><i class="bi bi-send-check-fill me-1"></i>送出報名</button>
+              </form>
             </div>
-            <div class="mb-3">
-              <label class="form-label">備註</label>
-              <textarea class="form-control" name="notes" rows="3" maxlength="500" placeholder="其他需要說明的事項"></textarea>
-            </div>
-            <button type="submit" class="btn btn-mixcin w-100 py-3"><i class="bi bi-send-check-fill me-1"></i>送出報名</button>
-          </form>
+          </div>
         </div>
       </div>
 
-      <!-- 03 團員資料 -->
-      <div class="tab-pane fade" id="tab-member">
+      <!-- 競演團大家庭 -->
+      <div class="tab-pane fade" id="tab-family">
         <div class="sec-head">
           <div class="sec-no">03</div>
           <div>
-            <div class="eyebrow">Member Profile</div>
-            <h2 class="sec-title">團員資料中心</h2>
-            <div class="sec-sub">孩子與家長都能用各自的 Google 帳號登入，共同維護同一份資料。</div>
+            <div class="eyebrow">MIXCIN Family</div>
+            <h2 class="sec-title">競演團大家庭</h2>
+            <div class="sec-sub">認識一起練舞的夥伴！這裡只會顯示大家設定為公開的資料。</div>
           </div>
         </div>
-
-        <div style="max-width: 820px;">
-          <div id="parentMultiChildBox" class="mx-card p-3 mb-3 d-none">
-            <label class="form-label"><i class="bi bi-person-hearts me-1" style="color:var(--mx-red)"></i>家長帳號：請選擇要檢視 / 維護的孩子</label>
-            <select class="form-select" id="parentChildSelect" onchange="onSelectParentChild()"></select>
-          </div>
-
-          <div id="adminMemberSwitchBox" class="mx-card p-3 mb-3 d-none">
-            <label class="form-label"><i class="bi bi-shield-lock-fill me-1" style="color:var(--mx-red)"></i>員工：切換查看 / 校正團員資料</label>
-            <select class="form-select" id="adminMemberSelect" onchange="onAdminSelectMember()"></select>
-          </div>
-
-          <div class="student-badge-card mb-3">
-            <div>
-              <div class="eyebrow mb-1" style="color:var(--mx-mist)">Student No.</div>
-              <div class="student-no-text" id="displayStudentNo">—</div>
-            </div>
-            <div class="hint">孩子與家長登入都綁定同一個學號，可用來查詢考核成績。</div>
-          </div>
-
-          <!-- 帳號綁定 -->
-          <div class="mx-card p-4 mb-3" id="accountsCard">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="panel-title m-0"><i class="bi bi-people-fill me-1"></i>帳號綁定</div>
-              <span class="small" style="color:var(--mx-muted)" id="accountsHint"></span>
-            </div>
-            <div id="accountsList"><div class="small" style="color:var(--mx-muted)">載入中…</div></div>
-            <div class="input-group mt-3 d-none" id="accountsAddBox">
-              <input type="email" class="form-control" id="accountsAddInput" placeholder="輸入家人的 Google Email">
-              <button class="btn btn-ink" type="button" onclick="addAccount()"><i class="bi bi-plus-lg me-1"></i>新增綁定</button>
-            </div>
-          </div>
-
-          <form id="memberForm" class="mx-card p-4" novalidate>
-            <fieldset id="memberFieldset">
-              <input type="hidden" name="studentNo" id="memberStudentNoHidden">
-
-              <div class="panel-title"><i class="bi bi-person-vcard-fill me-1"></i>基本資料</div>
-              <div class="small mb-3" style="color:var(--mx-muted)" id="staffOnlyHint">本名、生日、團隊為註冊驗證資料，如需更正請洽工作人員。</div>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">所屬團隊</label>
-                  <select class="form-select staff-only" name="team" id="memberTeamSelect" required></select>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">團員本名</label>
-                  <input type="text" class="form-control staff-only" name="name" maxlength="50" placeholder="請輸入姓名" required>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">出生年月日</label>
-                  <input type="date" class="form-control staff-only" name="birthday" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">身分證字號（保險用）</label>
-                  <input type="text" class="form-control text-uppercase" name="idNumber" placeholder="A123456789" maxlength="10">
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">聯絡電話（家長手機）</label>
-                  <input type="tel" class="form-control" name="phone" placeholder="0912345678" maxlength="20" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">家長姓名與稱謂</label>
-                  <input type="text" class="form-control" name="parentContact" maxlength="50" placeholder="例如：林媽媽" required>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">通訊地址</label>
-                <div class="input-group">
-                  <input type="text" class="form-control" id="memberAddress" name="address" maxlength="200" placeholder="含縣市區街路巷弄號" required>
-                  <button class="btn btn-ink" type="button" onclick="parseZipCode3()"><i class="bi bi-geo-alt-fill me-1"></i>帶入郵遞區號</button>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label class="form-label">郵遞區號</label>
-                  <input type="text" class="form-control text-center fw-bold" id="memberZip" name="zipCode" maxlength="6" placeholder="自動帶入" readonly>
-                </div>
-              </div>
-
-              <div class="tracker-box mt-2">
-                <h6 class="mb-3"><i class="bi bi-award-fill me-1"></i>考核成績與教練評語</h6>
-                <div class="row">
-                  <div class="col-md-4 mb-2">
-                    <label class="form-label">考核成績 / 等級</label>
-                    <input type="text" class="form-control" name="evalScore" id="memberEvalScore" maxlength="50" placeholder="如：A+ / 92 分" readonly>
-                  </div>
-                  <div class="col-md-8 mb-2">
-                    <label class="form-label">導師評語與建議</label>
-                    <textarea class="form-control" name="evalNotes" id="memberEvalNotes" rows="2" maxlength="2000" placeholder="教練評語…" readonly></textarea>
-                  </div>
-                </div>
-                <div id="evalEditNotice" class="small mt-1" style="color:var(--mx-muted)">團員與家長僅供查閱，成績由管理者登記。</div>
-              </div>
-
-              <button type="submit" class="btn btn-mixcin w-100 py-3 mt-2"><i class="bi bi-check-circle-fill me-1"></i>儲存並更新資料</button>
-            </fieldset>
-          </form>
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+          <input type="search" class="form-control" id="familySearch" placeholder="搜尋名字…" style="max-width:240px" oninput="renderFamily()">
+          <select class="form-select" id="familyTeam" style="max-width:220px" onchange="renderFamily()"></select>
         </div>
+        <div class="row g-3" id="familyGrid"></div>
       </div>
 
-      <!-- 04 考核查詢 -->
-      <div class="tab-pane fade" id="tab-eval">
+      <!-- 討論區 -->
+      <div class="tab-pane fade" id="tab-forum">
         <div class="sec-head">
           <div class="sec-no">04</div>
           <div>
-            <div class="eyebrow">Score Lookup</div>
-            <h2 class="sec-title">考核成績查詢</h2>
-            <div class="sec-sub">輸入專屬學號與團員生日，即可查看考核結果與教練評語。</div>
+            <div class="eyebrow">Forum</div>
+            <h2 class="sec-title">討論區</h2>
+            <div class="sec-sub">公開留言板，所有團員都看得到。輸入 @ 可以標記其他團員。請友善發言。</div>
           </div>
         </div>
-
-        <div class="mx-card p-4" style="max-width: 680px;">
-          <div class="row g-2 align-items-end">
-            <div class="col-sm-6">
-              <label class="form-label">專屬學號</label>
-              <input type="text" class="form-control form-control-lg text-uppercase fw-bold" id="queryStudentNoInput" placeholder="MX261234" style="letter-spacing:2px;" maxlength="12">
+        <div style="max-width:820px">
+          <div class="mx-card p-3 mb-3">
+            <div class="mention-wrap">
+              <textarea class="form-control" id="postInput" rows="3" maxlength="1000" placeholder="想說些什麼？輸入 @ 標記團員" oninput="onMentionInput(this)"></textarea>
+              <div class="mention-pop d-none" id="mentionPop"></div>
             </div>
-            <div class="col-sm-6">
-              <label class="form-label">團員生日</label>
-              <input type="date" class="form-control form-control-lg" id="queryBirthdayInput">
-            </div>
-            <div class="col-12 mt-3">
-              <button class="btn btn-mixcin w-100 py-3" type="button" onclick="doQueryScore()"><i class="bi bi-search me-1"></i>查詢成績</button>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <span class="small" style="color:var(--mx-muted)" id="postAsLabel"></span>
+              <button class="btn btn-mixcin px-4" type="button" onclick="submitPost()"><i class="bi bi-send-fill me-1"></i>發佈</button>
             </div>
           </div>
+          <div id="postList"></div>
+        </div>
+      </div>
 
-          <div id="queryResultCard" class="mt-4 d-none">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <div class="eyebrow mb-1">Result</div>
-                <h5 class="fw-bold m-0" id="resStudentName"></h5>
-              </div>
-              <span class="tag tag-ink" id="resStudentTeam"></span>
+      <!-- 悄悄話 -->
+      <div class="tab-pane fade" id="tab-dm">
+        <div class="sec-head">
+          <div class="sec-no">05</div>
+          <div>
+            <div class="eyebrow">Messages</div>
+            <h2 class="sec-title">悄悄話</h2>
+            <div class="sec-sub">團員之間的私訊。綁定的家長看得到內容；工作人員需要家長同意才能查閱。</div>
+          </div>
+        </div>
+        <div id="consentBox" class="mb-3"></div>
+        <div id="dmStaffNote" class="notice mb-3 d-none"><i class="bi bi-info-circle-fill"></i><div>員工帳號不使用悄悄話。需要了解團員私訊時，請到「員工後台 → 私訊查閱申請」送出申請，家長同意後可查閱 7 天。</div></div>
+        <div class="row g-3" id="dmArea">
+          <div class="col-lg-4">
+            <div class="mx-card p-3">
+              <select class="form-select mb-2" id="dmNewSelect" onchange="openThread(this.value);this.value='';"></select>
+              <div id="threadList"></div>
             </div>
-            <div class="score-hero mb-3">
-              <div>
-                <div class="small" style="color:var(--mx-mist)">考核評定</div>
-                <div class="score-big" id="resScore">--</div>
+          </div>
+          <div class="col-lg-8">
+            <div class="mx-card dm-panel">
+              <div class="dm-head" id="dmHead"><span style="color:var(--mx-muted)">選擇一位團員開始聊天</span></div>
+              <div class="dm-body" id="dmBody"></div>
+              <div class="dm-foot">
+                <input type="text" class="form-control" id="dmInput" maxlength="1000" placeholder="輸入訊息…" onkeydown="if(event.key==='Enter'&&!event.isComposing){sendDm();}">
+                <button class="btn btn-mixcin" type="button" onclick="sendDm()"><i class="bi bi-send-fill"></i></button>
               </div>
-              <div class="text-end">
-                <div class="small" style="color:var(--mx-mist)">學號</div>
-                <div class="fw-bold" id="resStudentNo"></div>
-              </div>
-            </div>
-            <div class="tracker-box mb-0">
-              <h6 class="mb-2"><i class="bi bi-chat-quote-fill me-1"></i>導師評語與建議</h6>
-              <div id="resNotes" style="white-space:pre-wrap"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 05 員工後台 -->
+      <!-- 積分商店 -->
+      <div class="tab-pane fade" id="tab-shop">
+        <div class="sec-head">
+          <div class="sec-no">06</div>
+          <div>
+            <div class="eyebrow">Point Shop</div>
+            <h2 class="sec-title">積分商店</h2>
+            <div class="sec-sub">上課、比賽、活動和任務都能累積積分，之後可以在這裡兌換商品。</div>
+          </div>
+        </div>
+        <div class="notice mb-3"><i class="bi bi-hourglass-split"></i><div><b>兌換功能即將開放！</b>先看看有哪些好東西，努力存積分吧。你目前有 <b id="shopPoints">—</b> 分。</div></div>
+        <div class="row g-3" id="shopGrid"></div>
+      </div>
+
+      <!-- 我的檔案 -->
+      <div class="tab-pane fade" id="tab-member">
+        <div class="sec-head">
+          <div class="sec-no">07</div>
+          <div>
+            <div class="eyebrow">My Profile</div>
+            <h2 class="sec-title">我的檔案</h2>
+            <div class="sec-sub">個人資料、帳號綁定、積分紀錄與考核成績。</div>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div id="adminMemberSwitchBox" class="mx-card p-3 mb-3 d-none">
+              <label class="form-label"><i class="bi bi-shield-lock-fill me-1" style="color:var(--mx-red)"></i>員工：切換查看 / 校正團員資料</label>
+              <select class="form-select" id="adminMemberSelect" onchange="onAdminSelectMember()"></select>
+            </div>
+
+            <div class="profile-hero mb-3">
+              <div class="avatar-xl" id="profileAvatar"><i class="bi bi-person-fill"></i></div>
+              <div class="flex-grow-1">
+                <div class="eyebrow mb-1" style="color:var(--mx-mist)">Student No. <span id="displayStudentNo">—</span></div>
+                <div class="profile-name" id="profileName">—</div>
+                <div class="d-flex flex-wrap gap-2 mt-2" id="profileTags"></div>
+              </div>
+              <div>
+                <label class="btn btn-ghost-light btn-sm mb-0" id="avatarBtn">
+                  <i class="bi bi-camera-fill me-1"></i>換大頭照
+                  <input type="file" accept="image/*" class="d-none" id="avatarInput" onchange="onAvatarPicked(this)">
+                </label>
+              </div>
+            </div>
+
+            <form id="memberForm" class="mx-card p-4 mb-3" novalidate>
+              <fieldset id="memberFieldset">
+                <input type="hidden" name="studentNo" id="memberStudentNoHidden">
+
+                <div class="panel-title"><i class="bi bi-stars me-1"></i>公開檔案 <span class="small fw-normal" style="color:var(--mx-muted)">（其他團員可能看得到，依後台設定）</span></div>
+                <div class="mb-3">
+                  <label class="form-label">自我介紹</label>
+                  <textarea class="form-control" name="intro" rows="2" maxlength="300" placeholder="喜歡的舞風、偶像、目標…"></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">IG 帳號</label>
+                    <div class="input-group"><span class="input-group-text">@</span><input type="text" class="form-control" name="ig" maxlength="80" placeholder="帳號或 IG 網址"></div>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label">團員身分</label>
+                    <input type="text" class="form-control staff-only" name="title" maxlength="20" placeholder="團員 / 隊長">
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label">位階</label>
+                    <select class="form-select staff-only" name="rank"><option value="">—</option><option>銅牌</option><option>銀牌</option><option>金牌</option><option>白金</option></select>
+                  </div>
+                </div>
+
+                <hr style="border-color:var(--mx-sand); opacity:1;">
+                <div class="panel-title"><i class="bi bi-lock-fill me-1"></i>私人資料 <span class="small fw-normal" style="color:var(--mx-muted)">（只有本人、家長和工作人員看得到）</span></div>
+                <div class="small mb-3" style="color:var(--mx-muted)" id="staffOnlyHint">本名、生日、團隊為註冊驗證資料，如需更正請洽工作人員。</div>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">團員本名</label>
+                    <input type="text" class="form-control staff-only" name="name" maxlength="50">
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">出生年月日（西元）</label>
+                    <input type="date" class="form-control staff-only" name="birthday">
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">所屬團隊</label>
+                    <select class="form-select staff-only" name="team" id="memberTeamSelect"></select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">身分證字號</label>
+                    <input type="text" class="form-control text-uppercase" name="idNumber" placeholder="A123456789" maxlength="10">
+                  </div>
+                  <div class="col-4 col-md-2 mb-3">
+                    <label class="form-label">身高 cm</label>
+                    <input type="number" class="form-control" name="height" min="50" max="250">
+                  </div>
+                  <div class="col-4 col-md-2 mb-3">
+                    <label class="form-label">體重 kg</label>
+                    <input type="number" class="form-control" name="weight" min="10" max="200">
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">就讀學校</label>
+                    <input type="text" class="form-control" name="school" maxlength="50">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">聯絡電話（家長手機）</label>
+                    <input type="tel" class="form-control" name="phone" placeholder="0912345678" maxlength="20">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">家長姓名與稱謂</label>
+                    <input type="text" class="form-control" name="parentContact" maxlength="50" placeholder="例如：林媽媽">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">通訊地址</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="memberAddress" name="address" maxlength="200" placeholder="含縣市區街路巷弄號">
+                    <button class="btn btn-ink" type="button" onclick="parseZipCode3()"><i class="bi bi-geo-alt-fill me-1"></i>帶入郵遞區號</button>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label">郵遞區號</label>
+                    <input type="text" class="form-control text-center fw-bold" id="memberZip" name="zipCode" maxlength="6" placeholder="自動帶入" readonly>
+                  </div>
+                </div>
+
+                <div class="tracker-box mt-2">
+                  <h6 class="mb-3"><i class="bi bi-award-fill me-1"></i>考核成績與教練評語</h6>
+                  <div class="row">
+                    <div class="col-md-4 mb-2">
+                      <label class="form-label">考核成績 / 等級</label>
+                      <input type="text" class="form-control" name="evalScore" id="memberEvalScore" maxlength="50" readonly>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                      <label class="form-label">導師評語與建議</label>
+                      <textarea class="form-control" name="evalNotes" id="memberEvalNotes" rows="2" maxlength="2000" readonly></textarea>
+                    </div>
+                  </div>
+                  <div id="evalEditNotice" class="small mt-1" style="color:var(--mx-muted)"></div>
+                </div>
+
+                <button type="submit" class="btn btn-mixcin w-100 py-3 mt-2"><i class="bi bi-check-circle-fill me-1"></i>儲存資料</button>
+              </fieldset>
+            </form>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="mx-card-dark p-4 mb-3">
+              <div class="eyebrow mb-1" style="color:var(--mx-mist)">Points</div>
+              <div class="score-big" id="profilePoints">0</div>
+              <div class="small mt-1" style="color:var(--mx-mist)">積分紀錄</div>
+              <div id="pointHistory" class="mt-2"></div>
+            </div>
+
+            <div class="mx-card p-4 mb-3" id="accountsCard">
+              <div class="panel-title"><i class="bi bi-people-fill me-1"></i>帳號綁定</div>
+              <div class="small mb-2" style="color:var(--mx-muted)" id="accountsHint"></div>
+              <div id="accountsList"></div>
+              <div class="mt-3 d-none" id="claimBox">
+                <button type="button" class="btn btn-line w-100" onclick="claimPrimaryAccount()"><i class="bi bi-person-check-fill me-1"></i>由我（家長）擔任主帳號</button>
+              </div>
+              <div class="mt-3 d-none" id="accountsAddBox">
+                <input type="email" class="form-control mb-2" id="accountsAddInput" placeholder="家人的 Google Email">
+                <div class="d-flex gap-2">
+                  <select class="form-select" id="accountsAddRelation" style="max-width:110px"><option value="家長">家長</option><option value="本人">本人</option></select>
+                  <button class="btn btn-ink flex-grow-1" type="button" onclick="addAccount()"><i class="bi bi-plus-lg me-1"></i>新增綁定</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 員工後台 -->
       <div class="tab-pane fade" id="tab-staff">
         <div class="sec-head">
-          <div class="sec-no">05</div>
+          <div class="sec-no">08</div>
           <div>
             <div class="eyebrow">Staff Console</div>
             <h2 class="sec-title">員工後台管理</h2>
@@ -840,6 +1100,89 @@
             </div>
             <div id="staffList"></div>
           </div>
+
+          <!-- 任務管理 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="mb-3">
+              <div class="eyebrow">Missions</div>
+              <h4 class="fw-bold m-0">任務管理</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">發布任務後，團員可以在「任務」頁承接。結算時按「成功」加分、「失敗」扣分。</div>
+            </div>
+            <form id="taskForm" class="row g-2 align-items-end mb-3" novalidate>
+              <input type="hidden" id="taskIdInput">
+              <div class="col-md-6"><label class="form-label">任務名稱</label><input type="text" class="form-control" id="taskTitleInput" maxlength="80" placeholder="IG REELS 挑戰"></div>
+              <div class="col-md-3"><label class="form-label">截止日</label><input type="date" class="form-control" id="taskDeadlineInput"></div>
+              <div class="col-md-3"><label class="form-label">狀態</label><select class="form-select" id="taskStatusInput"><option>開放</option><option>結束</option><option>下架</option></select></div>
+              <div class="col-12"><label class="form-label">任務說明</label><textarea class="form-control" id="taskDescInput" rows="2" maxlength="1000" placeholder="兩人一組拍攝一支短影音…"></textarea></div>
+              <div class="col-4 col-md-3"><label class="form-label">成功 +分</label><input type="number" class="form-control" id="taskRewardInput" min="0" value="10"></div>
+              <div class="col-4 col-md-3"><label class="form-label">失敗 −分</label><input type="number" class="form-control" id="taskPenaltyInput" min="0" value="0"></div>
+              <div class="col-4 col-md-3"><label class="form-label">名額（0=不限）</label><input type="number" class="form-control" id="taskMaxInput" min="0" value="0"></div>
+              <div class="col-md-3 d-flex gap-2"><button type="submit" class="btn btn-mixcin flex-grow-1">儲存任務</button><button type="button" class="btn btn-line" onclick="resetTaskForm()">清空</button></div>
+            </form>
+            <div id="staffTaskList"></div>
+          </div>
+
+          <!-- 積分發放 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="mb-3">
+              <div class="eyebrow">Points</div>
+              <h4 class="fw-bold m-0">積分發放</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">上課、比賽、活動都可以在這裡加分；輸入負數就是扣分。</div>
+            </div>
+            <div class="row g-2 align-items-end">
+              <div class="col-md-4"><label class="form-label">團員</label><select class="form-select" id="ptStudent"></select></div>
+              <div class="col-md-2"><label class="form-label">類別</label><select class="form-select" id="ptSource"><option>上課</option><option>比賽</option><option>活動</option><option>其他</option></select></div>
+              <div class="col-md-2"><label class="form-label">積分</label><input type="number" class="form-control" id="ptDelta" value="10"></div>
+              <div class="col-md-2"><label class="form-label">說明</label><input type="text" class="form-control" id="ptReason" maxlength="100" placeholder="11 月出席"></div>
+              <div class="col-md-2"><button type="button" class="btn btn-mixcin w-100" onclick="giveP()">送出</button></div>
+            </div>
+          </div>
+
+          <!-- 商店商品 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="mb-3">
+              <div class="eyebrow">Shop Items</div>
+              <h4 class="fw-bold m-0">積分商店商品</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">目前團員只能瀏覽，兌換功能尚未開放。</div>
+            </div>
+            <div class="row g-2 align-items-end mb-3">
+              <input type="hidden" id="shopIdInput">
+              <div class="col-md-4"><label class="form-label">商品名稱</label><input type="text" class="form-control" id="shopNameInput" maxlength="60"></div>
+              <div class="col-md-2"><label class="form-label">所需積分</label><input type="number" class="form-control" id="shopCostInput" min="0"></div>
+              <div class="col-md-2"><label class="form-label">庫存（空白=不限）</label><input type="number" class="form-control" id="shopStockInput" min="0"></div>
+              <div class="col-md-2"><label class="form-label">上架</label><select class="form-select" id="shopActiveInput"><option value="1">上架</option><option value="0">下架</option></select></div>
+              <div class="col-md-2"><label class="form-label">圖片</label><input type="file" class="form-control" accept="image/*" id="shopImageInput"></div>
+              <div class="col-md-10"><label class="form-label">說明</label><input type="text" class="form-control" id="shopDescInput" maxlength="300"></div>
+              <div class="col-md-2 d-flex gap-2"><button type="button" class="btn btn-mixcin flex-grow-1" onclick="saveShop()">儲存</button><button type="button" class="btn btn-line" onclick="resetShopForm()">清空</button></div>
+            </div>
+            <div id="staffShopList"></div>
+          </div>
+
+          <!-- 公開欄位設定 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="mb-3">
+              <div class="eyebrow">Privacy</div>
+              <h4 class="fw-bold m-0">大家庭公開欄位設定</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">勾選的欄位會顯示在「大家庭」頁給所有團員看。身分證、地址、身高體重、學校、生日與年齡永遠不公開。</div>
+            </div>
+            <div class="d-flex flex-wrap gap-3 mb-3" id="publicFieldBox"></div>
+            <button type="button" class="btn btn-ink" onclick="savePublicFields()">儲存設定</button>
+          </div>
+
+          <!-- 私訊查閱申請 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="mb-3">
+              <div class="eyebrow">Message Access</div>
+              <h4 class="fw-bold m-0">私訊查閱申請</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">需要了解團員的悄悄話時，送出申請給該團員的家長帳號；家長同意後可唯讀查閱 7 天。</div>
+            </div>
+            <div class="row g-2 align-items-end mb-3">
+              <div class="col-md-4"><label class="form-label">團員</label><select class="form-select" id="dmReqStudent"></select></div>
+              <div class="col-md-6"><label class="form-label">申請原因（家長會看到）</label><input type="text" class="form-control" id="dmReqReason" maxlength="300"></div>
+              <div class="col-md-2"><button type="button" class="btn btn-mixcin w-100" onclick="sendDmRequest()">送出申請</button></div>
+            </div>
+            <div id="dmReqList"></div>
+          </div>
         </div>
       </div>
 
@@ -923,16 +1266,38 @@
     // 呼叫 Apps Script 後端（doPost）
     const API_ARGS = {
       getSession: ['idToken'],
-      registerMember: ['name', 'birthday', 'idToken'],
+      registerMember: ['name', 'birthday', 'relation', 'idToken'],
+      getHome: ['asNo', 'idToken'],
       getEvents: ['idToken'],
       saveEvent: ['eventData', 'idToken'],
       getLinkedMembersForCurrentUser: ['idToken'],
       getMemberProfile: ['targetStudentNo', 'idToken'],
       saveMemberProfile: ['formData', 'idToken'],
+      saveAvatar: ['studentNo', 'dataUrl', 'idToken'],
       getAccountLinks: ['studentNo', 'idToken'],
-      addAccountLink: ['studentNo', 'email', 'idToken'],
+      addAccountLink: ['studentNo', 'email', 'relation', 'idToken'],
       removeAccountLink: ['studentNo', 'email', 'idToken'],
-      queryScoreByStudentNo: ['studentNo', 'birthday', 'idToken'],
+      claimPrimary: ['studentNo', 'idToken'],
+      getDirectory: ['idToken'],
+      getPublicSettings: ['idToken'],
+      savePublicSettings: ['settings', 'idToken'],
+      getPosts: ['idToken', 'limit'],
+      createPost: ['content', 'parentId', 'mentions', 'asNo', 'idToken'],
+      deletePost: ['postId', 'idToken'],
+      getThreads: ['asNo', 'idToken'],
+      getThread: ['asNo', 'otherNo', 'idToken'],
+      sendMessage: ['asNo', 'toNo', 'content', 'idToken'],
+      requestDmAccess: ['studentNo', 'reason', 'idToken'],
+      getDmAccessRequests: ['idToken'],
+      decideDmAccess: ['reqId', 'approve', 'idToken'],
+      getPointHistory: ['studentNo', 'idToken'],
+      staffAddPoints: ['studentNo', 'delta', 'reason', 'source', 'idToken'],
+      listTasks: ['asNo', 'idToken'],
+      acceptTask: ['taskId', 'asNo', 'idToken'],
+      saveTask: ['task', 'idToken'],
+      resolveTaskEntry: ['entryId', 'success', 'idToken'],
+      listShopItems: ['idToken'],
+      saveShopItem: ['item', 'idToken'],
       getAllMembersForAdmin: ['idToken'],
       submitRegistration: ['regData', 'idToken'],
       getTeamsAndMembers: ['idToken'],
@@ -1102,15 +1467,14 @@
     }
 
     function startApp() {
-      // 員工後台
+      // 員工後台只對員工顯示
+      document.getElementById('staffTabItem').classList.toggle('d-none', !session.isStaff);
       document.getElementById('staffWorkArea').classList.toggle('d-none', !session.isStaff);
-      document.getElementById('staffLockBox').classList.toggle('d-none', session.isStaff);
+      document.getElementById('staffLockBox').classList.add('d-none');
       document.getElementById('roleBadge').innerText = session.role || 'Staff';
-      document.getElementById('staffLockMsg').innerHTML =
-        `您的帳號 <b style="color:#fff">${esc(session.email)}</b> 不在員工名單中。<br>如需權限，請洽 Admin 在員工後台新增您的 Email。`;
       document.getElementById('staffAdminCard').classList.toggle('d-none', !session.isAdmin);
 
-      // 團員資料
+      // 我的檔案：員工才能改的欄位
       document.getElementById('adminMemberSwitchBox').classList.toggle('d-none', !session.isStaff);
       document.querySelectorAll('#memberForm .staff-only').forEach(el => {
         if (el.tagName === 'SELECT') el.disabled = !session.isStaff; else el.readOnly = !session.isStaff;
@@ -1125,29 +1489,49 @@
 
       if (!appStarted) {
         initCalendar();
+        document.getElementById('calTabBtn').addEventListener('shown.bs.tab', () => calendar.updateSize());
+        document.querySelectorAll('#mainTab [data-bs-toggle="tab"]').forEach(btn => {
+          btn.addEventListener('shown.bs.tab', () => onTabShown(btn.getAttribute('data-bs-target').slice(1)));
+        });
         appStarted = true;
-      } else {
-        calendar.updateSize();
       }
       loadEvents();
-      loadLinkedMembers();
+      loadLinkedMembers().then(() => { loadHome(); loadDirectory(); });
       if (session.isStaff) {
         loadAdminMembersList();
         loadRosterStatus();
+        loadStaffTools();
         api('getTeamsAndMembers', idToken).then(m => { globalTeamMap = m || {}; }).catch(() => {});
       }
       if (session.isAdmin) loadStaffList();
+    }
+
+    // 切換分頁時才載入該頁資料
+    function onTabShown(id) {
+      if (id === 'tab-home') loadHome();
+      if (id === 'tab-tasks') loadTasks();
+      if (id === 'tab-family') loadDirectory();
+      if (id === 'tab-forum') loadPosts();
+      if (id === 'tab-dm') loadDm();
+      if (id === 'tab-shop') loadShop();
+      if (id === 'tab-member') renderCurrentProfile();
+    }
+
+    function goTab(id) {
+      const btn = document.querySelector(`#mainTab [data-bs-target="#${id}"]`);
+      if (btn) bootstrap.Tab.getOrCreateInstance(btn).show();
     }
 
     document.getElementById('registerForm').addEventListener('submit', function (e) {
       e.preventDefault();
       const name = e.target.name.value.trim();
       const birthday = e.target.birthday.value;
+      const relation = e.target.relation.value;
       if (!name) return toast('請填寫團員本名', true);
       if (!birthday) return toast('請填寫團員生日', true);
       const btn = e.target.querySelector('button[type=submit]');
       setBusy(btn, true, '驗證中…');
-      api('registerMember', name, birthday, idToken)
+      api('registerMember', name, birthday, relation, idToken)
         .then(function (res) {
           toast('註冊成功！學號：' + res.studentNo);
           e.target.reset();
@@ -1224,6 +1608,7 @@
             : '<option value="">目前沒有開放報名的活動</option>';
 
           if (session.isStaff) renderStaffTable(globalEvents);
+          renderTaskEvents();
         })
         .catch(function (err) {
           document.getElementById('eventTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-red)">讀取發生異常，請重新整理頁面。</td></tr>';
@@ -1263,6 +1648,49 @@
     }
 
     // ==========================================
+    // 共用顯示工具
+    // ==========================================
+    let currentNo = '';
+
+    function me() { return myLinkedList.find(m => m.studentNo === currentNo) || null; }
+
+    function avatarHtml(src, name, cls) {
+      const safe = /^data:image\/(jpeg|png|webp);base64,/.test(src || '') ? src : '';
+      return `<span class="avatar ${cls || ''}">${safe ? `<img src="${safe}" alt="">` : esc((name || '?').slice(0, 1))}</span>`;
+    }
+
+    function fmtWhen(iso) {
+      if (!iso) return '';
+      const d = new Date(iso.replace(' ', 'T'));
+      if (isNaN(d)) return iso;
+      const diff = (Date.now() - d.getTime()) / 1000;
+      if (diff < 60) return '剛剛';
+      if (diff < 3600) return Math.floor(diff / 60) + ' 分鐘前';
+      if (diff < 86400) return Math.floor(diff / 3600) + ' 小時前';
+      return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function rankBadge(rank) {
+      return rank ? `<span class="rank-badge rank-${esc(rank)}">${esc(rank)}</span>` : '';
+    }
+
+    // 內容中的 @名字 標示出來
+    function renderMentions(text, mentions) {
+      let html = esc(text);
+      (mentions || []).forEach(m => {
+        if (!m.name) return;
+        const n = esc('@' + m.name);
+        html = html.split(n).join(`<span class="mention">${n}</span>`);
+      });
+      return html;
+    }
+
+    function dateBox(dateStr) {
+      const m = (dateStr || '').match(/^\d{4}-(\d{2})-(\d{2})$/);
+      return m ? `<div class="date">${Number(m[1])}月<b>${Number(m[2])}</b></div>` : '<div class="date">—</div>';
+    }
+
+    // ==========================================
     // 活動報名
     // ==========================================
     document.getElementById('regForm').addEventListener('submit', function (e) {
@@ -1276,24 +1704,22 @@
         notes: form.notes.value.trim()
       };
       if (!payload.eventId) return toast('請選擇活動', true);
-      if (!payload.name) return toast(myLinkedList.length > 1 ? '請先選擇要報名的孩子' : '請填寫報名者姓名', true);
+      if (!payload.name) return toast('請先選擇要報名的孩子', true);
       if (!payload.phone) return toast('請填寫聯絡電話', true);
-
       const btn = form.querySelector('button[type=submit]');
       setBusy(btn, true, '送出中…');
       api('submitRegistration', payload, idToken)
-        .then(function (res) {
-          toast(res && res.duplicated ? '您已經報名過這個活動了' : '報名成功！');
+        .then(res => {
+          toast(res && res.duplicated ? '已經報名過這個活動了' : '報名成功！');
           form.reset();
-          if (myLinkedList.length === 1) autoFillRegFormWithMember(myLinkedList[0]);
+          autoFillRegFormWithMember(me());
         })
         .catch(err => toast('報名失敗：' + errMsg(err), true))
         .finally(() => setBusy(btn, false));
     });
 
     function onSelectRegChild() {
-      const target = myLinkedList.find(x => x.studentNo === document.getElementById('regChildSelect').value);
-      if (target) autoFillRegFormWithMember(target);
+      autoFillRegFormWithMember(myLinkedList.find(x => x.studentNo === document.getElementById('regChildSelect').value));
     }
 
     function autoFillRegFormWithMember(m) {
@@ -1305,72 +1731,111 @@
     }
 
     // ==========================================
-    // 團員資料
+    // 綁定的團員與「目前使用身分」
     // ==========================================
     function loadLinkedMembers() {
-      api('getLinkedMembersForCurrentUser', idToken)
-        .then(function (list) {
+      return api('getLinkedMembersForCurrentUser', idToken)
+        .then(list => {
           myLinkedList = list || [];
+          if (!myLinkedList.some(m => m.studentNo === currentNo)) currentNo = myLinkedList[0] ? myLinkedList[0].studentNo : '';
           const many = myLinkedList.length > 1;
-          document.getElementById('parentMultiChildBox').classList.toggle('d-none', !many);
+          document.getElementById('asBox').classList.toggle('d-none', !many);
+          document.getElementById('asSelect').innerHTML = myLinkedList.map(m =>
+            `<option value="${esc(m.studentNo)}" ${m.studentNo === currentNo ? 'selected' : ''}>${esc(m.name)}${m.relation === '家長' ? '（家長）' : ''}</option>`).join('');
           document.getElementById('regChildSelectorBox').classList.toggle('d-none', !many);
-
-          if (many) {
-            document.getElementById('parentChildSelect').innerHTML = myLinkedList.map((m, i) =>
-              `<option value="${esc(m.studentNo)}">孩子 ${i + 1}：${esc(m.name)}（${esc(m.team || '未分隊')}）· ${esc(m.studentNo)}</option>`).join('');
-            document.getElementById('regChildSelect').innerHTML = '<option value="">請選擇要報名的孩子…</option>' + myLinkedList.map(m =>
-              `<option value="${esc(m.studentNo)}">${esc(m.name)}（${esc(m.team || '個人')}）</option>`).join('');
-          }
-
-          if (myLinkedList.length) {
-            renderMemberFormWithData(myLinkedList[0]);
-            if (!many) autoFillRegFormWithMember(myLinkedList[0]);
-          } else {
-            resetMemberForm();
-          }
+          document.getElementById('regChildSelect').innerHTML = myLinkedList.map(m => `<option value="${esc(m.studentNo)}">${esc(m.name)}</option>`).join('');
+          updateHeroAndLabels();
+          autoFillRegFormWithMember(me());
+          renderCurrentProfile();
         })
         .catch(err => toast(errMsg(err), true));
     }
 
-    function onSelectParentChild() {
-      const target = myLinkedList.find(x => x.studentNo === document.getElementById('parentChildSelect').value);
-      if (target) renderMemberFormWithData(target);
+    function onChangeAs() {
+      currentNo = document.getElementById('asSelect').value;
+      dmReadOnly = false; dmOther = '';
+      updateHeroAndLabels();
+      autoFillRegFormWithMember(me());
+      renderCurrentProfile();
+      const active = document.querySelector('#mainTab .nav-link.active');
+      onTabShown(active ? active.getAttribute('data-bs-target').slice(1) : 'tab-home');
+    }
+
+    function updateHeroAndLabels() {
+      const m = me();
+      document.getElementById('heroSub').textContent = m
+        ? `嗨，${m.name}${m.relation === '家長' ? ' 的家長' : ''}！今天也一起努力吧。`
+        : (session.isStaff ? `嗨，${session.name || '工作人員'}！` : '歡迎回來！');
+      document.getElementById('postAsLabel').textContent = m
+        ? `以「${m.name}${m.relation === '家長' ? '（家長）' : ''}」的身分發言`
+        : '以「工作人員」的身分發言';
+    }
+
+    // ==========================================
+    // 我的檔案
+    // ==========================================
+    let profileNo = '';
+
+    function renderCurrentProfile() {
+      const m = me();
+      if (m) renderMemberFormWithData(m);
+      else resetMemberForm();
     }
 
     function resetMemberForm() {
+      profileNo = '';
       document.getElementById('memberForm').reset();
       document.getElementById('memberStudentNoHidden').value = '';
       document.getElementById('displayStudentNo').innerText = '—';
+      document.getElementById('profileName').innerText = session.isStaff ? '員工帳號' : '—';
+      document.getElementById('profileTags').innerHTML = session.isStaff ? '<span class="small" style="color:var(--mx-mist)">從上方選單選擇要查看的團員</span>' : '';
+      document.getElementById('profileAvatar').innerHTML = '<i class="bi bi-person-fill"></i>';
       document.getElementById('memberFieldset').disabled = true;
+      document.getElementById('avatarBtn').classList.add('d-none');
       document.getElementById('accountsCard').classList.add('d-none');
+      document.getElementById('profilePoints').innerText = '—';
+      document.getElementById('pointHistory').innerHTML = '';
     }
 
     function renderMemberFormWithData(p) {
       if (!p) return;
+      profileNo = p.studentNo;
       const form = document.getElementById('memberForm');
-      ['team', 'name', 'birthday', 'idNumber', 'phone', 'zipCode', 'address', 'parentContact', 'evalScore', 'evalNotes'].forEach(k => {
-        if (form[k]) form[k].value = p[k] || '';
-      });
+      ['team', 'name', 'birthday', 'idNumber', 'phone', 'zipCode', 'address', 'parentContact', 'evalScore', 'evalNotes',
+        'height', 'weight', 'school', 'intro', 'ig', 'rank', 'title'].forEach(k => { if (form[k]) form[k].value = p[k] || ''; });
       document.getElementById('memberStudentNoHidden').value = p.studentNo || '';
       document.getElementById('displayStudentNo').innerText = p.studentNo || '—';
+      document.getElementById('profileName').innerText = p.name || '—';
+      document.getElementById('profileAvatar').innerHTML = p.avatar ? `<img src="${p.avatar.startsWith('data:image/') ? p.avatar : ''}" alt="">` : '<i class="bi bi-person-fill"></i>';
+      const tags = [];
+      if (p.team) tags.push(`<span class="tag tag-red">${esc(p.team)}</span>`);
+      if (p.title) tags.push(`<span class="tag tag-gray">${esc(p.title)}</span>`);
+      if (p.rank) tags.push(rankBadge(p.rank));
+      if (p.age !== '' && p.age !== undefined) tags.push(`<span class="tag tag-line">${esc(p.age)} 歲</span>`);
+      if (p.zodiac) tags.push(`<span class="tag tag-line">屬${esc(p.zodiac)}</span>`);
+      if (p.starSign) tags.push(`<span class="tag tag-line">${esc(p.starSign)}</span>`);
+      document.getElementById('profileTags').innerHTML = tags.join('');
       document.getElementById('memberFieldset').disabled = false;
+      document.getElementById('avatarBtn').classList.remove('d-none');
       loadAccounts(p.studentNo);
+      loadPointHistory(p.studentNo);
     }
 
     function loadAdminMembersList() {
       api('getAllMembersForAdmin', idToken)
-        .then(function (members) {
+        .then(members => {
           globalAllMembers = members || [];
-          document.getElementById('adminMemberSelect').innerHTML =
-            `<option value="">— 選擇要檢視 / 校正的團員（共 ${globalAllMembers.length} 位）—</option>` +
-            globalAllMembers.map(m => `<option value="${esc(m.studentNo)}">[${esc(m.studentNo || '未配發')}] ${esc(m.name)}（${esc(m.team || '未分隊')}）</option>`).join('');
+          const opts = globalAllMembers.map(m => `<option value="${esc(m.studentNo)}">[${esc(m.studentNo || '未配發')}] ${esc(m.name)}（${esc(m.team || '未分隊')}）</option>`).join('');
+          document.getElementById('adminMemberSelect').innerHTML = `<option value="">— 選擇要檢視 / 校正的團員（共 ${globalAllMembers.length} 位）—</option>` + opts;
+          document.getElementById('ptStudent').innerHTML = '<option value="">選擇團員…</option>' + opts;
+          document.getElementById('dmReqStudent').innerHTML = '<option value="">選擇團員…</option>' + opts;
         })
         .catch(err => toast(errMsg(err), true));
     }
 
     function onAdminSelectMember() {
       const no = document.getElementById('adminMemberSelect').value;
-      if (!no) return loadLinkedMembers();
+      if (!no) return renderCurrentProfile();
       api('getMemberProfile', no, idToken)
         .then(p => p ? renderMemberFormWithData(p) : toast('查無此團員', true))
         .catch(err => toast(errMsg(err), true));
@@ -1380,25 +1845,66 @@
       e.preventDefault();
       const form = e.target;
       const data = Object.fromEntries(new FormData(form).entries());
-      // 停用的欄位不會出現在 FormData，補回來給員工使用
       data.team = form.team.value;
+      data.rank = form.rank.value;
       if (!data.studentNo) return toast('沒有可儲存的團員資料', true);
-      if (!data.phone) return toast('請填寫聯絡電話', true);
-
       const btn = form.querySelector('button[type=submit]');
       setBusy(btn, true, '儲存中…');
       api('saveMemberProfile', data, idToken)
-        .then(function () {
+        .then(() => {
           toast('資料已儲存');
-          if (session.isStaff && document.getElementById('adminMemberSelect').value) {
-            loadAdminMembersList();
-          } else {
-            loadLinkedMembers();
-          }
+          if (session.isStaff && document.getElementById('adminMemberSelect').value) onAdminSelectMember();
+          else loadLinkedMembers();
         })
         .catch(err => toast('儲存失敗：' + errMsg(err), true))
         .finally(() => setBusy(btn, false));
     });
+
+    // 大頭照：先在瀏覽器裁成正方形並壓縮
+    function shrinkImage(file, size, maxLen) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = c.height = size;
+          const s = Math.min(img.width, img.height);
+          c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+          let q = 0.82, out = c.toDataURL('image/jpeg', q);
+          while (out.length > maxLen && q > 0.3) { q -= 0.1; out = c.toDataURL('image/jpeg', q); }
+          URL.revokeObjectURL(img.src);
+          out.length > maxLen ? reject(new Error('圖片太大，請換一張')) : resolve(out);
+        };
+        img.onerror = () => reject(new Error('無法讀取這張圖片'));
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    function onAvatarPicked(input) {
+      const f = input.files[0];
+      input.value = '';
+      if (!f || !profileNo) return;
+      shrinkImage(f, 200, 44000)
+        .then(dataUrl => api('saveAvatar', profileNo, dataUrl, idToken).then(() => {
+          document.getElementById('profileAvatar').innerHTML = `<img src="${dataUrl}" alt="">`;
+          const m = myLinkedList.find(x => x.studentNo === profileNo);
+          if (m) m.avatar = dataUrl;
+          toast('大頭照已更新');
+        }))
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function loadPointHistory(no) {
+      api('getPointHistory', no, idToken)
+        .then(res => {
+          document.getElementById('profilePoints').innerText = res.balance;
+          document.getElementById('pointHistory').innerHTML = res.history.length ? res.history.slice(0, 15).map(h => `
+            <div class="d-flex justify-content-between small py-1" style="border-bottom:1px solid rgba(255,255,255,.08)">
+              <span>${esc(h.reason)}<span style="color:var(--mx-silver)"> · ${esc(h.at.slice(5, 10))}</span></span>
+              <b style="color:${h.delta >= 0 ? 'var(--mx-gold)' : 'var(--mx-red)'}">${h.delta > 0 ? '+' : ''}${h.delta}</b>
+            </div>`).join('') : '<div class="small" style="color:var(--mx-silver)">還沒有積分紀錄</div>';
+        })
+        .catch(() => {});
+    }
 
     // ---------- 帳號綁定 ----------
     let accountsStudentNo = '';
@@ -1410,43 +1916,43 @@
       card.classList.remove('d-none');
       document.getElementById('accountsList').innerHTML = '<div class="small" style="color:var(--mx-muted)">載入中…</div>';
       api('getAccountLinks', studentNo, idToken)
-        .then(function (res) {
+        .then(res => {
           const list = res.accounts || [];
-          document.getElementById('accountsHint').textContent = res.canManage ? '您可以新增或移除家人的帳號' : '只有主帳號可以管理綁定';
+          document.getElementById('accountsHint').textContent = res.canManage ? '你是主帳號，可以新增或移除家人的帳號。' : '只有主帳號可以管理綁定。';
           document.getElementById('accountsAddBox').classList.toggle('d-none', !res.canManage);
-          document.getElementById('accountsList').innerHTML = list.length ? list.map(a => `
+          document.getElementById('claimBox').classList.toggle('d-none', !res.canClaimPrimary);
+          document.getElementById('accountsList').innerHTML = list.map(a => `
             <div class="acc-row">
-              <div>
-                <span class="tag ${a.role === '主帳號' ? 'tag-red' : 'tag-gray'} me-2">${esc(a.role)}</span>${esc(a.email)}
-                ${a.email === session.email ? '<span class="small ms-1" style="color:var(--mx-muted)">（您）</span>' : ''}
+              <div style="min-width:0">
+                <span class="tag ${a.role === '主帳號' ? 'tag-red' : 'tag-gray'} me-1">${esc(a.role)}</span>
+                <span class="tag tag-line me-1">${esc(a.relation)}</span>
+                <div class="small text-truncate mt-1">${esc(a.email)}${a.email === session.email ? '（您）' : ''}</div>
               </div>
               ${res.canManage && (a.role !== '主帳號' || session.isStaff)
                 ? `<button type="button" class="btn btn-sm btn-line" onclick="removeAccount('${esc(a.email)}')">移除</button>` : ''}
-            </div>`).join('') : '<div class="small" style="color:var(--mx-muted)">尚未綁定任何帳號</div>';
+            </div>`).join('') || '<div class="small" style="color:var(--mx-muted)">尚未綁定任何帳號</div>';
         })
-        .catch(err => {
-          document.getElementById('accountsList').innerHTML = '';
-          toast(errMsg(err), true);
-        });
+        .catch(err => { document.getElementById('accountsList').innerHTML = ''; toast(errMsg(err), true); });
     }
 
     function addAccount() {
       const input = document.getElementById('accountsAddInput');
       const email = input.value.trim();
       if (!email) return toast('請輸入要綁定的 Email', true);
-      api('addAccountLink', accountsStudentNo, email, idToken)
-        .then(res => {
-          toast(res.already ? '這個帳號已經綁定了' : '已新增綁定，對方登入後就能使用');
-          input.value = '';
-          loadAccounts(accountsStudentNo);
-        })
+      api('addAccountLink', accountsStudentNo, email, document.getElementById('accountsAddRelation').value, idToken)
+        .then(res => { toast(res.already ? '這個帳號已經綁定了' : '已新增綁定，對方登入後就能使用'); input.value = ''; loadAccounts(accountsStudentNo); })
         .catch(err => toast(errMsg(err), true));
     }
 
     function removeAccount(email) {
-      if (email === session.email && !session.isStaff) return toast('無法移除自己的帳號', true);
       api('removeAccountLink', accountsStudentNo, email, idToken)
         .then(() => { toast('已移除 ' + email); loadAccounts(accountsStudentNo); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function claimPrimaryAccount() {
+      api('claimPrimary', accountsStudentNo, idToken)
+        .then(() => { toast('您已成為主帳號'); loadAccounts(accountsStudentNo); })
         .catch(err => toast(errMsg(err), true));
     }
 
@@ -1455,48 +1961,392 @@
       const zipEl = document.getElementById('memberZip');
       if (!addr) return toast('請先輸入地址', true);
       const hit = Object.keys(TAIWAN_ZIP3).find(d => addr.includes(d));
-      if (hit) {
-        zipEl.value = TAIWAN_ZIP3[hit];
-      } else {
-        toast('找不到這個行政區的郵遞區號，請手動輸入', true);
-        zipEl.removeAttribute('readonly');
-        zipEl.focus();
-      }
+      if (hit) zipEl.value = TAIWAN_ZIP3[hit];
+      else { toast('找不到這個行政區的郵遞區號，請手動輸入', true); zipEl.removeAttribute('readonly'); zipEl.focus(); }
     }
 
     // ==========================================
-    // 考核查詢
+    // 布告欄首頁
     // ==========================================
-    function doQueryScore() {
-      const no = document.getElementById('queryStudentNoInput').value.trim();
-      const bday = document.getElementById('queryBirthdayInput').value;
-      if (!no) return toast('請輸入專屬學號', true);
-      if (!bday) return toast('請輸入團員生日', true);
+    function loadHome() {
+      api('getHome', currentNo, idToken)
+        .then(h => {
+          const m = me();
+          document.getElementById('homePoints').innerText = m ? h.points : '—';
+          document.getElementById('homeUnread').innerText = m ? h.unreadMessages : '—';
+          document.getElementById('homeRank').innerHTML = m && m.rank ? rankBadge(m.rank) : '<span style="font-size:15px;color:var(--mx-silver)">累積中</span>';
+          setDmBadge(m ? h.unreadMessages : 0);
+          document.getElementById('consentAlert').classList.toggle('d-none', !h.pendingConsent);
 
-      const card = document.getElementById('queryResultCard');
-      api('queryScoreByStudentNo', no, bday, idToken)
-        .then(function (res) {
-          if (!res) {
-            card.classList.add('d-none');
-            return toast('學號或生日不正確，請確認後再試', true);
-          }
-          document.getElementById('resStudentName').textContent = res.name;
-          document.getElementById('resStudentTeam').textContent = res.team;
-          document.getElementById('resStudentNo').textContent = res.studentNo;
-          document.getElementById('resScore').textContent = res.evalScore;
-          document.getElementById('resNotes').textContent = res.evalNotes;
-          card.classList.remove('d-none');
-          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          document.getElementById('homeTaskCount').innerText = h.openTasks.filter(t => t.myStatus === '進行中').length;
+          document.getElementById('homeTasks').innerHTML = h.openTasks.length ? h.openTasks.map(t => `
+            <div class="board-item">${dateBox(t.deadline)}
+              <div class="flex-grow-1"><b>${esc(t.title)}</b>
+                <div class="small" style="color:var(--mx-muted)">成功 +${t.reward}${t.penalty ? ` · 失敗 −${t.penalty}` : ''} · ${t.takerCount} 人承接</div></div>
+              ${t.myStatus ? `<span class="tag tag-soft">${esc(t.myStatus)}</span>` : ''}
+            </div>`).join('') : '<div class="board-empty">目前沒有開放中的任務</div>';
+
+          document.getElementById('homeEvents').innerHTML = h.upcomingEvents.length ? h.upcomingEvents.map(e => `
+            <div class="board-item" style="cursor:pointer" onclick='showEventModal(${JSON.stringify(e).replace(/'/g, "&#39;")})'>${dateBox(e.date)}
+              <div class="flex-grow-1"><b>${esc(e.title)}</b><div class="small" style="color:var(--mx-muted)">${esc(e.time)} · ${esc(e.location || '地點未定')}</div></div>
+              <span class="tag ${CAT_TAG[e.category] || 'tag-gray'}">${esc(e.category)}</span>
+            </div>`).join('') : '<div class="board-empty">近期沒有活動</div>';
+
+          document.getElementById('homePosts').innerHTML = h.latestPosts.length ? h.latestPosts.map(p => `
+            <div class="board-item" style="cursor:pointer" onclick="goTab('tab-forum')">
+              <div class="flex-grow-1"><b>${esc(p.author)}</b>${p.tag ? ` <span class="tag tag-gray">${esc(p.tag)}</span>` : ''}
+                <span class="small ms-1" style="color:var(--mx-silver)">${fmtWhen(p.createdAt)}</span>
+                <div class="text-truncate" style="color:var(--mx-slate)">${esc(p.content)}</div></div>
+              <span class="small" style="color:var(--mx-muted)"><i class="bi bi-chat"></i> ${p.replies}</span>
+            </div>`).join('') : '<div class="board-empty">還沒有人留言，來當第一個吧！</div>';
+
+          document.getElementById('homeMentions').innerHTML = h.mentions.length ? h.mentions.map(x => `
+            <div class="board-item" style="cursor:pointer" onclick="goTab('tab-forum')">
+              <div><b>${esc(x.author)}</b> <span class="small" style="color:var(--mx-silver)">${fmtWhen(x.createdAt)}</span>
+                <div style="color:var(--mx-slate)">${esc(x.content)}</div></div>
+            </div>`).join('') : '<div class="board-empty">最近兩週沒有人 @ 你</div>';
+
+          document.getElementById('homeLeaderboard').innerHTML = h.leaderboard.length ? h.leaderboard.map((r, i) => `
+            <div class="lb-row"><span class="lb-rank">${i + 1}</span>${avatarHtml(r.avatar, r.name, 'avatar-sm')}
+              <span>${esc(r.name)}</span><span class="lb-pts">${r.points}</span></div>`).join('')
+            : '<div class="small" style="color:var(--mx-silver)">還沒有人獲得積分</div>';
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function setDmBadge(n) {
+      const b = document.getElementById('dmBadge');
+      b.classList.toggle('d-none', !n);
+      b.textContent = n;
+    }
+
+    // ==========================================
+    // 任務
+    // ==========================================
+    function loadTasks() {
+      api('listTasks', currentNo, idToken)
+        .then(list => {
+          const box = document.getElementById('taskList');
+          if (!list.length) { box.innerHTML = '<div class="mx-card p-4 board-empty">目前沒有任務，敬請期待！</div>'; return; }
+          box.innerHTML = list.map(t => {
+            const open = t.status === '開放';
+            const full = t.maxTakers > 0 && t.takerCount >= t.maxTakers;
+            let action = '';
+            if (t.myStatus) action = `<span class="tag ${t.myStatus === '成功' ? 'tag-gold' : t.myStatus === '失敗' ? 'tag-gray' : 'tag-soft'}">${esc(t.myStatus)}</span>`;
+            else if (open && me() && !full) action = `<button class="btn btn-mixcin btn-sm px-3" onclick="acceptTaskUi('${esc(t.id)}', ${t.penalty})">承接任務</button>`;
+            else if (full) action = '<span class="tag tag-gray">名額已滿</span>';
+            return `<div class="task-card ${open ? '' : 'closed'}">
+              <div class="d-flex justify-content-between gap-2 align-items-start">
+                <div><div class="fw-bold" style="font-size:17px">${esc(t.title)}</div>
+                  <div class="small" style="color:var(--mx-muted)">${t.deadline ? '截止 ' + esc(t.deadline) + ' · ' : ''}${esc(t.status)}</div></div>
+                ${action}
+              </div>
+              <div class="task-pts"><span class="tag tag-gold">成功 +${t.reward}</span>${t.penalty ? `<span class="tag tag-soft">失敗 −${t.penalty}</span>` : ''}
+                <span class="tag tag-line">${t.takerCount}${t.maxTakers ? ' / ' + t.maxTakers : ''} 人承接</span></div>
+              <div style="white-space:pre-wrap;color:var(--mx-slate)">${esc(t.description)}</div>
+              ${t.takers.length ? `<div class="small mt-2" style="color:var(--mx-muted)">承接者：${t.takers.map(x => esc(x.name)).join('、')}</div>` : ''}
+            </div>`;
+          }).join('');
+        })
+        .catch(err => toast(errMsg(err), true));
+      renderTaskEvents();
+    }
+
+    function renderTaskEvents() {
+      const today = todayStr();
+      const list = globalEvents.filter(e => e.date >= today).slice(0, 10);
+      document.getElementById('taskEventList').innerHTML = list.length ? list.map(e => `
+        <div class="board-item">${dateBox(e.date)}<div><b>${esc(e.title)}</b><div class="small" style="color:var(--mx-muted)">${esc(e.category)} · ${esc(e.location || '地點未定')}</div></div></div>`).join('')
+        : '<div class="board-empty">近期沒有活動</div>';
+    }
+
+    function acceptTaskUi(id, penalty) {
+      if (penalty && !confirmInline(`承接後如果失敗會扣 ${penalty} 分，確定要承接嗎？`, () => doAccept(id))) return;
+      if (!penalty) doAccept(id);
+    }
+
+    function doAccept(id) {
+      api('acceptTask', id, currentNo, idToken)
+        .then(() => { toast('已承接任務，加油！'); loadTasks(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // 不用 alert/confirm，改用頁面內的確認提示
+    function confirmInline(msg, onYes) {
+      const box = document.getElementById('toastBox');
+      const el = document.createElement('div');
+      el.className = 'mx-toast';
+      el.innerHTML = `<i class="bi bi-question-circle-fill"></i><span>${esc(msg)}</span>
+        <button class="btn btn-sm btn-mixcin ms-2">確定</button><button class="btn btn-sm btn-ghost-light">取消</button>`;
+      const [yes, no] = el.querySelectorAll('button');
+      yes.onclick = () => { el.remove(); onYes(); };
+      no.onclick = () => el.remove();
+      box.appendChild(el);
+      return false;
+    }
+
+    // ==========================================
+    // 競演團大家庭
+    // ==========================================
+    let directory = [];
+
+    function loadDirectory() {
+      return api('getDirectory', idToken)
+        .then(res => {
+          directory = res.members || [];
+          const teams = Array.from(new Set(directory.map(m => m.team).filter(Boolean)));
+          const sel = document.getElementById('familyTeam');
+          const cur = sel.value;
+          sel.innerHTML = '<option value="">全部團隊</option>' + teams.map(t => `<option ${t === cur ? 'selected' : ''}>${esc(t)}</option>`).join('');
+          document.getElementById('dmNewSelect').innerHTML = '<option value="">＋ 傳悄悄話給…</option>' +
+            directory.filter(m => m.studentNo !== currentNo).map(m => `<option value="${esc(m.studentNo)}">${esc(m.name)}</option>`).join('');
+          renderFamily();
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function renderFamily() {
+      const q = document.getElementById('familySearch').value.trim();
+      const team = document.getElementById('familyTeam').value;
+      const list = directory.filter(m => (!q || m.name.includes(q)) && (!team || m.team === team));
+      document.getElementById('familyGrid').innerHTML = list.length ? list.map(m => `
+        <div class="col-6 col-md-4 col-xl-3"><div class="fam-card">
+          ${avatarHtml(m.avatar, m.name)}
+          <div class="nm">${esc(m.name)}</div>
+          <div class="meta">${[m.team, m.title].filter(Boolean).map(esc).join(' · ')}</div>
+          <div class="d-flex gap-1 justify-content-center flex-wrap">
+            ${rankBadge(m.rank)}
+            ${m.zodiac ? `<span class="tag tag-line">屬${esc(m.zodiac)}</span>` : ''}
+            ${m.starSign ? `<span class="tag tag-line">${esc(m.starSign)}</span>` : ''}
+          </div>
+          ${m.intro ? `<div class="intro">${esc(m.intro)}</div>` : ''}
+          <div class="acts">
+            ${m.ig ? `<a class="btn btn-sm btn-line" href="https://instagram.com/${encodeURIComponent(m.ig)}" target="_blank" rel="noopener"><i class="bi bi-instagram"></i></a>` : ''}
+            ${me() && m.studentNo !== currentNo ? `<button class="btn btn-sm btn-line" onclick="startDmWith('${esc(m.studentNo)}')"><i class="bi bi-envelope-heart"></i></button>` : ''}
+            <button class="btn btn-sm btn-line" onclick="mentionFromFamily('${esc(m.name)}','${esc(m.studentNo)}')">@</button>
+          </div>
+        </div></div>`).join('') : '<div class="board-empty">找不到符合的團員</div>';
+    }
+
+    function startDmWith(no) { goTab('tab-dm'); setTimeout(() => openThread(no), 150); }
+
+    function mentionFromFamily(name, no) {
+      goTab('tab-forum');
+      const input = document.getElementById('postInput');
+      input.value += (input.value && !input.value.endsWith(' ') ? ' ' : '') + '@' + name + ' ';
+      pendingMentions[no] = name;
+      setTimeout(() => input.focus(), 150);
+    }
+
+    // ==========================================
+    // 討論區
+    // ==========================================
+    let pendingMentions = {};
+    let replyMentions = {};
+
+    function loadPosts() {
+      if (!directory.length) loadDirectory();
+      api('getPosts', idToken, 60)
+        .then(posts => {
+          document.getElementById('postList').innerHTML = posts.length ? posts.map(p => `
+            <div class="post-card ${p.mentionsMe ? 'mention-me' : ''}">
+              <div class="post-meta">${avatarHtml(p.avatar, p.author)}
+                <div class="flex-grow-1"><span class="who">${esc(p.author)}</span>
+                  ${p.tag ? `<span class="tag ${p.tag === '工作人員' ? 'tag-red' : 'tag-gray'} ms-1">${esc(p.tag)}</span>` : ''}
+                  ${p.team ? `<span class="small ms-1" style="color:var(--mx-muted)">${esc(p.team)}</span>` : ''}
+                  <div class="when">${fmtWhen(p.createdAt)}</div></div>
+                ${p.canDelete ? `<button class="btn btn-sm btn-line" onclick="removePost('${esc(p.id)}')"><i class="bi bi-trash"></i></button>` : ''}
+              </div>
+              <div class="post-body">${renderMentions(p.content, p.mentions)}</div>
+              <div class="reply-box">
+                ${p.replies.map(r => `<div class="reply"><b>${esc(r.author)}</b>${r.tag ? ` <span class="tag tag-gray">${esc(r.tag)}</span>` : ''}
+                  <span class="small ms-1" style="color:var(--mx-silver)">${fmtWhen(r.createdAt)}</span>
+                  ${r.canDelete ? `<a href="#" class="small ms-2" onclick="removePost('${esc(r.id)}');return false;">刪除</a>` : ''}
+                  <div class="post-body">${renderMentions(r.content, r.mentions)}</div></div>`).join('')}
+                <div class="d-flex gap-2 mt-2 mention-wrap">
+                  <input type="text" class="form-control form-control-sm" id="reply-${esc(p.id)}" maxlength="1000" placeholder="回覆…" oninput="onMentionInput(this)">
+                  <button class="btn btn-sm btn-ink text-nowrap" onclick="submitReply('${esc(p.id)}')">回覆</button>
+                </div>
+              </div>
+            </div>`).join('') : '<div class="mx-card p-4 board-empty">還沒有人留言，來當第一個吧！</div>';
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function collectMentions(text, store) {
+      const out = [];
+      directory.forEach(m => { if (text.includes('@' + m.name)) out.push(m.studentNo); });
+      Object.keys(store).forEach(no => { if (text.includes('@' + store[no]) && !out.includes(no)) out.push(no); });
+      return out;
+    }
+
+    function submitPost() {
+      const input = document.getElementById('postInput');
+      const text = input.value.trim();
+      if (!text) return toast('請輸入內容', true);
+      api('createPost', text, '', collectMentions(text, pendingMentions), currentNo, idToken)
+        .then(() => { input.value = ''; pendingMentions = {}; toast('已發佈'); loadPosts(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function submitReply(postId) {
+      const input = document.getElementById('reply-' + postId);
+      const text = input.value.trim();
+      if (!text) return;
+      api('createPost', text, postId, collectMentions(text, replyMentions), currentNo, idToken)
+        .then(() => { replyMentions = {}; loadPosts(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function removePost(id) {
+      confirmInline('確定要刪除這則留言嗎？', () => {
+        api('deletePost', id, idToken).then(() => { toast('已刪除'); loadPosts(); }).catch(err => toast(errMsg(err), true));
+      });
+    }
+
+    // @ 標記選單
+    function onMentionInput(input) {
+      const pop = document.getElementById('mentionPop');
+      const before = input.value.slice(0, input.selectionStart);
+      const m = before.match(/@([^\s@]{0,10})$/);
+      if (!m || !directory.length) { pop.classList.add('d-none'); return; }
+      const q = m[1];
+      const hits = directory.filter(x => x.name.includes(q)).slice(0, 8);
+      if (!hits.length) { pop.classList.add('d-none'); return; }
+      input.parentElement.appendChild(pop);
+      pop.innerHTML = hits.map(x => `<div data-no="${esc(x.studentNo)}" data-name="${esc(x.name)}">${esc(x.name)} <span class="small" style="color:var(--mx-muted)">${esc(x.team || '')}</span></div>`).join('');
+      pop.classList.remove('d-none');
+      pop.querySelectorAll('div').forEach(d => d.onmousedown = ev => {
+        ev.preventDefault();
+        const name = d.dataset.name;
+        const start = before.length - m[0].length;
+        input.value = input.value.slice(0, start) + '@' + name + ' ' + input.value.slice(input.selectionStart);
+        (input.id === 'postInput' ? pendingMentions : replyMentions)[d.dataset.no] = name;
+        pop.classList.add('d-none');
+        input.focus();
+      });
+    }
+    document.addEventListener('click', e => { if (!e.target.closest('.mention-wrap')) document.getElementById('mentionPop').classList.add('d-none'); });
+
+    // ==========================================
+    // 悄悄話
+    // ==========================================
+    let dmOther = '';
+    let dmViewNo = '';      // 目前查看誰的私訊（員工查閱時為被查閱的團員）
+    let dmReadOnly = false;
+
+    function loadDm() {
+      if (!directory.length) loadDirectory();
+      loadConsentRequests();
+      const staffOnly = !me();
+      document.getElementById('dmStaffNote').classList.toggle('d-none', !staffOnly || !!dmReadOnly);
+      document.getElementById('dmArea').classList.toggle('d-none', staffOnly && !dmReadOnly);
+      if (staffOnly && !dmReadOnly) return;
+      if (!dmReadOnly) dmViewNo = currentNo;
+      document.getElementById('dmNewSelect').classList.toggle('d-none', dmReadOnly);
+      api('getThreads', dmViewNo, idToken)
+        .then(list => {
+          document.getElementById('threadList').innerHTML = list.length ? list.map(t => `
+            <div class="thread-item ${t.other === dmOther ? 'on' : ''}" onclick="openThread('${esc(t.other)}')">
+              ${avatarHtml(t.avatar, t.name)}
+              <div class="flex-grow-1" style="min-width:0"><b>${esc(t.name)}</b>
+                <div class="sub">${t.last.fromMe ? '你：' : ''}${esc(t.last.content)}</div></div>
+              ${t.unread ? `<span class="nav-badge">${t.unread}</span>` : ''}
+            </div>`).join('') : '<div class="board-empty">還沒有悄悄話</div>';
+          if (!dmReadOnly) setDmBadge(list.reduce((s, t) => s + t.unread, 0));
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function openThread(no) {
+      if (!no) return;
+      dmOther = no;
+      api('getThread', dmViewNo || currentNo, no, idToken)
+        .then(res => {
+          document.getElementById('dmHead').innerHTML = `${avatarHtml(res.other.avatar, res.other.name, 'avatar-sm')}<span>${esc(res.other.name)}</span>
+            ${res.readOnly ? '<span class="tag tag-soft ms-auto">員工唯讀查閱</span>' : ''}`;
+          const body = document.getElementById('dmBody');
+          body.innerHTML = res.messages.map(m => `
+            <div class="bubble ${m.fromMe ? 'me' : 'them'}">${esc(m.content)}<span class="t">${m.asParent ? '家長 · ' : ''}${fmtWhen(m.at)}</span></div>`).join('')
+            || '<div class="board-empty text-center">打聲招呼吧！</div>';
+          body.scrollTop = body.scrollHeight;
+          document.querySelector('.dm-foot').classList.toggle('d-none', res.readOnly);
+          loadDm();
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function sendDm() {
+      const input = document.getElementById('dmInput');
+      const text = input.value.trim();
+      if (!text || !dmOther) return;
+      api('sendMessage', currentNo, dmOther, text, idToken)
+        .then(() => { input.value = ''; openThread(dmOther); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function loadConsentRequests() {
+      api('getDmAccessRequests', idToken)
+        .then(res => {
+          const pending = res.forParent.filter(r => r.status === '待同意');
+          document.getElementById('consentBox').innerHTML = pending.map(r => `
+            <div class="notice notice-red mb-2"><i class="bi bi-shield-exclamation"></i>
+              <div class="flex-grow-1"><b>工作人員申請查閱「${esc(r.studentName)}」的悄悄話</b>
+                <div class="small mt-1">申請人：${esc(r.staffEmail)}<br>原因：${esc(r.reason)}</div>
+                <div class="small" style="color:var(--mx-muted)">同意後，對方可以唯讀查看 7 天。</div>
+                <div class="mt-2 d-flex gap-2">
+                  <button class="btn btn-sm btn-mixcin" onclick="decideRequest('${esc(r.id)}', true)">同意</button>
+                  <button class="btn btn-sm btn-line" onclick="decideRequest('${esc(r.id)}', false)">拒絕</button>
+                </div></div></div>`).join('');
+          if (session.isStaff) renderMyDmRequests(res.mine);
+        })
+        .catch(() => {});
+    }
+
+    function decideRequest(id, approve) {
+      api('decideDmAccess', id, approve, idToken)
+        .then(() => { toast(approve ? '已同意' : '已拒絕'); loadConsentRequests(); loadHome(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ==========================================
+    // 積分商店
+    // ==========================================
+    function loadShop() {
+      const m = me();
+      document.getElementById('shopPoints').innerText = m ? (m.points || 0) : '—';
+      api('listShopItems', idToken)
+        .then(res => {
+          const items = res.items.filter(i => i.active);
+          document.getElementById('shopGrid').innerHTML = items.length ? items.map(i => `
+            <div class="col-6 col-md-4 col-xl-3"><div class="shop-card">
+              <div class="shop-img">${/^data:image\//.test(i.image || '') ? `<img src="${i.image}" alt="">` : '<i class="bi bi-gift"></i>'}</div>
+              <div class="shop-body">
+                <div class="fw-bold">${esc(i.name)}</div>
+                <div class="small flex-grow-1" style="color:var(--mx-muted)">${esc(i.description)}</div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                  <span class="shop-cost">${i.cost} 分</span>
+                  ${i.stock !== '' ? `<span class="small" style="color:var(--mx-muted)">剩 ${i.stock}</span>` : ''}
+                </div>
+                <button class="btn btn-line w-100 mt-2" disabled>${res.redeemOpen ? '兌換' : '即將開放'}</button>
+              </div></div></div>`).join('') : '<div class="board-empty">商品準備中，敬請期待！</div>';
         })
         .catch(err => toast(errMsg(err), true));
     }
 
     // ==========================================
-    // 員工後台：名單狀態與員工管理
+    // 員工後台：名單、員工、任務、積分、商店、公開設定、私訊申請
     // ==========================================
+    function loadStaffTools() {
+      loadStaffTasks();
+      loadStaffShop();
+      loadPublicFields();
+      loadConsentRequests();
+    }
+
     function loadRosterStatus() {
       api('getRosterStatus', idToken)
-        .then(function (list) {
+        .then(list => {
           const tbody = document.getElementById('rosterTableBody');
           if (!list.length) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">名單是空的，請在試算表的 Roster 工作表加入可註冊的團員</td></tr>';
@@ -1504,13 +2354,9 @@
           }
           const done = list.filter(r => r.accounts.length).length;
           tbody.innerHTML = list.map(r => `
-            <tr>
-              <td class="fw-bold">${esc(r.name)}</td>
-              <td>${esc(r.birthday)}</td>
-              <td>${esc(r.team)}</td>
+            <tr><td class="fw-bold">${esc(r.name)}</td><td>${esc(r.birthday)}</td><td>${esc(r.team)}</td>
               <td>${r.studentNo ? esc(r.studentNo) : '<span style="color:var(--mx-silver)">—</span>'}</td>
-              <td>${r.accounts.length ? r.accounts.map(a => `<div class="small">${esc(a)}</div>`).join('') : '<span class="tag tag-soft">尚未註冊</span>'}</td>
-            </tr>`).join('') +
+              <td>${r.accounts.length ? r.accounts.map(a => `<div class="small">${esc(a)}</div>`).join('') : '<span class="tag tag-soft">尚未註冊</span>'}</td></tr>`).join('') +
             `<tr><td colspan="5" class="small" style="color:var(--mx-muted)">共 ${list.length} 位，已註冊 ${done} 位</td></tr>`;
         })
         .catch(err => toast(errMsg(err), true));
@@ -1518,19 +2364,15 @@
 
     function loadStaffList() {
       api('listStaff', idToken)
-        .then(function (list) {
+        .then(list => {
           document.getElementById('staffList').innerHTML = list.map(s => `
             <div class="acc-row">
-              <div>
-                <span class="tag ${s.role === 'Admin' ? 'tag-red' : 'tag-ink'} me-2">${esc(s.role)}</span>
-                <b>${esc(s.name || '（未填姓名）')}</b>
-                <span class="ms-2" style="color:var(--mx-muted)">${esc(s.email)}</span>
-                ${s.isSelf ? '<span class="small ms-1" style="color:var(--mx-muted)">（您）</span>' : ''}
-              </div>
+              <div><span class="tag ${s.role === 'Admin' ? 'tag-red' : 'tag-ink'} me-2">${esc(s.role)}</span>
+                <b>${esc(s.name || '（未填姓名）')}</b><span class="ms-2" style="color:var(--mx-muted)">${esc(s.email)}</span>
+                ${s.isSelf ? '<span class="small ms-1" style="color:var(--mx-muted)">（您）</span>' : ''}</div>
               ${s.isSelf ? '' : `<div class="d-flex gap-2">
                 <button type="button" class="btn btn-sm btn-line" onclick="toggleStaffRole('${esc(s.email)}','${esc(s.name)}','${s.role === 'Admin' ? 'Staff' : 'Admin'}')">${s.role === 'Admin' ? '改為 Staff' : '設為 Admin'}</button>
-                <button type="button" class="btn btn-sm btn-line" onclick="removeStaffMember('${esc(s.email)}')">移除</button>
-              </div>`}
+                <button type="button" class="btn btn-sm btn-line" onclick="removeStaffMember('${esc(s.email)}')">移除</button></div>`}
             </div>`).join('');
         })
         .catch(err => toast(errMsg(err), true));
@@ -1560,9 +2402,187 @@
     }
 
     function removeStaffMember(email) {
-      api('removeStaff', email, idToken)
-        .then(() => { toast('已移除 ' + email); loadStaffList(); })
+      confirmInline(`確定要移除員工 ${email} 嗎？`, () => {
+        api('removeStaff', email, idToken).then(() => { toast('已移除 ' + email); loadStaffList(); }).catch(err => toast(errMsg(err), true));
+      });
+    }
+
+    // ---------- 任務管理 ----------
+    let staffTasks = [];
+
+    function loadStaffTasks() {
+      api('listTasks', '', idToken)
+        .then(list => {
+          staffTasks = list;
+          document.getElementById('staffTaskList').innerHTML = list.length ? list.map(t => `
+            <div class="task-card ${t.status === '開放' ? '' : 'closed'}">
+              <div class="d-flex justify-content-between gap-2">
+                <div><b>${esc(t.title)}</b> <span class="tag tag-line ms-1">${esc(t.status)}</span>
+                  <div class="small" style="color:var(--mx-muted)">+${t.reward} / −${t.penalty} · ${t.deadline ? '截止 ' + esc(t.deadline) : '無截止日'} · ${t.takerCount}${t.maxTakers ? '/' + t.maxTakers : ''} 人</div></div>
+                <button class="btn btn-sm btn-line" onclick="editTask('${esc(t.id)}')">編輯</button>
+              </div>
+              ${t.takers.length ? `<div class="mt-2">${t.takers.map(x => `
+                <div class="acc-row"><span>${esc(x.name)} <span class="tag tag-line ms-1">${esc(x.status)}</span></span>
+                  ${x.status === '進行中' ? `<span class="d-flex gap-2">
+                    <button class="btn btn-sm btn-mixcin" onclick="resolveEntry('${esc(x.entryId)}', true)">成功 +${t.reward}</button>
+                    <button class="btn btn-sm btn-line" onclick="resolveEntry('${esc(x.entryId)}', false)">失敗 −${t.penalty}</button></span>` : ''}
+                </div>`).join('')}</div>` : ''}
+            </div>`).join('') : '<div class="board-empty">還沒有任務</div>';
+        })
         .catch(err => toast(errMsg(err), true));
+    }
+
+    function editTask(id) {
+      const t = staffTasks.find(x => x.id === id);
+      if (!t) return;
+      document.getElementById('taskIdInput').value = t.id;
+      document.getElementById('taskTitleInput').value = t.title;
+      document.getElementById('taskDeadlineInput').value = t.deadline;
+      document.getElementById('taskStatusInput').value = t.status;
+      document.getElementById('taskDescInput').value = t.description;
+      document.getElementById('taskRewardInput').value = t.reward;
+      document.getElementById('taskPenaltyInput').value = t.penalty;
+      document.getElementById('taskMaxInput').value = t.maxTakers;
+      document.getElementById('taskForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function resetTaskForm() {
+      document.getElementById('taskForm').reset();
+      document.getElementById('taskIdInput').value = '';
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const task = {
+        id: document.getElementById('taskIdInput').value,
+        title: document.getElementById('taskTitleInput').value.trim(),
+        deadline: document.getElementById('taskDeadlineInput').value,
+        status: document.getElementById('taskStatusInput').value,
+        description: document.getElementById('taskDescInput').value.trim(),
+        reward: document.getElementById('taskRewardInput').value,
+        penalty: document.getElementById('taskPenaltyInput').value,
+        maxTakers: document.getElementById('taskMaxInput').value
+      };
+      if (!task.title) return toast('請填寫任務名稱', true);
+      api('saveTask', task, idToken)
+        .then(() => { toast('任務已儲存'); resetTaskForm(); loadStaffTasks(); })
+        .catch(err => toast(errMsg(err), true));
+    });
+
+    function resolveEntry(entryId, ok) {
+      api('resolveTaskEntry', entryId, ok, idToken)
+        .then(res => { toast(`已結算（${res.delta > 0 ? '+' : ''}${res.delta} 分）`); loadStaffTasks(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ---------- 積分發放 ----------
+    function giveP() {
+      const no = document.getElementById('ptStudent').value;
+      const delta = document.getElementById('ptDelta').value;
+      if (!no) return toast('請選擇團員', true);
+      api('staffAddPoints', no, delta, document.getElementById('ptReason').value.trim(), document.getElementById('ptSource').value, idToken)
+        .then(() => { toast('積分已送出'); document.getElementById('ptReason').value = ''; })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ---------- 商店商品 ----------
+    let staffShopItems = [];
+
+    function loadStaffShop() {
+      api('listShopItems', idToken)
+        .then(res => {
+          staffShopItems = res.items;
+          document.getElementById('staffShopList').innerHTML = res.items.length ? res.items.map(i => `
+            <div class="acc-row"><span><b>${esc(i.name)}</b> <span class="tag tag-line ms-1">${i.cost} 分</span>
+              ${i.active ? '' : '<span class="tag tag-gray ms-1">下架</span>'}${i.stock !== '' ? `<span class="small ms-2" style="color:var(--mx-muted)">庫存 ${i.stock}</span>` : ''}</span>
+              <button class="btn btn-sm btn-line" onclick="editShop('${esc(i.id)}')">編輯</button></div>`).join('') : '<div class="board-empty">還沒有商品</div>';
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    let editingShopImage = '';
+
+    function editShop(id) {
+      const i = staffShopItems.find(x => x.id === id);
+      if (!i) return;
+      document.getElementById('shopIdInput').value = i.id;
+      document.getElementById('shopNameInput').value = i.name;
+      document.getElementById('shopCostInput').value = i.cost;
+      document.getElementById('shopStockInput').value = i.stock;
+      document.getElementById('shopActiveInput').value = i.active ? '1' : '0';
+      document.getElementById('shopDescInput').value = i.description;
+      editingShopImage = i.image || '';
+    }
+
+    function resetShopForm() {
+      ['shopIdInput', 'shopNameInput', 'shopCostInput', 'shopStockInput', 'shopDescInput', 'shopImageInput'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('shopActiveInput').value = '1';
+      editingShopImage = '';
+    }
+
+    function saveShop() {
+      const file = document.getElementById('shopImageInput').files[0];
+      const imgP = file ? shrinkImage(file, 240, 44000) : Promise.resolve(editingShopImage);
+      imgP.then(img => api('saveShopItem', {
+        id: document.getElementById('shopIdInput').value,
+        name: document.getElementById('shopNameInput').value.trim(),
+        cost: document.getElementById('shopCostInput').value,
+        stock: document.getElementById('shopStockInput').value,
+        active: document.getElementById('shopActiveInput').value === '1',
+        description: document.getElementById('shopDescInput').value.trim(),
+        image: img
+      }, idToken))
+        .then(() => { toast('商品已儲存'); resetShopForm(); loadStaffShop(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ---------- 公開欄位設定 ----------
+    const PUBLIC_LABELS = { avatar: '大頭照', team: '所屬團隊', title: '團員身分', rank: '位階', zodiac: '生肖', starSign: '星座', intro: '自我介紹', ig: 'IG 連結' };
+
+    function loadPublicFields() {
+      api('getPublicSettings', idToken)
+        .then(pub => {
+          document.getElementById('publicFieldBox').innerHTML = Object.keys(PUBLIC_LABELS).map(k => `
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="pub_${k}" ${pub[k] ? 'checked' : ''}>
+              <label class="form-check-label" for="pub_${k}">${PUBLIC_LABELS[k]}</label></div>`).join('');
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function savePublicFields() {
+      const settings = {};
+      Object.keys(PUBLIC_LABELS).forEach(k => { settings[k] = document.getElementById('pub_' + k).checked; });
+      api('savePublicSettings', settings, idToken)
+        .then(() => { toast('公開設定已儲存'); loadDirectory(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ---------- 私訊查閱申請 ----------
+    function sendDmRequest() {
+      const no = document.getElementById('dmReqStudent').value;
+      const reason = document.getElementById('dmReqReason').value.trim();
+      if (!no) return toast('請選擇團員', true);
+      if (!reason) return toast('請填寫申請原因', true);
+      api('requestDmAccess', no, reason, idToken)
+        .then(() => { toast('已送出，等待家長同意'); document.getElementById('dmReqReason').value = ''; loadConsentRequests(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function renderMyDmRequests(list) {
+      document.getElementById('dmReqList').innerHTML = (list || []).length ? list.map(r => `
+        <div class="acc-row"><span><b>${esc(r.studentName)}</b> <span class="tag ${r.status === '同意' ? 'tag-red' : 'tag-line'} ms-1">${esc(r.status)}</span>
+          <div class="small" style="color:var(--mx-muted)">${esc(r.reason)}${r.status === '同意' ? ' · 可查閱到 ' + esc(r.expiresAt.slice(0, 10)) : ''}</div></span>
+          ${r.status === '同意' ? `<button class="btn btn-sm btn-mixcin" onclick="viewDmsAsStaff('${esc(r.studentNo)}')">查閱</button>` : ''}
+        </div>`).join('') : '<div class="board-empty">尚無申請紀錄</div>';
+    }
+
+    function viewDmsAsStaff(no) {
+      dmReadOnly = true;
+      dmViewNo = no;
+      dmOther = '';
+      document.getElementById('dmHead').innerHTML = '<span style="color:var(--mx-muted)">選擇左側對話（唯讀）</span>';
+      document.getElementById('dmBody').innerHTML = '';
+      goTab('tab-dm');
     }
 
     // ==========================================
