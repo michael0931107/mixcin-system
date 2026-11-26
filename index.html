@@ -679,7 +679,7 @@
                   <select class="form-select" id="regEventSelect" name="eventId" required><option value="">載入活動中…</option></select>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">所屬團隊</label>
+                  <label class="form-label">組別</label>
                   <select class="form-select" id="regTeamSelect" name="team" required></select>
                 </div>
                 <div class="mb-3">
@@ -848,7 +848,7 @@
 
                 <hr style="border-color:var(--mx-sand); opacity:1;">
                 <div class="panel-title"><i class="bi bi-lock-fill me-1"></i>私人資料 <span class="small fw-normal" style="color:var(--mx-muted)">（只有本人、家長和工作人員看得到）</span></div>
-                <div class="small mb-3" style="color:var(--mx-muted)" id="staffOnlyHint">本名、生日、團隊為註冊驗證資料，如需更正請洽工作人員。</div>
+                <div class="small mb-3" style="color:var(--mx-muted)" id="staffOnlyHint">本名、生日、組別為註冊驗證資料，如需更正請洽工作人員。</div>
                 <div class="row">
                   <div class="col-md-4 mb-3">
                     <label class="form-label">團員本名</label>
@@ -859,7 +859,7 @@
                     <input type="date" class="form-control staff-only" name="birthday">
                   </div>
                   <div class="col-md-4 mb-3">
-                    <label class="form-label">所屬團隊</label>
+                    <label class="form-label">組別</label>
                     <select class="form-select staff-only" name="team" id="memberTeamSelect"></select>
                   </div>
                 </div>
@@ -1054,7 +1054,7 @@
                   <tr>
                     <th style="min-width:200px;">類別 / 活動名稱</th>
                     <th style="min-width:250px;">日期 | 時間 | 地點</th>
-                    <th style="min-width:170px;">參賽團隊</th>
+                    <th style="min-width:170px;">參賽組別</th>
                     <th style="min-width:240px;">追蹤進度（財務 / 成績）</th>
                     <th style="min-width:100px; text-align:center;">操作</th>
                   </tr>
@@ -1073,11 +1073,11 @@
                 <div class="eyebrow">Member Roster</div>
                 <h4 class="fw-bold m-0">註冊名單與狀態</h4>
               </div>
-              <span class="small" style="color:var(--mx-muted)">名單請在試算表的 Roster 工作表新增（本名、生日、團隊）</span>
+              <a class="small" href="https://docs.google.com/spreadsheets/d/1SfGz_whHFJZjSCZlQb7OkiDAShu39N7esknd5ycjWR4/edit#gid=660051442" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>開啟名單試算表（填本名、生日、組別）</a>
             </div>
             <div class="table-responsive">
               <table class="table align-middle mb-0 table-custom" style="min-width:720px">
-                <thead><tr><th>本名</th><th>生日</th><th>團隊</th><th>學號</th><th>已綁定帳號</th></tr></thead>
+                <thead><tr><th>本名</th><th>生日</th><th>組別</th><th>學號</th><th>已綁定帳號</th></tr></thead>
                 <tbody id="rosterTableBody"><tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">載入中…</td></tr></tbody>
               </table>
             </div>
@@ -1228,7 +1228,7 @@
     };
     const GOOGLE_CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID.trim();
 
-    const ALL_TEAMS = ['THE MIXCIN', 'MIXCIN WOW', 'MIXCIN PASSION', 'MIXCIN FLIPZY', 'MIXCIN NOVA', 'MIXCIN SHERO', 'MIXCIN BOSSy', '國際舞者團', '尚未確定 / 籌備中'];
+    const ALL_TEAMS = ['U12', 'U15', 'U18', 'KPOP', '啦啦團', '國際舞者團', '進修團', '尚未確定 / 籌備中'];
     const MEMBER_TEAMS = ALL_TEAMS.filter(t => t !== '尚未確定 / 籌備中');
     const CAT_COLOR = { '商業演出': '#E8475A', '街舞賽事': '#2A3038' };
     const CAT_TAG = { '商業演出': 'tag-red', '街舞賽事': 'tag-ink' };
@@ -1367,9 +1367,8 @@
     let appStarted = false;
 
     window.addEventListener('load', function () {
-      fillTeamSelect(document.getElementById('regTeamSelect'), ['無團隊/個人'].concat(MEMBER_TEAMS));
-      document.getElementById('regTeamSelect').options[0].text = '無團隊 / 個人代表';
-      fillTeamSelect(document.getElementById('memberTeamSelect'), MEMBER_TEAMS, '請選擇團隊…');
+      fillTeamSelect(document.getElementById('regTeamSelect'), MEMBER_TEAMS.concat(['無團隊/個人']));
+      fillTeamSelect(document.getElementById('memberTeamSelect'), MEMBER_TEAMS, '請選擇組別…');
       renderCategoryFields();
       refreshIdentity();
       initGoogleLogin();
@@ -1623,7 +1622,7 @@
       document.getElementById('modalEventTitle').textContent = ev.title;
 
       const row = (k, v) => `<div class="detail-row"><div class="k">${k}</div><div>${v}</div></div>`;
-      let html = row('日期', esc(ev.date)) + row('時間', esc(ev.time || '時間未定')) + row('地點', esc(ev.location || '未定')) + row('團隊', esc(ev.teams || '尚未確定'));
+      let html = row('日期', esc(ev.date)) + row('時間', esc(ev.time || '時間未定')) + row('地點', esc(ev.location || '未定')) + row('組別', esc(ev.teams || '尚未確定'));
 
       if (session.isStaff) {
         if (ev.participants) html += row('名單', esc(ev.participants));
@@ -2097,7 +2096,7 @@
           const teams = Array.from(new Set(directory.map(m => m.team).filter(Boolean)));
           const sel = document.getElementById('familyTeam');
           const cur = sel.value;
-          sel.innerHTML = '<option value="">全部團隊</option>' + teams.map(t => `<option ${t === cur ? 'selected' : ''}>${esc(t)}</option>`).join('');
+          sel.innerHTML = '<option value="">全部組別</option>' + teams.map(t => `<option ${t === cur ? 'selected' : ''}>${esc(t)}</option>`).join('');
           document.getElementById('dmNewSelect').innerHTML = '<option value="">＋ 傳悄悄話給…</option>' +
             directory.filter(m => m.studentNo !== currentNo).map(m => `<option value="${esc(m.studentNo)}">${esc(m.name)}</option>`).join('');
           renderFamily();
@@ -2537,7 +2536,7 @@
     }
 
     // ---------- 公開欄位設定 ----------
-    const PUBLIC_LABELS = { avatar: '大頭照', team: '所屬團隊', title: '團員身分', rank: '位階', zodiac: '生肖', starSign: '星座', intro: '自我介紹', ig: 'IG 連結' };
+    const PUBLIC_LABELS = { avatar: '大頭照', team: '組別', title: '團員身分', rank: '位階', zodiac: '生肖', starSign: '星座', intro: '自我介紹', ig: 'IG 連結' };
 
     function loadPublicFields() {
       api('getPublicSettings', idToken)
@@ -2596,7 +2595,7 @@
         box.innerHTML = `
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label class="form-label">演出團隊</label>
+              <label class="form-label">演出組別</label>
               <select class="form-select" name="teams">
                 ${ALL_TEAMS.slice().reverse().map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}
               </select>
@@ -2637,11 +2636,11 @@
 
         box.innerHTML = `
           <div class="mb-3">
-            <label class="form-label d-block">參賽團隊（未定可留空）</label>
+            <label class="form-label d-block">參賽組別（未定可留空）</label>
             <div class="p-3 rounded" style="background:var(--mx-paper); border:1px solid var(--mx-sand)">${checks}</div>
           </div>
           <div class="mb-3">
-            <label class="form-label">參與名單（勾選團隊後自動帶入，可再調整）</label>
+            <label class="form-label">參與名單（勾選組別後自動帶入，可再調整）</label>
             <textarea class="form-control" id="battleParticipants" rows="2" placeholder="未定可留空"></textarea>
           </div>
 
@@ -2740,7 +2739,7 @@
       document.getElementById('battleResultsContainer').insertAdjacentHTML('beforeend', `
         <div class="result-row" id="${id}">
           <div class="row g-2 align-items-end">
-            <div class="col-md-3"><label class="form-label small mb-1">獲獎團隊</label><select class="form-select form-select-sm res-team">${opt}</select></div>
+            <div class="col-md-3"><label class="form-label small mb-1">獲獎組別</label><select class="form-select form-select-sm res-team">${opt}</select></div>
             <div class="col-md-3"><label class="form-label small mb-1">名次 / 獎項</label><input type="text" class="form-control form-control-sm res-rank" placeholder="冠軍" value="${esc(data.rank || '')}"></div>
             <div class="col-md-3"><label class="form-label small mb-1">獎金 (NT$)</label><input type="number" min="0" class="form-control form-control-sm res-prize" value="${esc(data.prize || '')}"></div>
             <div class="col-md-2"><label class="form-label small mb-1">獎金進度</label><select class="form-select form-select-sm res-status">${st}</select></div>
@@ -2791,7 +2790,7 @@
           teamHtml = `<details class="team-details-dropdown">
             <summary><i class="bi bi-people-fill me-1"></i>${esc(teamList[0])}${teamList.length > 1 ? ' 等 ' + teamList.length + ' 隊' : ''} ▾</summary>
             <div class="team-dropdown-content">
-              <div class="fw-bold pb-1 mb-1" style="border-bottom:1px solid var(--mx-sand)">參賽團隊（${teamList.length} 隊）</div>
+              <div class="fw-bold pb-1 mb-1" style="border-bottom:1px solid var(--mx-sand)">參賽組別（${teamList.length} 組）</div>
               <div class="fw-bold mb-2">${esc(e.teams)}</div>
               <div class="fw-bold pb-1 mb-1" style="border-bottom:1px solid var(--mx-sand); color:var(--mx-muted)">參與人員</div>
               <div style="color:var(--mx-muted)">${esc(e.participants || '尚未填寫')}</div>
