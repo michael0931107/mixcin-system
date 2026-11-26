@@ -367,7 +367,7 @@
     .gate-card .lead-text { color: var(--mx-muted); font-size: 14px; margin-bottom: 22px; }
     .gate-step { display: none; }
     .gate-step.on { display: block; }
-    .gate-login-btn { display: flex; justify-content: center; min-height: 44px; }
+    .gate-login-btn { display: flex; justify-content: center; min-height: 40px; max-width: 220px; margin: 0 auto; overflow: hidden; }
     .gate-foot { font-size: 12px; color: var(--mx-silver); margin-top: 22px; line-height: 1.6; }
 
     .acc-row {
@@ -521,6 +521,7 @@
           </div>
         </div>
         <div class="gate-login-btn" id="gateLoginBtn"></div>
+        <div class="small text-center mt-2" style="color:var(--mx-silver)">點一下上方按鈕即可登入</div>
         <div class="small mt-3 text-center d-none" id="gateA2hs" style="color:var(--mx-muted)">
           <i class="bi bi-box-arrow-up me-1"></i>iPhone 小技巧：在 Safari 點「分享」→「加入主畫面」，以後就像 App 一樣一鍵開啟。
         </div>
@@ -1429,7 +1430,7 @@
     function renderLoginButton() {
       const box = document.getElementById('gateLoginBtn');
       if (!GOOGLE_CLIENT_ID || !(window.google && google.accounts) || box.dataset.done) return;
-      google.accounts.id.renderButton(box, { theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', locale: 'zh-TW', width: 280 });
+      google.accounts.id.renderButton(box, { type: 'standard', theme: 'outline', size: 'medium', shape: 'pill', text: 'signin_with', logo_alignment: 'left', locale: 'zh-TW', width: 200 });
       box.dataset.done = '1';
     }
 
