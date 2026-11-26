@@ -594,6 +594,7 @@
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-dm" data-bs-toggle="tab" type="button"><i class="bi bi-envelope-heart-fill"></i>悄悄話<span class="nav-badge d-none" id="dmBadge"></span></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-shop" data-bs-toggle="tab" type="button"><i class="bi bi-bag-heart-fill"></i>積分商店</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-member" data-bs-toggle="tab" type="button"><i class="bi bi-person-badge-fill"></i>我的檔案</button></li>
+        <li class="nav-item d-none" id="rollcallTabItem"><button class="nav-link" data-bs-target="#tab-rollcall" data-bs-toggle="tab" type="button"><i class="bi bi-clipboard-check-fill"></i>點名</button></li>
         <li class="nav-item d-none" id="staffTabItem"><button class="nav-link" data-bs-target="#tab-staff" data-bs-toggle="tab" type="button"><i class="bi bi-shield-lock-fill"></i>員工後台</button></li>
       </ul>
     </div>
@@ -708,11 +709,17 @@
             </div>
           </div>
           <div class="col-lg-5">
+            <div class="mx-card p-4 mb-3">
+              <div class="board-head"><span><i class="bi bi-people-fill" style="color:var(--mx-red)"></i>我的小團練（兩週內）</span></div>
+              <div class="small mb-2" style="color:var(--mx-muted)">小團練不用在 FitBook 預約，直接到場；老師點名後每堂 +1 分。</div>
+              <div id="myPracticeList" class="board-list"><div class="board-empty">目前沒有排定的小團練</div></div>
+            </div>
             <div class="mx-card p-4">
               <div class="board-head"><span><i class="bi bi-stars" style="color:var(--mx-gold)"></i>上課積分怎麼算</span></div>
               <ul class="small mb-0 ps-3" style="color:var(--mx-slate);line-height:1.9">
                 <li>用以下課卡上課並<b>簽到</b>，每堂 +1 分：<span id="bookingCards" class="fw-bold">—</span></li>
                 <li>一晚上三堂就是 +3，沒簽到不算分。</li>
+                <li>小團練由老師點名，出席每堂 +1。</li>
                 <li>積分由工作人員每週從 FitBook 匯入，可在「我的檔案」查看明細。</li>
                 <li>累積的積分可以到「積分商店」兌換課程或商品。</li>
               </ul>
@@ -1029,6 +1036,29 @@
       </div>
 
       <!-- 員工後台 -->
+      <!-- 點名（老師 / 員工） -->
+      <div class="tab-pane fade" id="tab-rollcall">
+        <div class="sec-head">
+          <div class="sec-no">點</div>
+          <div>
+            <div class="eyebrow">Roll Call</div>
+            <h2 class="sec-title">小團練點名</h2>
+            <div class="sec-sub">上完課勾選出席的團員再送出，每人自動 +1 分。勾錯可以重新點，系統會自動修正積分。</div>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-5">
+            <div class="mx-card p-4">
+              <div class="board-head"><span><i class="bi bi-calendar-week"></i>課表（前三週到後兩週）</span><a href="#" onclick="loadRollcallSessions();return false;">重新整理</a></div>
+              <div id="rcSessionList" class="board-list"><div class="board-empty">載入中…</div></div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="mx-card p-4" id="rcPanel"><div class="board-empty">← 選擇一堂課開始點名</div></div>
+          </div>
+        </div>
+      </div>
+
       <div class="tab-pane fade" id="tab-staff">
         <div class="sec-head">
           <div class="sec-no">08</div>
@@ -1195,7 +1225,7 @@
               <div class="col-md-5"><label class="form-label">Google Email</label><input type="email" class="form-control" id="staffEmailInput" placeholder="name@gmail.com"></div>
               <div class="col-md-3"><label class="form-label">姓名</label><input type="text" class="form-control" id="staffNameInput" maxlength="50"></div>
               <div class="col-md-2"><label class="form-label">權限</label>
-                <select class="form-select" id="staffRoleInput"><option value="Staff">Staff</option><option value="Admin">Admin</option></select>
+                <select class="form-select" id="staffRoleInput"><option value="Staff">Staff</option><option value="Admin">Admin</option><option value="Teacher">老師（只能點名）</option></select>
               </div>
               <div class="col-md-2"><button type="button" class="btn btn-mixcin w-100" onclick="saveStaffMember()">新增 / 更新</button></div>
             </div>
@@ -1221,6 +1251,37 @@
               <div class="col-md-3 d-flex gap-2"><button type="submit" class="btn btn-mixcin flex-grow-1">儲存任務</button><button type="button" class="btn btn-line" onclick="resetTaskForm()">清空</button></div>
             </form>
             <div id="staffTaskList"></div>
+          </div>
+
+          <!-- 小團練排程 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="mb-3">
+              <div class="eyebrow">Small Group Practice</div>
+              <h4 class="fw-bold m-0">小團練排程</h4>
+              <div class="small mt-1" style="color:var(--mx-muted)">設定每週固定時段，系統自動產生每一堂、登記到教室日曆，並寄日曆邀請給團員。老師在「點名」頁點名，出席每堂 +1 分。</div>
+            </div>
+            <form id="practiceForm" class="tracker-box mb-3" onsubmit="savePracticeForm(event)">
+              <input type="hidden" id="prId">
+              <div class="row g-2">
+                <div class="col-md-5"><label class="form-label small mb-1">名稱</label><input class="form-control form-control-sm" id="prTitle" maxlength="60" placeholder="例如：寒假小團練" required></div>
+                <div class="col-md-4"><label class="form-label small mb-1">帶課老師</label><input class="form-control form-control-sm" id="prTeacher" maxlength="40" placeholder="例如：Larry老師"></div>
+                <div class="col-md-3"><label class="form-label small mb-1">寄日曆邀請給團員</label><select class="form-select form-select-sm" id="prNotify"><option value="1">寄送</option><option value="0">不寄</option></select></div>
+                <div class="col-12"><label class="form-label small mb-1">對象</label><div id="prGroups" class="d-flex flex-wrap gap-3"></div></div>
+                <div class="col-12"><label class="form-label small mb-1">每週</label><div id="prWeekdays" class="d-flex flex-wrap gap-3"></div></div>
+                <div class="col-6 col-md-2"><label class="form-label small mb-1">開始</label><input type="time" class="form-control form-control-sm" id="prStart" step="900" required></div>
+                <div class="col-6 col-md-2"><label class="form-label small mb-1">結束</label><input type="time" class="form-control form-control-sm" id="prEnd" step="900" required></div>
+                <div class="col-md-4"><label class="form-label small mb-1">教室 / 地點</label><select class="form-select form-select-sm" id="prRoom" onchange="document.getElementById('prPlace').classList.toggle('d-none', this.value !== 'OTHER')"></select>
+                  <input class="form-control form-control-sm mt-1 d-none" id="prPlace" maxlength="100" placeholder="輸入地點"></div>
+                <div class="col-6 col-md-2"><label class="form-label small mb-1">開始日期</label><input type="date" class="form-control form-control-sm" id="prFrom" required></div>
+                <div class="col-6 col-md-2"><label class="form-label small mb-1">結束日期</label><input type="date" class="form-control form-control-sm" id="prTo" required></div>
+                <div class="col-md-9"><label class="form-label small mb-1">備註</label><input class="form-control form-control-sm" id="prNote" maxlength="200" placeholder="例如：帶護膝、穿團服"></div>
+                <div class="col-md-3 d-flex gap-2 align-items-end">
+                  <button type="submit" class="btn btn-mixcin btn-sm flex-grow-1" id="prSaveBtn">儲存</button>
+                  <button type="button" class="btn btn-line btn-sm" onclick="resetPracticeForm()">清除</button>
+                </div>
+              </div>
+            </form>
+            <div id="practiceList"></div>
           </div>
 
           <!-- FitBook 出席匯入 -->
@@ -1427,6 +1488,13 @@
       fitbookImport: ['rows', 'opts', 'idToken'],
       fitbookBind: ['fitbookName', 'rosterKey', 'idToken'],
       getFitbookSettings: ['idToken'],
+      listPractices: ['idToken'],
+      savePractice: ['practice', 'idToken'],
+      deletePractice: ['practiceId', 'idToken'],
+      getPracticeSessions: ['idToken'],
+      cancelPracticeSession: ['sessionId', 'cancel', 'idToken'],
+      getRollCall: ['sessionId', 'idToken'],
+      saveRollCall: ['sessionId', 'presentKeys', 'idToken'],
       saveFitbookSettings: ['settings', 'idToken'],
       setEventArchived: ['eventId', 'archived', 'idToken'],
       sendEventConfirmation: ['eventId', 'idToken'],
@@ -1611,7 +1679,7 @@
 
     function applyIdentityUI() {
       const loggedIn = !!session.email;
-      const allowed = session.isStaff || session.isMember;
+      const allowed = session.isStaff || session.isMember || session.isTeacher;
 
       document.getElementById('userPill').classList.toggle('is-in', loggedIn);
       document.getElementById('userBadge').innerText = loggedIn ? session.email : '尚未登入';
@@ -1645,6 +1713,7 @@
     function startApp() {
       // 員工後台只對員工顯示
       document.getElementById('staffTabItem').classList.toggle('d-none', !session.isStaff);
+      document.getElementById('rollcallTabItem').classList.toggle('d-none', !(session.isStaff || session.isTeacher));
       document.getElementById('staffWorkArea').classList.toggle('d-none', !session.isStaff);
       document.getElementById('staffLockBox').classList.add('d-none');
       document.getElementById('roleBadge').innerText = session.role || 'Staff';
@@ -1671,8 +1740,10 @@
         });
         appStarted = true;
       }
-      // 每次登入（含換帳號）都回到布告欄，避免停在上一個帳號開著的員工後台
-      bootstrap.Tab.getOrCreateInstance(document.querySelector('#mainTab [data-bs-target="#tab-home"]')).show();
+      // 每次登入（含換帳號）都回到布告欄，避免停在上一個帳號開著的員工後台；只有老師身分的直接到點名頁
+      const firstTab = session.isTeacher && !session.isMember && !session.isStaff ? '#tab-rollcall' : '#tab-home';
+      bootstrap.Tab.getOrCreateInstance(document.querySelector(`#mainTab [data-bs-target="${firstTab}"]`)).show();
+      if (firstTab === '#tab-rollcall') loadRollcallSessions();
       window.scrollTo(0, 0);
       loadEvents();
       loadLinkedMembers().then(() => { loadHome(); loadDirectory(); });
@@ -1688,6 +1759,7 @@
     // 切換分頁時才載入該頁資料
     function onTabShown(id) {
       if (id === 'tab-home') loadHome();
+      if (id === 'tab-rollcall') loadRollcallSessions();
       if (id === 'tab-tasks') loadTasks();
       if (id === 'tab-family') loadDirectory();
       if (id === 'tab-forum') loadPosts();
@@ -2169,6 +2241,7 @@
           document.getElementById('consentAlert').classList.toggle('d-none', !h.pendingConsent);
 
           renderMyRehearsals(h.myRehearsals || []);
+          renderMyPractices(h.myPractices || []);
 
           document.getElementById('homeTaskCount').innerText = h.openTasks.filter(t => t.myStatus === '進行中').length;
           document.getElementById('homeTasks').innerHTML = h.openTasks.length ? h.openTasks.map(t => `
@@ -2566,6 +2639,8 @@
       loadPublicFields();
       loadConsentRequests();
       loadFitbookSettings();
+      initPracticeForm();
+      loadPractices();
     }
 
     function loadRosterStatus() {
@@ -2592,7 +2667,7 @@
         .then(list => {
           document.getElementById('staffList').innerHTML = list.map(s => `
             <div class="acc-row">
-              <div><span class="tag ${s.role === 'Admin' ? 'tag-red' : 'tag-ink'} me-2">${esc(s.role)}</span>
+              <div><span class="tag ${s.role === 'Admin' ? 'tag-red' : (s.role === 'Teacher' ? 'tag-gold' : 'tag-ink')} me-2">${s.role === 'Teacher' ? '老師' : esc(s.role)}</span>
                 <b>${esc(s.name || '（未填姓名）')}</b><span class="ms-2" style="color:var(--mx-muted)">${esc(s.email)}</span>
                 ${s.isSelf ? '<span class="small ms-1" style="color:var(--mx-muted)">（您）</span>' : ''}</div>
               ${s.isSelf ? '' : `<div class="d-flex gap-2">
@@ -2698,6 +2773,180 @@
       api('resolveTaskEntry', entryId, ok, idToken)
         .then(res => { toast(`已結算（${res.delta > 0 ? '+' : ''}${res.delta} 分）`); loadStaffTasks(); })
         .catch(err => toast(errMsg(err), true));
+    }
+
+    // ---------- 小團練：團員看到的課表 ----------
+    const WD = ['日', '一', '二', '三', '四', '五', '六'];
+    const wdOf = d => WD[new Date(d + 'T00:00:00').getDay()];
+    function renderMyPractices(list) {
+      const el = document.getElementById('myPracticeList');
+      if (!el) return;
+      el.innerHTML = list.length ? list.map(x => `
+        <div class="board-item" style="${x.status === 'cancelled' ? 'opacity:.6' : ''}">${dateBox(x.date)}
+          <div class="flex-grow-1"><b>${esc(x.title)}</b>${x.status === 'cancelled' ? ' <span class="tag tag-soft">停課</span>' : ''}
+            <div class="small" style="color:var(--mx-muted)">週${wdOf(x.date)} ${esc(x.start)}–${esc(x.end)} · ${esc(x.where)}${x.teacher ? ' · ' + esc(x.teacher) : ''}</div></div>
+        </div>`).join('') : '<div class="board-empty">目前沒有排定的小團練</div>';
+    }
+
+    // ---------- 小團練：員工排程 ----------
+    function initPracticeForm() {
+      const g = document.getElementById('prGroups');
+      if (g.dataset.done) return;
+      g.dataset.done = '1';
+      g.innerHTML = `<div class="form-check"><input class="form-check-input pr-group" type="checkbox" value="ALL" id="prg_all" checked onchange="onPrAll(this)"><label class="form-check-label fw-bold" for="prg_all">全體團員</label></div>` +
+        DIVISIONS.reduce((a, d) => a.concat(d.units), []).map((u, i) => `<div class="form-check"><input class="form-check-input pr-group" type="checkbox" value="${esc(u)}" id="prg_${i}" onchange="onPrGroup()"><label class="form-check-label" for="prg_${i}">${groupHtml(u)}</label></div>`).join('');
+      document.getElementById('prWeekdays').innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => `<div class="form-check"><input class="form-check-input pr-wd" type="checkbox" value="${d}" id="prw_${d}"><label class="form-check-label" for="prw_${d}">週${WD[d]}</label></div>`).join('');
+      document.getElementById('prRoom').innerHTML = ROOM_OPTIONS.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('');
+    }
+    function onPrAll(el) { if (el.checked) document.querySelectorAll('.pr-group:not([value="ALL"])').forEach(c => { c.checked = false; }); }
+    function onPrGroup() {
+      const any = [...document.querySelectorAll('.pr-group:not([value="ALL"])')].some(c => c.checked);
+      document.getElementById('prg_all').checked = !any;
+    }
+    function resetPracticeForm() {
+      document.getElementById('practiceForm').reset();
+      document.getElementById('prId').value = '';
+      document.getElementById('prPlace').classList.add('d-none');
+      document.getElementById('prg_all').checked = true;
+      document.getElementById('prSaveBtn').textContent = '儲存';
+    }
+    let practiceCache = [];
+    function loadPractices() {
+      api('listPractices', idToken).then(list => {
+        practiceCache = list;
+        document.getElementById('practiceList').innerHTML = list.length ? list.map(p => `
+          <div class="acc-row">
+            <div><b>${esc(p.title)}</b> <span class="tag tag-gold ms-1">${esc(p.groupsText)}</span>
+              <div class="small" style="color:var(--mx-muted)">每週${esc(p.weekdayText)} ${esc(p.start)}–${esc(p.end)} · ${esc(p.where)}${p.teacher ? ' · ' + esc(p.teacher) : ''}</div>
+              <div class="small" style="color:var(--mx-muted)">${esc(p.from)} ～ ${esc(p.to)} · 共 ${p.total} 堂，已點名 ${p.done} 堂${p.notify ? ` · 已邀請 ${p.invited} 個帳號` : ' · 不寄邀請'}</div></div>
+            <div class="d-flex gap-1"><button class="btn-mini" onclick="editPractice('${esc(p.id)}')">修改</button>
+              <button class="btn-mini" onclick="removePractice('${esc(p.id)}', this)">刪除</button></div>
+          </div>`).join('') : '<div class="board-empty">還沒有小團練排程</div>';
+      }).catch(err => toast(errMsg(err), true));
+    }
+    function editPractice(id) {
+      const p = practiceCache.find(x => x.id === id);
+      if (!p) return;
+      initPracticeForm();
+      document.getElementById('prId').value = p.id;
+      document.getElementById('prTitle').value = p.title;
+      document.getElementById('prTeacher').value = p.teacher || '';
+      document.getElementById('prNotify').value = p.notify ? '1' : '0';
+      document.querySelectorAll('.pr-group').forEach(c => { c.checked = p.groups.includes(c.value); });
+      document.querySelectorAll('.pr-wd').forEach(c => { c.checked = p.weekdays.includes(Number(c.value)); });
+      document.getElementById('prStart').value = p.start;
+      document.getElementById('prEnd').value = p.end;
+      document.getElementById('prRoom').value = p.room || 'OTHER';
+      document.getElementById('prPlace').value = p.place || '';
+      document.getElementById('prPlace').classList.toggle('d-none', p.room !== 'OTHER');
+      document.getElementById('prFrom').value = p.from;
+      document.getElementById('prTo').value = p.to;
+      document.getElementById('prNote').value = p.note || '';
+      document.getElementById('prSaveBtn').textContent = '儲存修改';
+      document.getElementById('practiceForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function savePracticeForm(e) {
+      e.preventDefault();
+      const groups = [...document.querySelectorAll('.pr-group:checked')].map(c => c.value);
+      const weekdays = [...document.querySelectorAll('.pr-wd:checked')].map(c => Number(c.value));
+      if (!weekdays.length) return toast('請至少選一個星期', true);
+      const data = {
+        id: document.getElementById('prId').value, title: document.getElementById('prTitle').value.trim(),
+        teacher: document.getElementById('prTeacher').value.trim(), notify: document.getElementById('prNotify').value === '1',
+        groups: groups.length ? groups : ['ALL'], weekdays,
+        start: document.getElementById('prStart').value, end: document.getElementById('prEnd').value,
+        room: document.getElementById('prRoom').value, place: document.getElementById('prPlace').value.trim(),
+        from: document.getElementById('prFrom').value, to: document.getElementById('prTo').value,
+        note: document.getElementById('prNote').value.trim()
+      };
+      const btn = document.getElementById('prSaveBtn');
+      setBusy(btn, true, '儲存中…');
+      api('savePractice', data, idToken).then(res => {
+        toast(`已儲存，共 ${res.sessions} 堂${res.invited ? `，日曆邀請已寄給 ${res.invited} 個帳號` : ''}`);
+        (res.warnings || []).forEach(w => toast('⚠ ' + w, true));
+        resetPracticeForm(); loadPractices();
+      }).catch(err => toast(errMsg(err), true)).finally(() => setBusy(btn, false));
+    }
+    function removePractice(id, btn) {
+      const p = practiceCache.find(x => x.id === id);
+      if (!window.confirm(`確定刪除「${p ? p.title : ''}」？\n還沒上的堂數會取消，已點名的紀錄和積分會保留。`)) return;
+      setBusy(btn, true, '刪除中…');
+      api('deletePractice', id, idToken).then(() => { toast('已刪除小團練'); loadPractices(); })
+        .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
+    }
+
+    // ---------- 點名 ----------
+    let rcSessions = [];
+    function loadRollcallSessions() {
+      api('getPracticeSessions', idToken).then(list => {
+        rcSessions = list;
+        const today = todayStr();
+        const item = x => {
+          const st = x.status === 'cancelled' ? '<span class="tag tag-soft">停課</span>'
+            : x.status === 'done' ? `<span class="tag tag-gold">已點名 ${x.present} 人</span>`
+            : x.date <= today ? '<span class="tag tag-red">待點名</span>' : '<span class="tag tag-line">未開始</span>';
+          const canMark = x.date <= today && x.status !== 'cancelled';
+          const staffBtn = session.isStaff && x.date > today && x.status !== 'done'
+            ? `<button class="btn-mini ms-1" onclick="event.stopPropagation();toggleSession('${esc(x.id)}', ${x.status !== 'cancelled'}, this)">${x.status === 'cancelled' ? '恢復' : '停課'}</button>` : '';
+          return `<div class="board-item" style="cursor:${canMark ? 'pointer' : 'default'};${x.date === today ? 'background:#FFF8E6;border-radius:10px' : ''}" ${canMark ? `onclick="openRollCall('${esc(x.id)}')"` : ''}>${dateBox(x.date)}
+            <div class="flex-grow-1"><b>${esc(x.title)}</b> <span class="small" style="color:var(--mx-muted)">週${wdOf(x.date)}</span>
+              <div class="small" style="color:var(--mx-muted)">${esc(x.start)}–${esc(x.end)} · ${esc(x.where)} · ${esc(x.groupsText)}</div></div>
+            <div class="text-end">${st}${staffBtn}</div></div>`;
+        };
+        const past = list.filter(x => x.date <= today).reverse(), next = list.filter(x => x.date > today);
+        document.getElementById('rcSessionList').innerHTML = list.length
+          ? (past.length ? '<div class="small fw-bold mb-1" style="color:var(--mx-red)">今天與最近</div>' + past.map(item).join('') : '') +
+            (next.length ? '<div class="small fw-bold mt-3 mb-1" style="color:var(--mx-muted)">接下來</div>' + next.map(item).join('') : '')
+          : '<div class="board-empty">目前沒有小團練（請員工先在後台建立排程）</div>';
+      }).catch(err => toast(errMsg(err), true));
+    }
+    function toggleSession(id, cancel, btn) {
+      if (cancel && !window.confirm('確定這堂停課？已邀請的團員會收到日曆取消通知。')) return;
+      setBusy(btn, true, '處理中…');
+      api('cancelPracticeSession', id, cancel, idToken).then(() => { toast(cancel ? '已停課' : '已恢復上課'); loadRollcallSessions(); })
+        .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
+    }
+    let rcCurrent = null;
+    function openRollCall(id) {
+      const panel = document.getElementById('rcPanel');
+      panel.innerHTML = '<div class="board-empty">載入名單中…</div>';
+      if (window.innerWidth < 992) panel.scrollIntoView({ behavior: 'smooth' });
+      api('getRollCall', id, idToken).then(rc => {
+        rcCurrent = rc;
+        const rows = rc.members.map((m, i) => `
+          <label class="d-flex align-items-center gap-2 py-2 px-2" style="border-bottom:1px solid var(--mx-sand);cursor:pointer">
+            <input type="checkbox" class="form-check-input m-0 rc-chk" style="width:22px;height:22px" value="${esc(m.key)}" ${m.present ? 'checked' : ''} onchange="rcCount()">
+            <span class="fw-bold flex-grow-1">${esc(m.name)}</span><span class="small">${groupHtml(m.group)}</span>
+          </label>`).join('');
+        panel.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+            <div><div class="eyebrow">${esc(rc.date)}（週${wdOf(rc.date)}）${esc(rc.start)}–${esc(rc.end)}</div>
+              <h5 class="fw-bold m-0">${esc(rc.title)}</h5><div class="small" style="color:var(--mx-muted)">${esc(rc.where)} · ${esc(rc.groupsText)}</div></div>
+            <div class="d-flex gap-1"><button class="btn-mini" onclick="rcAll(true)">全選</button><button class="btn-mini" onclick="rcAll(false)">全不選</button></div>
+          </div>
+          ${rc.members.length ? `<div style="max-height:60vh;overflow:auto">${rows}</div>` : '<div class="board-empty">這個組別目前沒有團員名單</div>'}
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <span class="small" id="rcCountText"></span>
+            <button class="btn btn-mixcin" id="rcSaveBtn" onclick="saveRollCallNow()" ${rc.canMark ? '' : 'disabled'}><i class="bi bi-check2-all me-1"></i>送出點名</button>
+          </div>
+          ${rc.status === 'done' ? `<div class="small mt-2" style="color:var(--mx-muted)">已由 ${esc(rc.markedBy)} 點過名，修改後再送出即可。</div>` : ''}`;
+        rcCount();
+      }).catch(err => { panel.innerHTML = ''; toast(errMsg(err), true); });
+    }
+    function rcAll(v) { document.querySelectorAll('.rc-chk').forEach(c => { c.checked = v; }); rcCount(); }
+    function rcCount() {
+      const n = document.querySelectorAll('.rc-chk:checked').length, all = document.querySelectorAll('.rc-chk').length;
+      const el = document.getElementById('rcCountText');
+      if (el) el.innerHTML = `出席 <b>${n}</b> / ${all} 人（每人 +1 分）`;
+    }
+    function saveRollCallNow() {
+      const keys = [...document.querySelectorAll('.rc-chk:checked')].map(c => c.value);
+      const btn = document.getElementById('rcSaveBtn');
+      setBusy(btn, true, '送出中…');
+      api('saveRollCall', rcCurrent.id, keys, idToken).then(res => {
+        toast(`點名完成：出席 ${res.present} 人${res.added ? `，+${res.added} 人加分` : ''}${res.removed ? `，${res.removed} 人收回積分` : ''}`);
+        loadRollcallSessions(); openRollCall(rcCurrent.id);
+      }).catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
     }
 
     // ---------- FitBook 出席匯入 ----------
