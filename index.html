@@ -1283,6 +1283,13 @@
     };
     const GOOGLE_CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID.trim();
 
+    // 組織架構：MIXCIN 競演團 MIXCIN Academy Repertory Company (MIXCIN Rep Co.)
+    const DIVISIONS = [
+      { name: '競技賽事部', abbr: 'COMP DIV', units: ['街舞組', 'K-POP組', '舞道修練組', 'Solo & Battle組'] },
+      { name: '國際演出部', abbr: 'INTL DIV', units: ['國際演出部'] },
+      { name: '舞蹈啦啦部', abbr: 'CHEER DIV', units: ['舞蹈啦啦部'] }
+    ];
+    const GROUP_ABBR = { '街舞組': 'SD Unit', 'K-POP組': 'KPOP Unit', '舞道修練組': 'TRAIN Unit', 'Solo & Battle組': 'SB Unit', '國際演出部': 'INTL DIV', '舞蹈啦啦部': 'CHEER DIV' };
     const ALL_TEAMS = DIVISIONS.reduce((a, d) => a.concat(d.units), []).concat(['尚未確定 / 籌備中']);
     // 下拉選單文字：中文為主，後面接英文縮寫
     const groupText = t => GROUP_ABBR[t] ? `${t}・${GROUP_ABBR[t]}` : t;
