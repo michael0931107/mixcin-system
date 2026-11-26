@@ -692,6 +692,7 @@
               <span><i style="background:#E8475A"></i>商業演出</span>
               <span><i style="background:#2A3038"></i>街舞賽事</span>
               <span><i style="background:#9AA1AA"></i>其他</span>
+              <span><i style="background:#C9A227"></i>彩排 / 排練</span>
             </div>
             <div class="mx-card p-3 p-md-4"><div id="calendar"></div></div>
           </div>
@@ -1054,6 +1055,15 @@
                   </div>
                 </div>
 
+                <div class="tracker-box" id="rehearsalBox">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="m-0"><i class="bi bi-music-note-beamed me-1"></i>彩排 / 排練時間</h6>
+                    <button type="button" class="btn-mini" onclick="addRehearsalRow()"><i class="bi bi-plus-lg me-1"></i>新增排練時間</button>
+                  </div>
+                  <div id="rehearsalRows"></div>
+                  <div class="small" style="color:var(--mx-muted)">選好教室後按儲存，就會登記到該教室的 Google 日曆（選「全開」會同時登記大、小教室）。日期留空的列不會儲存。</div>
+                </div>
+
                 <div id="dynamicFields"></div>
 
                 <div class="mb-3">
@@ -1259,6 +1269,12 @@
 
     const ALL_TEAMS = ['U12', 'U15', 'U18', 'KPOP', '啦啦團', '國際舞者團', '進修團', '尚未確定 / 籌備中'];
     const MEMBER_TEAMS = ALL_TEAMS.filter(t => t !== '尚未確定 / 籌備中');
+    const ROOM_OPTIONS = [
+      ['SHUANGXING_BIG', '雙星館 大教室'], ['SHUANGXING_SMALL', '雙星館 小教室'], ['SHUANGXING_ALL', '雙星館 全開（大＋小）'],
+      ['ZHONGXIAO_BIG', '忠孝館 大教室'], ['ZHONGXIAO_SMALL', '忠孝館 小教室'],
+      ['XIMEN_BIG', '西門館 大教室'], ['XIMEN_SMALL', '西門館 小教室'],
+      ['OTHER', '其他地點（自行輸入）']
+    ];
     const CAT_COLOR = { '商業演出': '#E8475A', '街舞賽事': '#2A3038' };
     const CAT_TAG = { '商業演出': 'tag-red', '街舞賽事': 'tag-ink' };
 
@@ -1399,6 +1415,7 @@
       fillTeamSelect(document.getElementById('regTeamSelect'), MEMBER_TEAMS.concat(['無團隊/個人']));
       fillTeamSelect(document.getElementById('memberTeamSelect'), MEMBER_TEAMS, '請選擇組別…');
       renderCategoryFields();
+      resetRehearsals();
       refreshIdentity();
       initGoogleLogin();
     });
@@ -1641,7 +1658,13 @@
         .then(function (events) {
           globalEvents = events || [];
           calendar.removeAllEvents();
-          calendar.addEventSource(globalEvents.map(toCalendarEvent));
+          const rehearsalEvents = [];
+          globalEvents.forEach(e => (e.rehearsals || []).forEach(r => rehearsalEvents.push({
+            title: '彩排｜' + e.title,
+            start: `${r.date}T${r.start}:00`, end: `${r.date}T${r.end}:00`,
+            color: '#C9A227', textColor: '#1F2429', extendedProps: e
+          })));
+          calendar.addEventSource(globalEvents.map(toCalendarEvent).concat(rehearsalEvents));
 
           const today = todayStr();
           const sel = document.getElementById('regEventSelect');
@@ -1667,6 +1690,9 @@
 
       const row = (k, v) => `<div class="detail-row"><div class="k">${k}</div><div>${v}</div></div>`;
       let html = row('日期', esc(ev.date)) + row('時間', esc(ev.time || '時間未定')) + row('地點', esc(ev.location || '未定')) + row('組別', esc(ev.teams || '尚未確定'));
+      if ((ev.rehearsals || []).length) {
+        html += row('彩排', ev.rehearsals.map(r => `<div>${esc(r.date.slice(5).replace('-', '/'))} ${esc(r.start)}–${esc(r.end)}・${esc(r.where)}${r.note ? `<span style="color:var(--mx-muted)">（${esc(r.note)}）</span>` : ''}</div>`).join(''));
+      }
 
       if (session.isStaff) {
         if (ev.participants) html += row('名單', esc(ev.participants));
@@ -2848,6 +2874,7 @@
             <span class="tag ${CAT_TAG[e.category] || 'tag-gray'} me-1">${esc(e.category)}</span>
             <span class="tag ${cf.openForReg === 'no' ? 'tag-line' : 'tag-soft'} me-1">${cf.openForReg === 'no' ? '內部' : '公開'}</span>
             <span class="title-single-line" title="${esc(e.title)}">${esc(e.title)}</span>
+            ${(e.rehearsals || []).length ? `<span class="tag tag-gold ms-1"><i class="bi bi-music-note-beamed"></i>彩排 ${e.rehearsals.length}</span>` : ''}
           </td>
           <td><div class="info-single-line"><b>${esc(e.date)}</b><span class="mx-1" style="color:var(--mx-mist)">|</span>${esc(timeStr)}<span class="mx-1" style="color:var(--mx-mist)">|</span><i class="bi bi-geo-alt" style="color:var(--mx-red)"></i> ${esc(e.location || '地點未定')}</div></td>
           <td>${teamHtml}</td>
@@ -2876,6 +2903,7 @@
       form.notes.value = ev.notes || '';
       const cf = ev.customFields || {};
       document.getElementById('openForRegSelect').value = cf.openForReg || 'yes';
+      resetRehearsals(cf.rehearsals || []);
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
 
       if (ev.category === '商業演出') {
@@ -2904,12 +2932,60 @@
       collapseEl.scrollIntoView({ behavior: 'smooth' });
     }
 
+    // ---------- 彩排 / 排練時間 ----------
+    function addRehearsalRow(r) {
+      r = r || {};
+      const id = 'rh_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      const opts = ROOM_OPTIONS.map(o => `<option value="${o[0]}" ${r.room === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('');
+      document.getElementById('rehearsalRows').insertAdjacentHTML('beforeend', `
+        <div class="result-row reh-row" id="${id}" data-rid="${esc(r.id || '')}">
+          <div class="row g-2 align-items-end">
+            <div class="col-6 col-md-2"><label class="form-label small mb-1">日期</label><input type="date" class="form-control form-control-sm reh-date" value="${esc(r.date || '')}"></div>
+            <div class="col-3 col-md-2"><label class="form-label small mb-1">開始</label><input type="time" class="form-control form-control-sm reh-start" value="${esc(r.start || '')}" step="900"></div>
+            <div class="col-3 col-md-2"><label class="form-label small mb-1">結束</label><input type="time" class="form-control form-control-sm reh-end" value="${esc(r.end || '')}" step="900"></div>
+            <div class="col-md-3"><label class="form-label small mb-1">教室 / 地點</label>
+              <select class="form-select form-select-sm reh-room" onchange="this.closest('.reh-row').querySelector('.reh-place').classList.toggle('d-none', this.value !== 'OTHER')">${opts}</select>
+              <input type="text" class="form-control form-control-sm mt-1 reh-place ${r.room === 'OTHER' ? '' : 'd-none'}" maxlength="100" placeholder="輸入地點" value="${esc(r.place || '')}">
+            </div>
+            <div class="col-10 col-md-2"><label class="form-label small mb-1">備註</label><input type="text" class="form-control form-control-sm reh-note" maxlength="200" placeholder="例如：走位" value="${esc(r.note || '')}"></div>
+            <div class="col-2 col-md-1 text-end"><button type="button" class="btn btn-sm btn-line" title="刪除這次排練" onclick="document.getElementById('${id}').remove()"><i class="bi bi-trash"></i></button></div>
+          </div>
+        </div>`);
+    }
+
+    function resetRehearsals(list) {
+      document.getElementById('rehearsalRows').innerHTML = '';
+      (list && list.length ? list : [{}]).forEach(r => addRehearsalRow(r));
+    }
+
+    function collectRehearsals() {
+      const out = [];
+      for (const row of document.querySelectorAll('#rehearsalRows .reh-row')) {
+        const r = {
+          id: row.dataset.rid || '',
+          date: row.querySelector('.reh-date').value,
+          start: row.querySelector('.reh-start').value,
+          end: row.querySelector('.reh-end').value,
+          room: row.querySelector('.reh-room').value,
+          place: row.querySelector('.reh-place').value.trim(),
+          note: row.querySelector('.reh-note').value.trim()
+        };
+        if (!r.date) continue;
+        if (!r.start || !r.end) throw new Error(`請填寫 ${r.date} 排練的開始與結束時間`);
+        if (r.end <= r.start) throw new Error(`${r.date} 排練的結束時間要晚於開始時間`);
+        if (r.room === 'OTHER' && !r.place) throw new Error(`請填寫 ${r.date} 排練的地點`);
+        out.push(r);
+      }
+      return out;
+    }
+
     function resetStaffForm() {
       document.getElementById('staffEventForm').reset();
       document.getElementById('editEventId').value = '';
       document.getElementById('openForRegSelect').value = 'yes';
       document.getElementById('formTitle').textContent = '活動登記與追蹤設定';
       renderCategoryFields();
+      resetRehearsals();
     }
 
     document.getElementById('staffEventForm').addEventListener('submit', function (e) {
@@ -2923,6 +2999,7 @@
       if (!form.date.value) return toast('請選擇日期', true);
 
       let teams = '尚未確定 / 籌備中', participants = '', customFields = { openForReg: openForReg };
+      try { customFields.rehearsals = collectRehearsals(); } catch (err) { return toast(err.message, true); }
 
       // 保留原本的日曆同步 ID
       const old = globalEvents.find(x => x.eventId === form.eventId.value);
@@ -2976,6 +3053,7 @@
       api('saveEvent', payload, idToken)
         .then(function (res) {
           toast(res && res.calendarSynced ? '活動已儲存並同步到 Google 日曆' : '活動已儲存（日曆未同步）');
+          (res && res.warnings || []).forEach(w => toast('⚠ ' + w, true));
           resetStaffForm();
           loadEvents();
         })
