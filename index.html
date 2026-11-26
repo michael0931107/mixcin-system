@@ -1572,6 +1572,9 @@
         });
         appStarted = true;
       }
+      // 每次登入（含換帳號）都回到布告欄，避免停在上一個帳號開著的員工後台
+      bootstrap.Tab.getOrCreateInstance(document.querySelector('#mainTab [data-bs-target="#tab-home"]')).show();
+      window.scrollTo(0, 0);
       loadEvents();
       loadLinkedMembers().then(() => { loadHome(); loadDirectory(); });
       if (session.isStaff) {
