@@ -1330,6 +1330,8 @@
       getHome: ['asNo', 'idToken'],
       getEvents: ['idToken'],
       saveEvent: ['eventData', 'idToken'],
+      sendEventConfirmation: ['eventId', 'idToken'],
+      getMailStatus: ['idToken'],
       getLinkedMembersForCurrentUser: ['idToken'],
       getMemberProfile: ['targetStudentNo', 'idToken'],
       saveMemberProfile: ['formData', 'idToken'],
@@ -1794,7 +1796,7 @@
       setBusy(btn, true, '送出中…');
       api('submitRegistration', payload, idToken)
         .then(res => {
-          toast(res && res.duplicated ? '已經報名過這個活動了' : '報名成功！');
+          toast(res && res.duplicated ? '已經報名過這個活動了' : (res && res.mailed ? '報名成功！確認信已寄到您的信箱' : '報名成功！'));
           form.reset();
           autoFillRegFormWithMember(me());
         })
@@ -2927,9 +2929,31 @@
           <td><div class="info-single-line"><b>${esc(e.date)}</b><span class="mx-1" style="color:var(--mx-mist)">|</span>${esc(timeStr)}<span class="mx-1" style="color:var(--mx-mist)">|</span><i class="bi bi-geo-alt" style="color:var(--mx-red)"></i> ${esc(e.location || '地點未定')}</div></td>
           <td>${teamHtml}</td>
           <td style="white-space:nowrap;">${status}</td>
-          <td style="text-align:center;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button></td>
+          <td style="text-align:center;white-space:nowrap;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button>
+            ${!past ? `<button class="btn-mini ms-1" onclick="sendConfirmMail('${esc(e.eventId)}', this)" title="依通知對象寄出參加確認信"><i class="bi bi-envelope-check me-1"></i>寄確認信</button>` : ''}
+            ${(cf.mailLog || []).length ? `<div class="small mt-1" style="color:var(--mx-muted)">已寄 ${esc(cf.mailLog[cf.mailLog.length - 1].at.slice(5, 16).replace('T', ' '))}</div>` : ''}</td>
         </tr>`;
       }).join('');
+    }
+
+    function sendConfirmMail(id, btn) {
+      const ev = globalEvents.find(x => x.eventId === id);
+      if (!ev) return;
+      const cf = ev.customFields || {};
+      const who = { group: '活動組別的全部團員', registered: '已報名的團員', none: '（不通知）' }[cf.notifyMode || 'group'];
+      const last = (cf.mailLog || []).slice(-1)[0];
+      const msg = `要寄出「${ev.title}」的參加確認信嗎？\n寄送對象：${who}（含綁定的家長帳號）` +
+        (last ? `\n\n注意：${last.at.replace('T', ' ').slice(0, 16)} 已經寄過一次（${last.people} 位團員）` : '');
+      if (!window.confirm(msg)) return;
+      setBusy(btn, true, '寄送中…');
+      api('sendEventConfirmation', id, idToken)
+        .then(res => {
+          toast(`已寄出確認信給 ${res.people} 位團員（共 ${res.sent} 個信箱）`);
+          if (res.failed) toast(`⚠ 有 ${res.failed} 封沒有寄出，可能是今天的寄信額度用完了`, true);
+          loadEvents();
+        })
+        .catch(err => toast(errMsg(err), true))
+        .finally(() => setBusy(btn, false));
     }
 
     function editEvent(id) {
