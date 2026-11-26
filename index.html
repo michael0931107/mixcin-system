@@ -587,6 +587,7 @@
       <ul class="nav mx-tabs" id="mainTab" role="tablist">
         <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-home" data-bs-toggle="tab" type="button"><i class="bi bi-grid-1x2-fill"></i>布告欄</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-tasks" data-bs-toggle="tab" type="button"><i class="bi bi-flag-fill"></i>任務</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-booking" data-bs-toggle="tab" type="button"><i class="bi bi-calendar-check-fill"></i>課程預約</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button" id="calTabBtn"><i class="bi bi-calendar3"></i>活動日曆</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-family" data-bs-toggle="tab" type="button"><i class="bi bi-people-fill"></i>大家庭</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-forum" data-bs-toggle="tab" type="button"><i class="bi bi-chat-square-text-fill"></i>討論區</button></li>
@@ -681,6 +682,55 @@
         </div>
       </div>
 
+      <!-- 課程預約（FitBook） -->
+      <div class="tab-pane fade" id="tab-booking">
+        <div class="sec-head">
+          <div class="sec-no">約</div>
+          <div>
+            <div class="eyebrow">Class Booking</div>
+            <h2 class="sec-title">課程預約</h2>
+            <div class="sec-sub">常態課在 FitBook 預約，點下方按鈕會直接開啟 FitBook。</div>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="mx-card-dark p-4 h-100">
+              <div class="eyebrow" style="color:var(--mx-gold)">FitBook · MIXCIN 雙星館</div>
+              <h3 class="fw-bold mt-1 mb-2" style="color:#fff">預約常態課</h3>
+              <div class="mb-3" style="color:var(--mx-mist)">選好課程後用你的團員課卡預約，上課記得在現場<b style="color:#fff">簽到</b>，才會累積積分（每堂 +1）。</div>
+              <a class="btn btn-mixcin btn-lg px-4" href="https://www.fit-book.com.tw/mixcin/352" target="_blank" rel="noopener"><i class="bi bi-calendar-check me-2"></i>前往 FitBook 預約課程</a>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <a class="btn btn-line btn-sm" style="background:#fff" href="https://www.fit-book.com.tw/mixcin/member/reservation/352" target="_blank" rel="noopener"><i class="bi bi-list-check me-1"></i>我的預約</a>
+                <a class="btn btn-line btn-sm" style="background:#fff" href="https://www.fit-book.com.tw/mixcin/teacher/352" target="_blank" rel="noopener"><i class="bi bi-person-video3 me-1"></i>師資陣容</a>
+                <a class="btn btn-line btn-sm" style="background:#fff" href="https://www.fit-book.com.tw/mixcin/plan/352" target="_blank" rel="noopener"><i class="bi bi-ticket-perforated me-1"></i>課卡方案</a>
+                <a class="btn btn-line btn-sm" style="background:#fff" href="https://www.fit-book.com.tw/mixcin/member/login/352" target="_blank" rel="noopener"><i class="bi bi-box-arrow-in-right me-1"></i>FitBook 登入</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="mx-card p-4 mb-3">
+              <div class="board-head"><span><i class="bi bi-line" style="color:#06C755"></i>用 LINE 開啟</span></div>
+              <div class="small mb-2" style="color:var(--mx-muted)">已經在 MIXCIN 官方 LINE 綁定 FitBook 的話，可以直接用 LINE 查課卡、簽到。</div>
+              <div class="d-grid gap-2">
+                <a class="btn btn-line btn-sm text-start" href="https://liff.line.me/2006562083-bExArOrJ?id=352&target=HOME" target="_blank" rel="noopener"><i class="bi bi-calendar-event me-2"></i>課程預約</a>
+                <a class="btn btn-line btn-sm text-start" href="https://liff.line.me/2006562083-bExArOrJ?id=352&target=RESERVATION" target="_blank" rel="noopener"><i class="bi bi-search me-2"></i>我的預約查詢</a>
+                <a class="btn btn-line btn-sm text-start" href="https://liff.line.me/2006562083-bExArOrJ?id=352&target=CARD" target="_blank" rel="noopener"><i class="bi bi-credit-card me-2"></i>我的課卡（剩餘堂數）</a>
+                <a class="btn btn-line btn-sm text-start" href="https://liff.line.me/2006562083-bExArOrJ?id=352&target=SIGN" target="_blank" rel="noopener"><i class="bi bi-person-check me-2"></i>簽到打卡（僅當日預約的課）</a>
+              </div>
+            </div>
+            <div class="mx-card p-4">
+              <div class="board-head"><span><i class="bi bi-stars" style="color:var(--mx-gold)"></i>上課積分怎麼算</span></div>
+              <ul class="small mb-0 ps-3" style="color:var(--mx-slate);line-height:1.9">
+                <li>用以下課卡上課並<b>簽到</b>，每堂 +1 分：<span id="bookingCards" class="fw-bold">—</span></li>
+                <li>一晚上三堂就是 +3，沒簽到不算分。</li>
+                <li>積分由工作人員每週從 FitBook 匯入，可在「我的檔案」查看明細。</li>
+                <li>累積的積分可以到「積分商店」兌換課程或商品。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 活動日曆 + 報名 -->
       <div class="tab-pane fade" id="tab-calendar">
         <div class="sec-head">
@@ -696,6 +746,7 @@
             <div class="legend">
               <span><i style="background:#E8475A"></i>商業演出</span>
               <span><i style="background:#2A3038"></i>街舞賽事</span>
+              <span><i style="background:#C9A227"></i>活動</span>
               <span><i style="background:#9AA1AA"></i>其他</span>
               <span><i style="background:#C9A227"></i>彩排 / 排練</span>
             </div>
@@ -2123,6 +2174,8 @@
           document.getElementById('homeUnread').innerText = m ? h.unreadMessages : '—';
           document.getElementById('homeRank').innerHTML = m && m.rank ? rankBadge(m.rank) : '<span style="font-size:15px;color:var(--mx-silver)">累積中</span>';
           setDmBadge(m ? h.unreadMessages : 0);
+          const bc = document.getElementById('bookingCards');
+          if (bc) bc.textContent = (h.scoringCards || []).length ? h.scoringCards.join('、') : '（工作人員設定中）';
           document.getElementById('consentAlert').classList.toggle('d-none', !h.pendingConsent);
 
           renderMyRehearsals(h.myRehearsals || []);
