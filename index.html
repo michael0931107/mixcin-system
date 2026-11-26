@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <title>MIXCIN 活動管理與團員系統</title>
+  <title>MIXCIN 競演團 | MIXCIN Rep Co.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#2A3038">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -485,7 +485,7 @@
       <div class="topbar-divider d-none d-md-block"></div>
       <div class="d-none d-md-block">
         <div class="eyebrow" style="font-size:10px;">Dance Academy</div>
-        <div class="topbar-title">競演團活動管理系統</div>
+        <div class="topbar-title">MIXCIN 競演團 <small style="font-size:11px;letter-spacing:1px;color:var(--mx-muted);font-weight:500">MIXCIN Rep Co.</small></div>
       </div>
     </div>
     <div class="d-flex align-items-center gap-2">
@@ -511,6 +511,7 @@
       <div class="gate-step" id="gateLogin">
         <span class="hero-badge">MEMBERS ONLY</span>
         <h1>MIXCIN <span style="color:var(--mx-red)">競演團</span> 系統</h1>
+        <div class="small mb-2" style="letter-spacing:1.5px;color:var(--mx-muted)">MIXCIN ACADEMY REPERTORY COMPANY</div>
         <div class="lead-text">本系統僅限 MIXCIN 團員、家長與工作人員使用。請先以 Google 帳號登入。</div>
         <div class="notice notice-red mb-3 d-none" id="gateInApp">
           <i class="bi bi-phone"></i>
@@ -1282,7 +1283,18 @@
     };
     const GOOGLE_CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID.trim();
 
-    const ALL_TEAMS = ['U12', 'U15', 'U18', 'KPOP', '啦啦團', '國際舞者團', '進修團', '尚未確定 / 籌備中'];
+    const ALL_TEAMS = DIVISIONS.reduce((a, d) => a.concat(d.units), []).concat(['尚未確定 / 籌備中']);
+    // 下拉選單文字：中文為主，後面接英文縮寫
+    const groupText = t => GROUP_ABBR[t] ? `${t}・${GROUP_ABBR[t]}` : t;
+    // 頁面上的標籤：英文縮寫用小字
+    const groupHtml = t => GROUP_ABBR[t] ? `${esc(t)} <small style="opacity:.6;font-weight:500;letter-spacing:.5px">${esc(GROUP_ABBR[t])}</small>` : esc(t);
+    // 依部門分組的下拉選項
+    function groupOptions(extra, selected) {
+      const opt = t => `<option value="${esc(t)}" ${t === selected ? 'selected' : ''}>${esc(groupText(t))}</option>`;
+      return DIVISIONS.map(d => d.units.length > 1
+        ? `<optgroup label="${esc(d.name)} ${esc(d.abbr)}">${d.units.map(opt).join('')}</optgroup>`
+        : opt(d.units[0])).join('') + (extra || []).map(opt).join('');
+    }
     const MEMBER_TEAMS = ALL_TEAMS.filter(t => t !== '尚未確定 / 籌備中');
     const ROOM_OPTIONS = [
       ['SHUANGXING_BIG', '雙星館 大教室'], ['SHUANGXING_SMALL', '雙星館 小教室'], ['SHUANGXING_ALL', '雙星館 全開（大＋小）'],
@@ -1419,8 +1431,8 @@
     }
 
     function fillTeamSelect(sel, teams, placeholder) {
-      sel.innerHTML = (placeholder ? `<option value="">${esc(placeholder)}</option>` : '') +
-        teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+      const extra = teams.filter(t => !GROUP_ABBR[t]);
+      sel.innerHTML = (placeholder ? `<option value="">${esc(placeholder)}</option>` : '') + groupOptions(extra);
     }
 
     // ==========================================
@@ -1897,7 +1909,7 @@
       document.getElementById('profileName').innerText = p.name || '—';
       document.getElementById('profileAvatar').innerHTML = p.avatar ? `<img src="${p.avatar.startsWith('data:image/') ? p.avatar : ''}" alt="">` : '<i class="bi bi-person-fill"></i>';
       const tags = [];
-      if (p.team) tags.push(`<span class="tag tag-red">${esc(p.team)}</span>`);
+      if (p.team) tags.push(`<span class="tag tag-red">${groupHtml(p.team)}</span>`);
       if (p.title) tags.push(`<span class="tag tag-gray">${esc(p.title)}</span>`);
       if (p.rank) tags.push(rankBadge(p.rank));
       if (p.age !== '' && p.age !== undefined) tags.push(`<span class="tag tag-line">${esc(p.age)} 歲</span>`);
@@ -2275,7 +2287,7 @@
               <div class="post-meta">${avatarHtml(p.avatar, p.author)}
                 <div class="flex-grow-1"><span class="who">${esc(p.author)}</span>
                   ${p.tag ? `<span class="tag ${p.tag === '工作人員' ? 'tag-red' : 'tag-gray'} ms-1">${esc(p.tag)}</span>` : ''}
-                  ${p.team ? `<span class="small ms-1" style="color:var(--mx-muted)">${esc(p.team)}</span>` : ''}
+                  ${p.team ? `<span class="small ms-1" style="color:var(--mx-muted)">${groupHtml(p.team)}</span>` : ''}
                   <div class="when">${fmtWhen(p.createdAt)}</div></div>
                 ${p.canDelete ? `<button class="btn btn-sm btn-line" onclick="removePost('${esc(p.id)}')"><i class="bi bi-trash"></i></button>` : ''}
               </div>
@@ -2476,7 +2488,7 @@
           }
           const done = list.filter(r => r.accounts.length).length;
           tbody.innerHTML = list.map(r => `
-            <tr><td class="fw-bold">${esc(r.name)}</td><td>${esc(r.birthday)}</td><td>${esc(r.team)}</td>
+            <tr><td class="fw-bold">${esc(r.name)}</td><td>${esc(r.birthday)}</td><td>${groupHtml(r.team)}</td>
               <td>${r.studentNo ? esc(r.studentNo) : '<span style="color:var(--mx-silver)">—</span>'}</td>
               <td>${r.accounts.length ? r.accounts.map(a => `<div class="small">${esc(a)}</div>`).join('') : '<span class="tag tag-soft">尚未註冊</span>'}</td></tr>`).join('') +
             `<tr><td colspan="5" class="small" style="color:var(--mx-muted)">共 ${list.length} 位，已註冊 ${done} 位</td></tr>`;
@@ -2720,7 +2732,7 @@
             <div class="col-md-4 mb-3">
               <label class="form-label">演出組別</label>
               <select class="form-select" name="teams">
-                ${ALL_TEAMS.slice().reverse().map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}
+                ${groupOptions([])}<option value="尚未確定 / 籌備中" selected>尚未確定 / 籌備中</option>
               </select>
             </div>
             <div class="col-md-8 mb-3">
@@ -2751,11 +2763,14 @@
             </div>
           </div>`;
       } else if (cat === '街舞賽事') {
-        const checks = ALL_TEAMS.map((t, i) => `
+        let ci = 0;
+        const chk = t => `
           <div class="form-check form-check-inline my-1">
-            <input class="form-check-input team-check" type="checkbox" value="${esc(t)}" id="chk_${i}" onchange="onBattleTeamSelect()">
-            <label class="form-check-label fw-bold" for="chk_${i}" style="color:var(--mx-ink)">${esc(t)}</label>
-          </div>`).join('');
+            <input class="form-check-input team-check" type="checkbox" value="${esc(t)}" id="chk_${ci}" onchange="onBattleTeamSelect()">
+            <label class="form-check-label fw-bold" for="chk_${ci++}" style="color:var(--mx-ink)">${groupHtml(t)}</label>
+          </div>`;
+        const checks = DIVISIONS.map(d => `
+          <div class="mb-1"><span class="small fw-bold" style="color:var(--mx-red);letter-spacing:1px">${esc(d.name)} <span style="opacity:.6">${esc(d.abbr)}</span></span><br>${d.units.map(chk).join('')}</div>`).join('') + chk('尚未確定 / 籌備中');
 
         box.innerHTML = `
           <div class="mb-3">
@@ -2856,7 +2871,7 @@
       data = data || {};
       const id = 'res_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
       const teams = ALL_TEAMS.filter(t => t !== '尚未確定 / 籌備中').concat(['個人代表']);
-      const opt = teams.map(t => `<option value="${esc(t)}" ${data.team === t ? 'selected' : ''}>${esc(t)}</option>`).join('');
+      const opt = teams.map(t => `<option value="${esc(t)}" ${data.team === t ? 'selected' : ''}>${esc(groupText(t))}</option>`).join('');
       const st = ['待撥款', '已入帳', '已發放團員', '無獎金'].map(s => `<option value="${s}" ${data.status === s ? 'selected' : ''}>${s}</option>`).join('');
 
       document.getElementById('battleResultsContainer').insertAdjacentHTML('beforeend', `
@@ -2911,7 +2926,7 @@
           teamHtml = '<span class="tag tag-line">未定 / 籌備中</span>';
         } else {
           teamHtml = `<details class="team-details-dropdown">
-            <summary><i class="bi bi-people-fill me-1"></i>${esc(teamList[0])}${teamList.length > 1 ? ' 等 ' + teamList.length + ' 隊' : ''} ▾</summary>
+            <summary><i class="bi bi-people-fill me-1"></i>${groupHtml(teamList[0])}${teamList.length > 1 ? ' 等 ' + teamList.length + ' 組' : ''} ▾</summary>
             <div class="team-dropdown-content">
               <div class="fw-bold pb-1 mb-1" style="border-bottom:1px solid var(--mx-sand)">參賽組別（${teamList.length} 組）</div>
               <div class="fw-bold mb-2">${esc(e.teams)}</div>
