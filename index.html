@@ -1028,6 +1028,7 @@
                   <div class="col-md-3 mb-3">
                     <label class="form-label">活動類別</label>
                     <select class="form-select" id="eventCategory" name="category" onchange="renderCategoryFields()" required>
+                      <option value="活動">活動</option>
                       <option value="商業演出">商業演出</option>
                       <option value="街舞賽事">街舞賽事</option>
                       <option value="其他">其他</option>
@@ -1101,7 +1102,11 @@
                 <div class="eyebrow">Event Tracker</div>
                 <h4 class="fw-bold m-0">活動總表與進度追蹤</h4>
               </div>
-              <span class="small" style="color:var(--mx-muted)">依日期排序 · 點「修正」載入上方表單</span>
+              <span class="small" style="color:var(--mx-muted)">依日期排序 · 點「修正」載入上方表單 · 結束後按「完結」收進已完結</span>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+              <div class="d-flex flex-wrap gap-1" id="evFilterBar"></div>
+              <input type="search" class="form-control form-control-sm ms-auto" id="evSearch" style="max-width:220px" placeholder="搜尋活動名稱 / 地點" oninput="renderStaffTable(globalEvents)">
             </div>
             <div class="table-responsive">
               <table class="table align-middle mb-0 table-custom">
@@ -1309,8 +1314,8 @@
       ['XIMEN_BIG', '西門館 大教室'], ['XIMEN_SMALL', '西門館 小教室'],
       ['OTHER', '其他地點（自行輸入）']
     ];
-    const CAT_COLOR = { '商業演出': '#E8475A', '街舞賽事': '#2A3038' };
-    const CAT_TAG = { '商業演出': 'tag-red', '街舞賽事': 'tag-ink' };
+    const CAT_COLOR = { '商業演出': '#E8475A', '街舞賽事': '#2A3038', '活動': '#C9A227' };
+    const CAT_TAG = { '商業演出': 'tag-red', '街舞賽事': 'tag-ink', '活動': 'tag-gold' };
 
     let idToken = '';
     let session = { email: '', isStaff: false, role: 'Guest', loginAvailable: false };
@@ -1349,6 +1354,7 @@
       getHome: ['asNo', 'idToken'],
       getEvents: ['idToken'],
       saveEvent: ['eventData', 'idToken'],
+      setEventArchived: ['eventId', 'archived', 'idToken'],
       sendEventConfirmation: ['eventId', 'idToken'],
       getMailStatus: ['idToken'],
       getLinkedMembersForCurrentUser: ['idToken'],
@@ -2905,10 +2911,51 @@
       }
     }
 
-    function renderStaffTable(events) {
+    // 活動總表分類：活動 / 商演 / 比賽 / 其他 / 已完結
+    const EV_FILTERS = [
+      ['all', '進行中全部', e => !isArchived(e)],
+      ['活動', '活動', e => !isArchived(e) && e.category === '活動'],
+      ['商業演出', '商演', e => !isArchived(e) && e.category === '商業演出'],
+      ['街舞賽事', '比賽', e => !isArchived(e) && e.category === '街舞賽事'],
+      ['其他', '其他', e => !isArchived(e) && !['活動', '商業演出', '街舞賽事'].includes(e.category)],
+      ['done', '已完結', e => isArchived(e)]
+    ];
+    let evFilter = 'all';
+    function isArchived(e) { return !!(e.customFields && e.customFields.archived); }
+    function setEvFilter(k) { evFilter = k; renderStaffTable(globalEvents); }
+
+    function renderEvFilterBar(events) {
+      const overdue = events.filter(e => !isArchived(e) && e.date < todayStr()).length;
+      document.getElementById('evFilterBar').innerHTML = EV_FILTERS.map(([k, label, fn]) => {
+        const n = events.filter(fn).length;
+        const on = evFilter === k;
+        return `<button type="button" class="btn btn-sm ${on ? 'btn-mixcin' : 'btn-line'}" style="border-radius:999px" onclick="setEvFilter('${k}')">
+          ${k === 'done' ? '<i class="bi bi-archive me-1"></i>' : ''}${label} <span style="opacity:.7">${n}</span></button>`;
+      }).join('') + (overdue && evFilter !== 'done'
+        ? `<span class="small align-self-center ms-1" style="color:var(--mx-red)"><i class="bi bi-info-circle"></i> 有 ${overdue} 筆已過日期，可按「完結」收起來</span>` : '');
+    }
+
+    function archiveEvent(id, archived, btn) {
+      setBusy(btn, true, archived ? '處理中…' : '移回中…');
+      api('setEventArchived', id, archived, idToken)
+        .then(() => {
+          const ev = globalEvents.find(x => x.eventId === id);
+          if (ev) { ev.customFields = ev.customFields || {}; if (archived) ev.customFields.archived = true; else delete ev.customFields.archived; }
+          toast(archived ? '已移到「已完結」' : '已移回進行中');
+          renderStaffTable(globalEvents);
+        })
+        .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
+    }
+
+    function renderStaffTable(allEvents) {
       const tbody = document.getElementById('eventTableBody');
+      renderEvFilterBar(allEvents);
+      const f = EV_FILTERS.find(x => x[0] === evFilter) || EV_FILTERS[0];
+      const q = (document.getElementById('evSearch').value || '').trim().toLowerCase();
+      let events = allEvents.filter(f[2]).filter(e => !q || (e.title + ' ' + (e.location || '') + ' ' + (e.teams || '')).toLowerCase().includes(q));
+      if (evFilter === 'done') events = events.slice().reverse(); // 已完結：最近的在最上面
       if (!events.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">目前沒有活動紀錄</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">${q ? '找不到符合的活動' : (evFilter === 'done' ? '還沒有已完結的活動' : '這個分類目前沒有活動')}</td></tr>`;
         return;
       }
 
@@ -2944,18 +2991,23 @@
 
         const timeStr = e.time && e.time !== '時間未定' ? e.time : '未定';
         const past = e.date < todayStr();
-        return `<tr style="${past ? 'opacity:.62' : ''}">
+        const archived = isArchived(e);
+        return `<tr style="${past && !archived ? 'opacity:.62' : ''}">
           <td style="white-space:nowrap;">
             <span class="tag ${CAT_TAG[e.category] || 'tag-gray'} me-1">${esc(e.category)}</span>
             <span class="tag ${cf.openForReg === 'no' ? 'tag-line' : 'tag-soft'} me-1">${cf.openForReg === 'no' ? '內部' : '公開'}</span>
             <span class="title-single-line" title="${esc(e.title)}">${esc(e.title)}</span>
             ${(e.rehearsals || []).length ? `<span class="tag tag-gold ms-1"><i class="bi bi-music-note-beamed"></i>彩排 ${e.rehearsals.length}</span>` : ''}
+            ${past && !archived ? '<span class="tag tag-line ms-1">已過日期</span>' : ''}
           </td>
           <td><div class="info-single-line"><b>${esc(e.date)}</b><span class="mx-1" style="color:var(--mx-mist)">|</span>${esc(timeStr)}<span class="mx-1" style="color:var(--mx-mist)">|</span><i class="bi bi-geo-alt" style="color:var(--mx-red)"></i> ${esc(e.location || '地點未定')}</div></td>
           <td>${teamHtml}</td>
           <td style="white-space:nowrap;">${status}</td>
           <td style="text-align:center;white-space:nowrap;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button>
-            ${!past ? `<button class="btn-mini ms-1" onclick="sendConfirmMail('${esc(e.eventId)}', this)" title="依通知對象寄出參加確認信"><i class="bi bi-envelope-check me-1"></i>寄確認信</button>` : ''}
+            ${!past && !archived ? `<button class="btn-mini ms-1" onclick="sendConfirmMail('${esc(e.eventId)}', this)" title="依通知對象寄出參加確認信"><i class="bi bi-envelope-check me-1"></i>寄確認信</button>` : ''}
+            ${archived
+              ? `<button class="btn-mini ms-1" onclick="archiveEvent('${esc(e.eventId)}', false, this)" title="移回進行中"><i class="bi bi-arrow-counterclockwise me-1"></i>移回</button>`
+              : `<button class="btn-mini ms-1" onclick="archiveEvent('${esc(e.eventId)}', true, this)" title="收進已完結"><i class="bi bi-archive me-1"></i>完結</button>`}
             ${(cf.mailLog || []).length ? `<div class="small mt-1" style="color:var(--mx-muted)">已寄 ${esc(cf.mailLog[cf.mailLog.length - 1].at.slice(5, 16).replace('T', ' '))}</div>` : ''}</td>
         </tr>`;
       }).join('');
