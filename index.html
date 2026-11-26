@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>MIXCIN 活動管理與團員系統</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    /* ==========================================
+       MIXCIN 品牌色系（取自品牌簡報）
+       ========================================== */
+    :root {
+      --mx-ink: #1F2429;
+      --mx-charcoal: #2A3038;
+      --mx-slate: #3D424A;
+      --mx-muted: #6B727C;
+      --mx-silver: #9AA1AA;
+      --mx-mist: #B8BDC4;
+      --mx-red: #E8475A;
+      --mx-red-deep: #B3192B;
+      --mx-red-soft: #FCEBED;
+      --mx-paper: #F4F2EF;
+      --mx-sand: #E2DFDA;
+      --mx-card: #FFFFFF;
+      --mx-gold: #C9A227;
+      --mx-bronze: #A8744A;
+      --mx-radius: 12px;
+      --mx-shadow: 0 1px 2px rgba(31, 36, 41, .04), 0 6px 18px -8px rgba(31, 36, 41, .12);
+    }
+
+    body {
+      background: var(--mx-paper);
+      color: var(--mx-ink);
+      font-family: 'Noto Sans TC', system-ui, sans-serif;
+      margin: 0;
+      padding-bottom: 72px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 { color: inherit; }
+    a { color: var(--mx-red); }
+
+    /* 小字距英文眉標 */
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--mx-red);
+    }
+
+    /* ---------- 頂部列 ---------- */
+    .mx-topbar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--mx-sand);
+      padding: 10px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand-logo-img { height: 36px; max-width: 180px; object-fit: contain; }
+    .topbar-divider { width: 1px; height: 28px; background: var(--mx-sand); }
+    .topbar-title { font-size: 14px; font-weight: 700; color: var(--mx-charcoal); line-height: 1.2; }
+
+    .user-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--mx-paper); border: 1px solid var(--mx-sand);
+      border-radius: 999px; padding: 5px 14px;
+      font-size: 13px; color: var(--mx-slate); max-width: 260px;
+    }
+    .user-pill span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .user-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mx-silver); flex: none; }
+    .user-pill.is-in .dot { background: var(--mx-red); }
+    .role-chip {
+      font-size: 11px; font-weight: 700; letter-spacing: .08em;
+      background: var(--mx-charcoal); color: #fff; border-radius: 999px; padding: 3px 10px;
+    }
+    .btn-ghost {
+      background: transparent; border: 1px solid var(--mx-sand); color: var(--mx-slate);
+      border-radius: 999px; font-size: 12px; font-weight: 700; padding: 5px 12px;
+    }
+    .btn-ghost:hover { border-color: var(--mx-red); color: var(--mx-red); }
+
+    /* ---------- 深色主視覺區 ---------- */
+    .mx-hero {
+      background: var(--mx-charcoal);
+      color: #fff;
+      padding: 36px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .mx-hero::after {
+      content: 'MIXCIN';
+      position: absolute; right: -20px; bottom: -40px;
+      font-size: 160px; font-weight: 900; letter-spacing: -4px;
+      color: rgba(255, 255, 255, .035);
+      pointer-events: none; line-height: 1;
+    }
+    .hero-badge {
+      display: inline-block; background: var(--mx-red); color: #fff;
+      font-size: 10.5px; font-weight: 700; letter-spacing: .2em;
+      padding: 4px 10px; border-radius: 3px; margin-bottom: 14px;
+    }
+    .hero-title { font-size: clamp(26px, 4vw, 38px); font-weight: 900; letter-spacing: .02em; margin: 0; color: #fff; }
+    .hero-title em { font-style: normal; color: var(--mx-red); }
+    .hero-sub { color: var(--mx-mist); font-size: 14px; margin: 8px 0 26px; }
+
+    /* 主導覽 */
+    .mx-tabs {
+      display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px;
+      border: none; margin: 0; padding: 0; list-style: none;
+    }
+    .mx-tabs::-webkit-scrollbar { display: none; }
+    .mx-tabs .nav-link {
+      color: var(--mx-mist);
+      background: transparent;
+      border: none;
+      border-radius: 10px 10px 0 0;
+      padding: 13px 20px 14px;
+      font-weight: 700; font-size: 14.5px; white-space: nowrap;
+      position: relative;
+    }
+    .mx-tabs .nav-link .tab-no { font-size: 11px; color: var(--mx-silver); margin-right: 8px; letter-spacing: .1em; }
+    .mx-tabs .nav-link:hover { color: #fff; }
+    .mx-tabs .nav-link.active { background: var(--mx-paper); color: var(--mx-ink); }
+    .mx-tabs .nav-link.active .tab-no { color: var(--mx-red); }
+    .mx-tabs .nav-link.active::before {
+      content: ''; position: absolute; left: 20px; right: 20px; top: 0; height: 3px;
+      background: var(--mx-red); border-radius: 0 0 3px 3px;
+    }
+
+    /* ---------- 區塊標題（大紅編號） ---------- */
+    .sec-head { display: flex; align-items: flex-start; gap: 16px; margin: 30px 0 20px; }
+    .sec-no { font-size: 42px; font-weight: 900; color: var(--mx-red); line-height: .95; letter-spacing: -1px; }
+    .sec-title { font-size: 24px; font-weight: 900; margin: 4px 0 2px; color: var(--mx-ink); }
+    .sec-sub { font-size: 13px; color: var(--mx-muted); }
+
+    /* ---------- 卡片 ---------- */
+    .mx-card {
+      background: var(--mx-card);
+      border: 1px solid var(--mx-sand);
+      border-radius: var(--mx-radius);
+      box-shadow: var(--mx-shadow);
+    }
+    .mx-card-dark {
+      background: var(--mx-charcoal);
+      color: #fff;
+      border-radius: var(--mx-radius);
+    }
+    .panel-title { font-size: 15px; font-weight: 900; color: var(--mx-ink); margin-bottom: 14px; }
+    .panel-title i { color: var(--mx-red); }
+
+    /* ---------- 表單 ---------- */
+    label, .form-label { color: var(--mx-slate); font-size: 13.5px; font-weight: 700; margin-bottom: 6px; }
+    .form-control, .form-select {
+      background-color: #FFFFFF;
+      border: 1.5px solid var(--mx-sand);
+      color: var(--mx-ink);
+      font-size: 15px; border-radius: 8px; padding: 10px 14px; font-weight: 500;
+    }
+    .form-control::placeholder { color: var(--mx-silver); font-weight: 400; }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--mx-red);
+      box-shadow: 0 0 0 4px rgba(232, 71, 90, .14);
+    }
+    .form-control[readonly] { background: var(--mx-paper); }
+    .form-check-input:checked { background-color: var(--mx-red); border-color: var(--mx-red); }
+    fieldset:disabled { opacity: .55; }
+
+    /* ---------- 按鈕 ---------- */
+    .btn-mixcin {
+      background: var(--mx-red); color: #fff; border: none;
+      font-weight: 700; font-size: 15px; border-radius: 8px; padding: 11px 22px;
+      transition: background .15s, transform .15s;
+    }
+    .btn-mixcin:hover, .btn-mixcin:focus { background: var(--mx-red-deep); color: #fff; }
+    .btn-mixcin:active { transform: translateY(1px); }
+    .btn-mixcin:disabled { background: var(--mx-silver); }
+    .btn-ink {
+      background: var(--mx-charcoal); color: #fff; border: none;
+      font-weight: 700; border-radius: 8px; padding: 9px 18px;
+    }
+    .btn-ink:hover { background: var(--mx-ink); color: #fff; }
+    .btn-line {
+      background: #fff; color: var(--mx-slate); border: 1.5px solid var(--mx-sand);
+      font-weight: 700; border-radius: 8px; padding: 9px 18px;
+    }
+    .btn-line:hover { border-color: var(--mx-red); color: var(--mx-red); }
+    .btn-mini {
+      background: #fff; color: var(--mx-red); border: 1.5px solid var(--mx-red);
+      font-weight: 700; font-size: 12.5px; border-radius: 6px; padding: 4px 10px;
+    }
+    .btn-mini:hover { background: var(--mx-red); color: #fff; }
+
+    /* ---------- 標籤 ---------- */
+    .tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 3px 8px;
+      white-space: nowrap; line-height: 1.3;
+    }
+    .tag-red { background: var(--mx-red); color: #fff; }
+    .tag-ink { background: var(--mx-charcoal); color: #fff; }
+    .tag-gray { background: var(--mx-sand); color: var(--mx-slate); }
+    .tag-soft { background: var(--mx-red-soft); color: var(--mx-red-deep); }
+    .tag-gold { background: #F6EFD6; color: #7A5F0E; border: 1px solid #E5D49A; }
+    .tag-line { background: #fff; color: var(--mx-muted); border: 1px solid var(--mx-sand); }
+
+    /* ---------- 追蹤區塊 ---------- */
+    .tracker-box {
+      background: var(--mx-paper);
+      border-left: 4px solid var(--mx-red);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .tracker-box h6 { font-weight: 900; color: var(--mx-ink); }
+    .tracker-box h6 i { color: var(--mx-red); }
+    .result-row {
+      background: #fff; border: 1px solid var(--mx-sand); border-radius: 8px;
+      padding: 12px 14px; margin-bottom: 10px;
+    }
+
+    .notice {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: #fff; border: 1px solid var(--mx-sand); border-left: 4px solid var(--mx-charcoal);
+      border-radius: 8px; padding: 14px 16px; font-size: 14px; color: var(--mx-slate);
+    }
+    .notice i { color: var(--mx-red); font-size: 18px; line-height: 1.2; }
+    .notice-red { border-left-color: var(--mx-red); }
+
+    /* ---------- 學號卡（深色） ---------- */
+    .student-badge-card {
+      background: var(--mx-charcoal); color: #fff;
+      border-radius: var(--mx-radius); padding: 22px 24px;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .student-no-text { font-size: 2.2rem; font-weight: 900; color: var(--mx-red); letter-spacing: 3px; line-height: 1.1; }
+    .student-badge-card .hint { font-size: 12px; color: var(--mx-mist); max-width: 300px; }
+
+    /* ---------- 成績查詢結果 ---------- */
+    .score-hero {
+      background: var(--mx-charcoal); color: #fff; border-radius: 10px; padding: 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .score-big { font-size: 44px; font-weight: 900; color: var(--mx-red); line-height: 1; }
+
+    /* ---------- 表格 ---------- */
+    .table-custom { min-width: 980px; width: 100%; }
+    .table-custom th {
+      white-space: nowrap; font-weight: 700; font-size: 12px; letter-spacing: .12em;
+      background: var(--mx-paper); color: var(--mx-muted);
+      border-bottom: 1px solid var(--mx-sand); padding: 12px 14px;
+    }
+    .table-custom td { padding: 12px 14px; vertical-align: middle; font-size: 14px; border-bottom: 1px solid #EEEBE7; }
+    .table-custom tr:hover td { background: #FBFAF8; }
+    .title-single-line {
+      max-width: 230px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      display: inline-block; vertical-align: middle; font-weight: 700; color: var(--mx-ink);
+    }
+    .info-single-line { white-space: nowrap; font-size: 13.5px; color: var(--mx-slate); }
+
+    .team-details-dropdown { position: relative; display: inline-block; }
+    .team-details-dropdown summary {
+      cursor: pointer; list-style: none; font-weight: 700; color: var(--mx-slate);
+      background: var(--mx-paper); border: 1px solid var(--mx-sand); border-radius: 6px;
+      padding: 4px 10px; font-size: 12.5px; white-space: nowrap; user-select: none;
+    }
+    .team-details-dropdown summary::-webkit-details-marker { display: none; }
+    .team-dropdown-content {
+      position: absolute; top: 100%; left: 0; z-index: 1050;
+      min-width: 260px; max-width: 330px; background: #fff;
+      border: 1px solid var(--mx-sand); border-radius: 10px; padding: 12px 14px; margin-top: 6px;
+      box-shadow: 0 12px 28px -6px rgba(31, 36, 41, .2); font-size: 13px; line-height: 1.55;
+    }
+
+    /* ---------- 圖例 ---------- */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--mx-muted); margin-bottom: 12px; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+    /* ---------- FullCalendar ---------- */
+    .fc { --fc-border-color: var(--mx-sand); --fc-today-bg-color: var(--mx-red-soft); color: var(--mx-ink); }
+    .fc .fc-toolbar-title { font-size: 20px; font-weight: 900; }
+    .fc th, .fc .fc-col-header-cell a {
+      color: var(--mx-muted) !important; text-decoration: none !important;
+      font-size: 12.5px; font-weight: 700; letter-spacing: .1em;
+      background: var(--mx-paper); padding: 10px 0 !important;
+    }
+    .fc .fc-daygrid-day-number { color: var(--mx-slate) !important; font-weight: 700; padding: 6px 8px; text-decoration: none !important; }
+    .fc .fc-daygrid-day-number:hover { color: var(--mx-red) !important; }
+    .fc .fc-day-today .fc-daygrid-day-number {
+      background: var(--mx-red); color: #fff !important; border-radius: 50%;
+      min-width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; margin: 4px;
+    }
+    .fc-event {
+      white-space: normal !important; font-size: 12.5px !important; line-height: 1.35 !important;
+      padding: 3px 6px !important; border-radius: 4px !important; border: none !important; cursor: pointer;
+    }
+    .fc .fc-daygrid-event-dot { display: none; }
+    .fc .fc-button {
+      background: #fff !important; border: 1.5px solid var(--mx-sand) !important;
+      color: var(--mx-slate) !important; font-weight: 700; border-radius: 6px !important;
+      box-shadow: none !important; font-size: 13px; padding: 6px 12px;
+    }
+    .fc .fc-button:hover { border-color: var(--mx-red) !important; color: var(--mx-red) !important; }
+    .fc .fc-button-active, .fc .fc-button-active:hover {
+      background: var(--mx-charcoal) !important; border-color: var(--mx-charcoal) !important; color: #fff !important;
+    }
+
+    /* ---------- 彈窗 ---------- */
+    .modal-content { border: none; border-radius: 14px; overflow: hidden; }
+    .modal-head-dark { background: var(--mx-charcoal); color: #fff; padding: 20px 22px; }
+    .modal-head-dark .btn-close { filter: invert(1); opacity: .7; }
+    .detail-row { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #EEEBE7; font-size: 14px; }
+    .detail-row .k { width: 76px; flex: none; color: var(--mx-muted); font-weight: 700; font-size: 12.5px; letter-spacing: .06em; padding-top: 1px; }
+
+    /* ---------- 提示訊息 ---------- */
+    #toastBox { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .mx-toast {
+      background: var(--mx-charcoal); color: #fff; padding: 12px 18px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px -8px rgba(0, 0, 0, .35);
+      display: flex; gap: 10px; align-items: center; max-width: 90vw;
+      animation: toastIn .2s ease-out;
+    }
+    .mx-toast.err { background: var(--mx-red-deep); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .mx-footer { text-align: center; font-size: 11px; letter-spacing: .25em; color: var(--mx-silver); margin-top: 48px; }
+
+    @media (max-width: 576px) {
+      .mx-topbar { padding: 10px 14px; }
+      .sec-no { font-size: 34px; }
+      .sec-title { font-size: 20px; }
+      .mx-tabs .nav-link { padding: 12px 14px; font-size: 14px; }
+      .student-no-text { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部列 -->
+  <header class="mx-topbar d-flex justify-content-between align-items-center gap-2">
+    <div class="d-flex align-items-center gap-3">
+      <img src="https://i.meee.com.tw/xyOLC8D.png" alt="MIXCIN" class="brand-logo-img">
+      <div class="topbar-divider d-none d-md-block"></div>
+      <div class="d-none d-md-block">
+        <div class="eyebrow" style="font-size:10px;">Dance Academy</div>
+        <div class="topbar-title">競演團活動管理系統</div>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span id="roleChip" class="role-chip d-none"></span>
+      <div class="user-pill d-none d-sm-inline-flex" id="userPill">
+        <span class="dot"></span><span id="userBadge">連線中…</span>
+      </div>
+      <div id="gsiButton"></div>
+      <button type="button" class="btn-ghost d-none" id="btnSignOut" onclick="signOut()">
+        <i class="bi bi-box-arrow-right me-1"></i>登出
+      </button>
+    </div>
+  </header>
+
+  <!-- 深色主視覺 + 導覽 -->
+  <section class="mx-hero">
+    <div class="container-xl px-3 px-md-4">
+      <span class="hero-badge">EST. 2013 · TEAM SYSTEM</span>
+      <h1 class="hero-title">MIXCIN <em>競演團</em> 活動管理</h1>
+      <p class="hero-sub">行事曆、活動報名、團員資料與考核查詢，一站完成。</p>
+
+      <ul class="nav mx-tabs" id="mainTab" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button"><span class="tab-no">01</span>活動行事曆</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-register" data-bs-toggle="tab" type="button"><span class="tab-no">02</span>活動報名</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-member" data-bs-toggle="tab" type="button"><span class="tab-no">03</span>團員資料</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-eval" data-bs-toggle="tab" type="button"><span class="tab-no">04</span>考核查詢</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-staff" data-bs-toggle="tab" type="button"><span class="tab-no">05</span>員工後台</button></li>
+      </ul>
+    </div>
+  </section>
+
+  <main class="container-xl px-3 px-md-4">
+    <div class="tab-content">
+
+      <!-- 01 活動行事曆 -->
+      <div class="tab-pane fade show active" id="tab-calendar">
+        <div class="sec-head">
+          <div class="sec-no">01</div>
+          <div>
+            <div class="eyebrow">Team Calendar</div>
+            <h2 class="sec-title">團隊行事曆</h2>
+            <div class="sec-sub">點任一日期數字可切換到當天檢視，點活動可看詳細資訊。</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span><i style="background:#E8475A"></i>商業演出</span>
+          <span><i style="background:#2A3038"></i>街舞賽事</span>
+          <span><i style="background:#9AA1AA"></i>其他</span>
+        </div>
+        <div class="mx-card p-3 p-md-4"><div id="calendar"></div></div>
+      </div>
+
+      <!-- 02 活動報名 -->
+      <div class="tab-pane fade" id="tab-register">
+        <div class="sec-head">
+          <div class="sec-no">02</div>
+          <div>
+            <div class="eyebrow">Event Registration</div>
+            <h2 class="sec-title">活動報名登記</h2>
+            <div class="sec-sub">只會顯示開放前台報名、且尚未結束的活動。</div>
+          </div>
+        </div>
+
+        <div class="mx-card p-4" style="max-width: 680px;">
+          <div id="regChildSelectorBox" class="mb-3 d-none">
+            <label class="form-label"><i class="bi bi-people-fill me-1" style="color:var(--mx-red)"></i>您綁定了多位孩子，請選擇要報名的孩子</label>
+            <select class="form-select" id="regChildSelect" onchange="onSelectRegChild()"></select>
+          </div>
+
+          <form id="regForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label">選擇活動</label>
+              <select class="form-select" id="regEventSelect" name="eventId" required>
+                <option value="">載入活動中…</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">所屬團隊</label>
+              <select class="form-select" id="regTeamSelect" name="team" required></select>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">報名者 / 團員本名</label>
+                <input type="text" class="form-control" id="regNameInput" name="name" placeholder="孩子的全名" maxlength="50" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">聯絡電話</label>
+                <input type="tel" class="form-control" id="regPhoneInput" name="phone" placeholder="0912345678" maxlength="20" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">備註</label>
+              <textarea class="form-control" name="notes" rows="3" maxlength="500" placeholder="其他需要說明的事項"></textarea>
+            </div>
+            <button type="submit" class="btn btn-mixcin w-100 py-3"><i class="bi bi-send-check-fill me-1"></i>送出報名</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 03 團員資料 -->
+      <div class="tab-pane fade" id="tab-member">
+        <div class="sec-head">
+          <div class="sec-no">03</div>
+          <div>
+            <div class="eyebrow">Member Profile</div>
+            <h2 class="sec-title">團員資料中心</h2>
+            <div class="sec-sub">孩子與家長都能用各自的 Google 帳號登入，共同維護同一份資料。</div>
+          </div>
+        </div>
+
+        <div style="max-width: 820px;">
+          <div id="memberLoginNotice" class="notice notice-red mb-3 d-none">
+            <i class="bi bi-lock-fill"></i>
+            <div>
+              <div class="fw-bold text-dark mb-1">請先登入 Google 帳號</div>
+              <div id="memberLoginMsg">登入後才能查看與編輯團員資料。</div>
+              <div class="small mt-2" style="color:var(--mx-silver)" id="originHint"></div>
+            </div>
+          </div>
+
+          <div id="parentMultiChildBox" class="mx-card p-3 mb-3 d-none">
+            <label class="form-label"><i class="bi bi-person-hearts me-1" style="color:var(--mx-red)"></i>家長帳號：請選擇要檢視 / 維護的孩子</label>
+            <select class="form-select" id="parentChildSelect" onchange="onSelectParentChild()"></select>
+          </div>
+
+          <div id="adminMemberSwitchBox" class="mx-card p-3 mb-3 d-none">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label m-0"><i class="bi bi-shield-lock-fill me-1" style="color:var(--mx-red)"></i>管理者：切換查看 / 校正團員資料</label>
+              <button type="button" class="btn-mini" onclick="startNewMember()"><i class="bi bi-plus-lg me-1"></i>新增團員</button>
+            </div>
+            <select class="form-select" id="adminMemberSelect" onchange="onAdminSelectMember()"></select>
+          </div>
+
+          <div class="student-badge-card mb-3">
+            <div>
+              <div class="eyebrow mb-1" style="color:var(--mx-mist)">Student No.</div>
+              <div class="student-no-text" id="displayStudentNo">—</div>
+            </div>
+            <div class="hint">孩子與家長登入都綁定同一個學號，可用來查詢考核成績。</div>
+          </div>
+
+          <form id="memberForm" class="mx-card p-4" novalidate>
+            <fieldset id="memberFieldset">
+              <input type="hidden" name="studentNo" id="memberStudentNoHidden">
+
+              <div class="panel-title"><i class="bi bi-envelope-check-fill me-1"></i>Google 帳號綁定</div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">團員（孩子）Google Email</label>
+                  <input type="email" class="form-control" name="email" id="memberChildEmail" placeholder="孩子的 Google 帳號" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">家長 Google Email</label>
+                  <input type="email" class="form-control" name="parentEmail" id="memberParentEmail" placeholder="家長常用的 Gmail">
+                </div>
+              </div>
+
+              <hr style="border-color:var(--mx-sand); opacity:1;">
+              <div class="panel-title"><i class="bi bi-person-vcard-fill me-1"></i>基本資料</div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">所屬團隊</label>
+                  <select class="form-select" name="team" id="memberTeamSelect" required></select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">團員本名</label>
+                  <input type="text" class="form-control" name="name" maxlength="50" placeholder="請輸入姓名" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">出生年月日</label>
+                  <input type="date" class="form-control" name="birthday" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">身分證字號（保險用）</label>
+                  <input type="text" class="form-control text-uppercase" name="idNumber" placeholder="A123456789" maxlength="10">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">聯絡電話（家長手機）</label>
+                  <input type="tel" class="form-control" name="phone" placeholder="0912345678" maxlength="20" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">家長姓名與稱謂</label>
+                  <input type="text" class="form-control" name="parentContact" maxlength="50" placeholder="例如：林媽媽" required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">通訊地址</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="memberAddress" name="address" maxlength="200" placeholder="含縣市區街路巷弄號" required>
+                  <button class="btn btn-ink" type="button" onclick="parseZipCode3()"><i class="bi bi-geo-alt-fill me-1"></i>帶入郵遞區號</button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">郵遞區號</label>
+                  <input type="text" class="form-control text-center fw-bold" id="memberZip" name="zipCode" maxlength="6" placeholder="自動帶入" readonly>
+                </div>
+              </div>
+
+              <div class="tracker-box mt-2">
+                <h6 class="mb-3"><i class="bi bi-award-fill me-1"></i>考核成績與教練評語</h6>
+                <div class="row">
+                  <div class="col-md-4 mb-2">
+                    <label class="form-label">考核成績 / 等級</label>
+                    <input type="text" class="form-control" name="evalScore" id="memberEvalScore" maxlength="50" placeholder="如：A+ / 92 分" readonly>
+                  </div>
+                  <div class="col-md-8 mb-2">
+                    <label class="form-label">導師評語與建議</label>
+                    <textarea class="form-control" name="evalNotes" id="memberEvalNotes" rows="2" maxlength="2000" placeholder="教練評語…" readonly></textarea>
+                  </div>
+                </div>
+                <div id="evalEditNotice" class="small mt-1" style="color:var(--mx-muted)">團員與家長僅供查閱，成績由管理者登記。</div>
+              </div>
+
+              <button type="submit" class="btn btn-mixcin w-100 py-3 mt-2"><i class="bi bi-check-circle-fill me-1"></i>儲存並更新資料</button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+
+      <!-- 04 考核查詢 -->
+      <div class="tab-pane fade" id="tab-eval">
+        <div class="sec-head">
+          <div class="sec-no">04</div>
+          <div>
+            <div class="eyebrow">Score Lookup</div>
+            <h2 class="sec-title">考核成績查詢</h2>
+            <div class="sec-sub">輸入專屬學號與團員生日，即可查看考核結果與教練評語。</div>
+          </div>
+        </div>
+
+        <div class="mx-card p-4" style="max-width: 680px;">
+          <div class="row g-2 align-items-end">
+            <div class="col-sm-6">
+              <label class="form-label">專屬學號</label>
+              <input type="text" class="form-control form-control-lg text-uppercase fw-bold" id="queryStudentNoInput" placeholder="MX261234" style="letter-spacing:2px;" maxlength="12">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">團員生日</label>
+              <input type="date" class="form-control form-control-lg" id="queryBirthdayInput">
+            </div>
+            <div class="col-12 mt-3">
+              <button class="btn btn-mixcin w-100 py-3" type="button" onclick="doQueryScore()"><i class="bi bi-search me-1"></i>查詢成績</button>
+            </div>
+          </div>
+
+          <div id="queryResultCard" class="mt-4 d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <div class="eyebrow mb-1">Result</div>
+                <h5 class="fw-bold m-0" id="resStudentName"></h5>
+              </div>
+              <span class="tag tag-ink" id="resStudentTeam"></span>
+            </div>
+            <div class="score-hero mb-3">
+              <div>
+                <div class="small" style="color:var(--mx-mist)">考核評定</div>
+                <div class="score-big" id="resScore">--</div>
+              </div>
+              <div class="text-end">
+                <div class="small" style="color:var(--mx-mist)">學號</div>
+                <div class="fw-bold" id="resStudentNo"></div>
+              </div>
+            </div>
+            <div class="tracker-box mb-0">
+              <h6 class="mb-2"><i class="bi bi-chat-quote-fill me-1"></i>導師評語與建議</h6>
+              <div id="resNotes" style="white-space:pre-wrap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 員工後台 -->
+      <div class="tab-pane fade" id="tab-staff">
+        <div class="sec-head">
+          <div class="sec-no">05</div>
+          <div>
+            <div class="eyebrow">Staff Console</div>
+            <h2 class="sec-title">員工後台管理</h2>
+            <div class="sec-sub">活動登記、請款與賽事成績追蹤。</div>
+          </div>
+        </div>
+
+        <div id="staffLockBox" class="mx-card-dark p-5 text-center d-none">
+          <i class="bi bi-shield-lock" style="font-size:56px; color:var(--mx-red)"></i>
+          <h3 class="fw-bold mt-3">權限未開通</h3>
+          <p class="mt-2 mb-0" style="color:var(--mx-mist)" id="staffLockMsg"></p>
+        </div>
+
+        <div id="staffWorkArea" class="d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <span class="tag tag-line" style="font-size:13px; padding:6px 12px;"><i class="bi bi-person-gear"></i>目前身分：<b id="roleBadge" style="color:var(--mx-red)">Staff</b></span>
+            <button class="btn btn-ink" type="button" data-bs-toggle="collapse" data-bs-target="#formCollapseArea">
+              <i class="bi bi-plus-circle me-1"></i>登記新活動 / 收合表單
+            </button>
+          </div>
+
+          <div class="collapse show mb-4" id="formCollapseArea">
+            <div class="mx-card p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <div class="eyebrow">Event Editor</div>
+                  <h4 class="fw-bold m-0" id="formTitle">活動登記與追蹤設定</h4>
+                </div>
+                <button type="button" class="btn btn-line btn-sm" onclick="resetStaffForm()">清空表單</button>
+              </div>
+
+              <form id="staffEventForm" novalidate>
+                <input type="hidden" name="eventId" id="editEventId">
+                <div class="row">
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label">活動類別</label>
+                    <select class="form-select" id="eventCategory" name="category" onchange="renderCategoryFields()" required>
+                      <option value="商業演出">商業演出</option>
+                      <option value="街舞賽事">街舞賽事</option>
+                      <option value="其他">其他</option>
+                    </select>
+                  </div>
+                  <div class="col-md-5 mb-3">
+                    <label class="form-label">活動名稱</label>
+                    <input type="text" class="form-control" name="title" id="eventTitleInput" maxlength="120" placeholder="例如：新光盃街舞大賽" required>
+                  </div>
+                  <div class="col-md-2 mb-3">
+                    <label class="form-label">日期</label>
+                    <input type="date" class="form-control" name="date" required>
+                  </div>
+                  <div class="col-md-2 mb-3">
+                    <label class="form-label">時間（選填）</label>
+                    <input type="text" class="form-control" name="time" id="eventTimeInput" maxlength="40" placeholder="14:00-18:00">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-7 mb-3">
+                    <label class="form-label">活動地點</label>
+                    <input type="text" class="form-control" name="location" maxlength="200" placeholder="例如：新光三越香堤廣場" required>
+                  </div>
+                  <div class="col-md-5 mb-3">
+                    <label class="form-label">前台報名</label>
+                    <select class="form-select" name="openForRegistration" id="openForRegSelect">
+                      <option value="yes">開放團員前台報名</option>
+                      <option value="no">僅後台內部紀錄</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div id="dynamicFields"></div>
+
+                <div class="mb-3">
+                  <label class="form-label">一般備註（增減員 / 特殊狀況）</label>
+                  <textarea class="form-control" name="notes" rows="2" maxlength="2000" placeholder="其他備註事項"></textarea>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                  <button type="submit" class="btn btn-mixcin flex-grow-1" id="btnSaveEvent"><i class="bi bi-cloud-arrow-up-fill me-1"></i>儲存活動與追蹤紀錄</button>
+                  <button type="button" class="btn btn-line px-4" onclick="resetStaffForm()">取消</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="mx-card p-4">
+            <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-2">
+              <div>
+                <div class="eyebrow">Event Tracker</div>
+                <h4 class="fw-bold m-0">活動總表與進度追蹤</h4>
+              </div>
+              <span class="small" style="color:var(--mx-muted)">依日期排序 · 點「修正」載入上方表單</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-middle mb-0 table-custom">
+                <thead>
+                  <tr>
+                    <th style="min-width:200px;">類別 / 活動名稱</th>
+                    <th style="min-width:250px;">日期 | 時間 | 地點</th>
+                    <th style="min-width:170px;">參賽團隊</th>
+                    <th style="min-width:240px;">追蹤進度（財務 / 成績）</th>
+                    <th style="min-width:100px; text-align:center;">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="eventTableBody">
+                  <tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">載入中…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="mx-footer">MIXCIN DANCE ACADEMY · TAIPEI · TOKYO · SHENZHEN</div>
+  </main>
+
+  <!-- 活動詳細資料彈窗 -->
+  <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-head-dark d-flex justify-content-between align-items-start">
+          <div>
+            <div id="modalEventTags" class="mb-2"></div>
+            <h5 class="fw-bold m-0" id="modalEventTitle"></h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body px-4" id="modalEventBody"></div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-line btn-sm px-4" data-bs-dismiss="modal">關閉</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastBox"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/locales-all.global.min.js"></script>
+  <script>
+    // ==========================================
+    // 基本設定與狀態
+    // ==========================================
+    // ==========================================
+    // 系統設定：部署到 GitHub Pages 時只需要改這兩行
+    // ==========================================
+    const CONFIG = {
+      GAS_URL: 'https://script.google.com/macros/s/AKfycbwjBvrp9TxpCakHTgBK3QrIi1qCz_0H50zrhEFSYw9v3kQ-PkHI9MBoyn-0qAGwVuYM/exec',
+      GOOGLE_CLIENT_ID: '53536119728-1b1r6dqhth33901hdojo6k3rlnfq64op.apps.googleusercontent.com'   // 貼上 Google Cloud 建立的用戶端 ID（xxxx.apps.googleusercontent.com）
+    };
+    const GOOGLE_CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID.trim();
+
+    const ALL_TEAMS = ['THE MIXCIN', 'MIXCIN WOW', 'MIXCIN PASSION', 'MIXCIN FLIPZY', 'MIXCIN NOVA', 'MIXCIN SHERO', 'MIXCIN BOSSy', '國際舞者團', '尚未確定 / 籌備中'];
+    const MEMBER_TEAMS = ALL_TEAMS.filter(t => t !== '尚未確定 / 籌備中');
+    const CAT_COLOR = { '商業演出': '#E8475A', '街舞賽事': '#2A3038' };
+    const CAT_TAG = { '商業演出': 'tag-red', '街舞賽事': 'tag-ink' };
+
+    let idToken = '';
+    let session = { email: '', isStaff: false, role: 'Guest', loginAvailable: false };
+    let globalEvents = [];
+    let globalTeamMap = {};
+    let globalAllMembers = [];
+    let myLinkedList = [];
+    let calendar;
+    let isNightExpanded = false;
+
+    const TAIWAN_ZIP3 = {
+      "中正區": "100", "大同區": "103", "中山區": "104", "松山區": "105", "大安區": "106",
+      "萬華區": "108", "信義區": "110", "士林區": "111", "北投區": "112", "內湖區": "114",
+      "南港區": "115", "文山區": "116",
+      "萬里區": "207", "金山區": "208", "板橋區": "220", "汐止區": "221", "深坑區": "222",
+      "石碇區": "223", "瑞芳區": "224", "平溪區": "226", "雙溪區": "227", "貢寮區": "228",
+      "新店區": "231", "坪林區": "232", "烏來區": "233", "永和區": "234", "中和區": "235",
+      "土城區": "236", "三峽區": "237", "樹林區": "238", "鶯歌區": "239", "三重區": "241",
+      "新莊區": "242", "泰山區": "243", "林口區": "244", "蘆洲區": "247", "五股區": "248",
+      "八里區": "249", "淡水區": "251", "三芝區": "252", "石門區": "253",
+      "桃園區": "330", "中壢區": "320", "平鎮區": "324", "八德區": "334", "楊梅區": "326",
+      "新竹市": "300", "竹北市": "302", "西屯區": "407", "北屯區": "406", "南屯區": "408"
+    };
+
+    // ==========================================
+    // 共用工具
+    // ==========================================
+    function esc(v) {
+      return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // 呼叫 Apps Script 後端（doPost）
+    const API_ARGS = {
+      getSession: ['idToken'],
+      getEvents: ['idToken'],
+      getTeamsAndMembers: ['idToken'],
+      getLinkedMembersForCurrentUser: ['idToken'],
+      getAllMembersForAdmin: ['idToken'],
+      getMemberProfile: ['targetStudentNo', 'idToken'],
+      saveMemberProfile: ['formData', 'idToken'],
+      saveEvent: ['eventData', 'idToken'],
+      queryScoreByStudentNo: ['studentNo', 'birthday'],
+      submitPublicRegistration: ['regData']
+    };
+
+    function api(fn, ...args) {
+      const req = { action: fn };
+      (API_ARGS[fn] || []).forEach((k, i) => { req[k] = args[i]; });
+      // 用 text/plain 送出，避免跨網域預檢請求（Apps Script 不支援 OPTIONS）
+      return fetch(CONFIG.GAS_URL, { method: 'POST', body: JSON.stringify(req), redirect: 'follow' })
+        .then(r => {
+          if (!r.ok) throw new Error('伺服器連線失敗（' + r.status + '）');
+          return r.json();
+        })
+        .then(res => {
+          if (res && res.success === false && res.error) throw new Error(res.error);
+          return res;
+        });
+    }
+
+    function toast(msg, isError) {
+      const box = document.getElementById('toastBox');
+      const el = document.createElement('div');
+      el.className = 'mx-toast' + (isError ? ' err' : '');
+      el.innerHTML = `<i class="bi ${isError ? 'bi-exclamation-circle-fill' : 'bi-check-circle-fill'}"></i><span>${esc(msg)}</span>`;
+      box.appendChild(el);
+      setTimeout(() => el.remove(), isError ? 6000 : 3500);
+    }
+
+    function errMsg(err) {
+      return (err && err.message) ? err.message.replace(/^Exception:\s*/, '') : '發生錯誤，請稍後再試';
+    }
+
+    function money(v) {
+      return (v && Number(v) > 0) ? '$' + Number(v).toLocaleString() : '待確認';
+    }
+
+    function setBusy(btn, busy, text) {
+      if (!btn) return;
+      if (busy) {
+        btn.dataset.html = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${text || '處理中…'}`;
+      } else {
+        btn.disabled = false;
+        if (btn.dataset.html) btn.innerHTML = btn.dataset.html;
+      }
+    }
+
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function fillTeamSelect(sel, teams, placeholder) {
+      sel.innerHTML = (placeholder ? `<option value="">${esc(placeholder)}</option>` : '') +
+        teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    }
+
+    // ==========================================
+    // 啟動
+    // ==========================================
+    window.addEventListener('load', function () {
+      fillTeamSelect(document.getElementById('regTeamSelect'), ['無團隊/個人'].concat(MEMBER_TEAMS));
+      document.getElementById('regTeamSelect').options[0].text = '無團隊 / 個人代表';
+      fillTeamSelect(document.getElementById('memberTeamSelect'), MEMBER_TEAMS, '請選擇團隊…');
+      document.getElementById('originHint').textContent = '';
+
+      initCalendar();
+      renderCategoryFields();
+      refreshIdentity();
+      initGoogleLogin();
+    });
+
+    // ==========================================
+    // 身分與登入
+    // ==========================================
+    function initGoogleLogin() {
+      if (!GOOGLE_CLIENT_ID) return;
+      const s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.async = true;
+      s.onload = function () {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: function (resp) {
+            idToken = resp.credential || '';
+            refreshIdentity();
+          },
+          auto_select: true
+        });
+        renderLoginButton();
+        if (!session.email) google.accounts.id.prompt();
+      };
+      document.head.appendChild(s);
+    }
+
+    function renderLoginButton() {
+      const box = document.getElementById('gsiButton');
+      box.innerHTML = '';
+      if (!GOOGLE_CLIENT_ID || session.email || !(window.google && google.accounts)) return;
+      google.accounts.id.renderButton(box, { theme: 'outline', size: 'medium', shape: 'pill', text: 'signin', locale: 'zh-TW' });
+    }
+
+    function signOut() {
+      idToken = '';
+      if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+      toast('已登出');
+      refreshIdentity();
+    }
+
+    function refreshIdentity() {
+      api('getSession', idToken)
+        .then(function (s) {
+          session = s || session;
+          if (idToken && !session.email) {
+            idToken = '';
+            toast('登入驗證失敗或已逾時，請重新登入', true);
+          }
+          applyIdentityUI();
+          loadEvents();
+          if (session.isStaff) {
+            loadAdminMembersList();
+            api('getTeamsAndMembers', idToken).then(m => { globalTeamMap = m || {}; }).catch(() => {});
+          }
+          if (session.email) loadLinkedMembers();
+          else resetMemberForm();
+        })
+        .catch(function (err) {
+          document.getElementById('userBadge').innerText = '連線失敗';
+          toast(errMsg(err), true);
+          loadEvents();
+        });
+    }
+
+    function applyIdentityUI() {
+      const loggedIn = !!session.email;
+      const pill = document.getElementById('userPill');
+      pill.classList.toggle('is-in', loggedIn);
+      document.getElementById('userBadge').innerText = loggedIn ? session.email : '訪客';
+
+      const chip = document.getElementById('roleChip');
+      chip.classList.toggle('d-none', !session.isStaff);
+      chip.innerText = session.role || '';
+
+      document.getElementById('btnSignOut').classList.toggle('d-none', !idToken);
+      renderLoginButton();
+
+      // 員工後台
+      document.getElementById('staffWorkArea').classList.toggle('d-none', !session.isStaff);
+      document.getElementById('staffLockBox').classList.toggle('d-none', session.isStaff);
+      document.getElementById('roleBadge').innerText = session.role || 'Staff';
+      document.getElementById('staffLockMsg').innerHTML = loggedIn
+        ? `您的帳號 <b style="color:#fff">${esc(session.email)}</b> 尚未登記在員工白名單。<br>請管理員在試算表的 Staff 工作表加入此 Email 後重新整理。`
+        : '請先用右上角按鈕登入 Google 帳號。';
+
+      // 團員資料
+      const notice = document.getElementById('memberLoginNotice');
+      notice.classList.toggle('d-none', loggedIn);
+      document.getElementById('memberLoginMsg').innerText = !session.loginAvailable
+        ? '目前系統尚未開放一般帳號登入，請洽詢管理員。'
+        : (GOOGLE_CLIENT_ID
+          ? '請按右上角「登入」，用孩子或家長的 Google 帳號登入後即可查看與編輯。'
+          : '請改用家長專用網址登入：https://michael0931107.github.io/mixcin-system/');
+      document.getElementById('originHint').textContent = (!session.loginAvailable && session.isStaff === false)
+        ? '（系統設定用來源網址：' + location.origin + '）' : '';
+      document.getElementById('memberFieldset').disabled = !loggedIn;
+
+      document.getElementById('adminMemberSwitchBox').classList.toggle('d-none', !session.isStaff);
+      document.getElementById('memberEvalScore').readOnly = !session.isStaff;
+      document.getElementById('memberEvalNotes').readOnly = !session.isStaff;
+      document.getElementById('evalEditNotice').innerText = session.isStaff
+        ? '您具有管理者權限，可以直接輸入或修改考核成績與評語。'
+        : '團員與家長僅供查閱，成績由管理者登記。';
+    }
+
+    // ==========================================
+    // 行事曆
+    // ==========================================
+    function initCalendar() {
+      calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
+        locale: 'zh-tw',
+        navLinks: true,
+        customButtons: {
+          toggleNight: {
+            text: '展開 00-06 時',
+            click: function (ev, el) {
+              isNightExpanded = !isNightExpanded;
+              calendar.setOption('slotMinTime', isNightExpanded ? '00:00:00' : '06:00:00');
+              if (el) el.innerText = isNightExpanded ? '收折 00-06 時' : '展開 00-06 時';
+            }
+          }
+        },
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listMonth' },
+        footerToolbar: { left: 'toggleNight' },
+        buttonText: { today: '今天', month: '月', week: '週', day: '日', list: '列表' },
+        height: 'auto',
+        slotMinTime: '06:00:00',
+        slotMaxTime: '24:00:00',
+        slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        noEventsContent: '這段期間沒有活動',
+        events: [],
+        eventClick: function (info) { showEventModal(info.event.extendedProps); }
+      });
+      calendar.render();
+    }
+
+    function toCalendarEvent(e) {
+      const base = {
+        title: e.title,
+        color: CAT_COLOR[e.category] || '#9AA1AA',
+        extendedProps: e
+      };
+      const m = (e.time || '').match(/(\d{1,2}):(\d{2})(?:\s*[-~～至]\s*(\d{1,2}):(\d{2}))?/);
+      if (!m || !/^\d{4}-\d{2}-\d{2}$/.test(e.date)) return Object.assign(base, { start: e.date, allDay: true });
+
+      const pad = n => String(n).padStart(2, '0');
+      base.start = `${e.date}T${pad(m[1])}:${m[2]}:00`;
+      if (m[3] !== undefined) {
+        let end = new Date(`${e.date}T${pad(m[3])}:${m[4]}:00`);
+        if (end <= new Date(base.start)) end.setDate(end.getDate() + 1);
+        base.end = end;
+      }
+      return base;
+    }
+
+    function loadEvents() {
+      api('getEvents', idToken)
+        .then(function (events) {
+          globalEvents = events || [];
+          calendar.removeAllEvents();
+          calendar.addEventSource(globalEvents.map(toCalendarEvent));
+
+          const today = todayStr();
+          const sel = document.getElementById('regEventSelect');
+          const open = globalEvents.filter(e => (e.customFields || {}).openForReg !== 'no' && e.date >= today);
+          sel.innerHTML = open.length
+            ? '<option value="">請選擇要報名的活動…</option>' + open.map(e => `<option value="${esc(e.eventId)}">[${esc(e.date)}] ${esc(e.title)}（${esc(e.location)}）</option>`).join('')
+            : '<option value="">目前沒有開放報名的活動</option>';
+
+          if (session.isStaff) renderStaffTable(globalEvents);
+        })
+        .catch(function (err) {
+          document.getElementById('eventTableBody').innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-red)">讀取發生異常，請重新整理頁面。</td></tr>';
+          toast(errMsg(err), true);
+        });
+    }
+
+    function showEventModal(ev) {
+      const cf = ev.customFields || {};
+      const open = cf.openForReg === 'no' ? '<span class="tag tag-gray">僅內部活動</span>' : '<span class="tag tag-soft">開放報名</span>';
+      document.getElementById('modalEventTags').innerHTML = `<span class="tag ${CAT_TAG[ev.category] || 'tag-gray'} me-1" style="${ev.category === '街舞賽事' ? 'background:#fff;color:#2A3038' : ''}">${esc(ev.category)}</span>${open}`;
+      document.getElementById('modalEventTitle').textContent = ev.title;
+
+      const row = (k, v) => `<div class="detail-row"><div class="k">${k}</div><div>${v}</div></div>`;
+      let html = row('日期', esc(ev.date)) + row('時間', esc(ev.time || '時間未定')) + row('地點', esc(ev.location || '未定')) + row('團隊', esc(ev.teams || '尚未確定'));
+
+      if (session.isStaff) {
+        if (ev.participants) html += row('名單', esc(ev.participants));
+        if (ev.notes) html += row('備註', esc(ev.notes));
+
+        if (ev.category === '商業演出') {
+          html += `<div class="tracker-box mt-3 mb-0"><h6 class="mb-2"><i class="bi bi-cash-stack me-1"></i>請款追蹤</h6>
+            <div>狀態：${esc(cf.invoiceStatus || '未請款')}</div>
+            <div>總額：${esc(money(cf.invoiceAmount))}</div>
+            <div>備註：${esc(cf.invoiceNote || '無')}</div></div>`;
+        } else if (ev.category === '街舞賽事') {
+          const results = (cf.battleResults || []).map(r =>
+            `<li><b>${esc(r.team)}</b>：${esc(r.rank)}（獎金 ${esc(money(r.prize))} · ${esc(r.status)}）</li>`).join('');
+          html += `<div class="tracker-box mt-3 mb-0"><h6 class="mb-2"><i class="bi bi-trophy-fill me-1"></i>賽事與費用追蹤</h6>
+            <div>費用：${esc(cf.feeStatus || '無需繳費')}（${esc(money(cf.totalFee))}）</div>
+            <div class="mt-2 fw-bold">成績與獎金</div>
+            <ul class="mb-0 ps-3">${results || '<li style="color:var(--mx-muted)">尚未登記成績</li>'}</ul></div>`;
+        }
+      }
+      document.getElementById('modalEventBody').innerHTML = html;
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('eventDetailModal')).show();
+    }
+
+    // ==========================================
+    // 活動報名
+    // ==========================================
+    document.getElementById('regForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const payload = {
+        eventId: form.eventId.value,
+        team: form.team.value,
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        notes: form.notes.value.trim()
+      };
+      if (!payload.eventId) return toast('請選擇活動', true);
+      if (!payload.name) return toast('請填寫報名者姓名', true);
+      if (!payload.phone) return toast('請填寫聯絡電話', true);
+
+      const btn = form.querySelector('button[type=submit]');
+      setBusy(btn, true, '送出中…');
+      api('submitPublicRegistration', payload)
+        .then(function (res) {
+          toast(res && res.duplicated ? '您已經報名過這個活動了' : '報名成功！');
+          form.reset();
+          if (myLinkedList.length === 1) autoFillRegFormWithMember(myLinkedList[0]);
+        })
+        .catch(err => toast('報名失敗：' + errMsg(err), true))
+        .finally(() => setBusy(btn, false));
+    });
+
+    function onSelectRegChild() {
+      const target = myLinkedList.find(x => x.studentNo === document.getElementById('regChildSelect').value);
+      if (target) autoFillRegFormWithMember(target);
+    }
+
+    function autoFillRegFormWithMember(m) {
+      if (!m) return;
+      document.getElementById('regNameInput').value = m.name || '';
+      document.getElementById('regPhoneInput').value = m.phone || '';
+      const teamSel = document.getElementById('regTeamSelect');
+      if (m.team && Array.from(teamSel.options).some(o => o.value === m.team)) teamSel.value = m.team;
+    }
+
+    // ==========================================
+    // 團員資料
+    // ==========================================
+    function loadLinkedMembers() {
+      api('getLinkedMembersForCurrentUser', idToken)
+        .then(function (list) {
+          myLinkedList = list || [];
+          const parentBox = document.getElementById('parentMultiChildBox');
+          const regBox = document.getElementById('regChildSelectorBox');
+          const many = myLinkedList.length > 1;
+          parentBox.classList.toggle('d-none', !many);
+          regBox.classList.toggle('d-none', !many);
+
+          if (many) {
+            document.getElementById('parentChildSelect').innerHTML = myLinkedList.map((m, i) =>
+              `<option value="${esc(m.studentNo)}">孩子 ${i + 1}：${esc(m.name)}（${esc(m.team || '未分隊')}）· ${esc(m.studentNo)}</option>`).join('');
+            document.getElementById('regChildSelect').innerHTML = '<option value="">請選擇要報名的孩子…</option>' + myLinkedList.map(m =>
+              `<option value="${esc(m.studentNo)}">${esc(m.name)}（${esc(m.team || '個人')}）</option>`).join('');
+          }
+
+          if (myLinkedList.length) {
+            renderMemberFormWithData(myLinkedList[0]);
+            if (!many) autoFillRegFormWithMember(myLinkedList[0]);
+          } else {
+            resetMemberForm();
+            document.getElementById('memberChildEmail').value = session.email;
+            document.getElementById('displayStudentNo').innerText = '儲存後自動產生';
+          }
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function onSelectParentChild() {
+      const target = myLinkedList.find(x => x.studentNo === document.getElementById('parentChildSelect').value);
+      if (target) renderMemberFormWithData(target);
+    }
+
+    function resetMemberForm() {
+      document.getElementById('memberForm').reset();
+      document.getElementById('memberStudentNoHidden').value = '';
+      document.getElementById('displayStudentNo').innerText = session.email ? '儲存後自動產生' : '—';
+    }
+
+    function startNewMember() {
+      document.getElementById('adminMemberSelect').value = '';
+      resetMemberForm();
+      document.getElementById('memberChildEmail').focus();
+    }
+
+    function renderMemberFormWithData(p) {
+      if (!p) return;
+      const form = document.getElementById('memberForm');
+      ['team', 'name', 'birthday', 'idNumber', 'phone', 'zipCode', 'address', 'parentContact', 'evalScore', 'evalNotes'].forEach(k => {
+        if (form[k]) form[k].value = p[k] || '';
+      });
+      document.getElementById('memberChildEmail').value = p.email || '';
+      document.getElementById('memberParentEmail').value = p.parentEmail || '';
+      document.getElementById('memberStudentNoHidden').value = p.studentNo || '';
+      document.getElementById('displayStudentNo').innerText = p.studentNo || '儲存後自動產生';
+    }
+
+    function loadAdminMembersList() {
+      api('getAllMembersForAdmin', idToken)
+        .then(function (members) {
+          globalAllMembers = members || [];
+          document.getElementById('adminMemberSelect').innerHTML =
+            `<option value="">— 選擇要檢視 / 校正的團員（共 ${globalAllMembers.length} 位）—</option>` +
+            globalAllMembers.map(m => `<option value="${esc(m.studentNo)}">[${esc(m.studentNo || '未配發')}] ${esc(m.name)}（${esc(m.team || '未分隊')}）</option>`).join('');
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function onAdminSelectMember() {
+      const no = document.getElementById('adminMemberSelect').value;
+      if (!no) return startNewMember();
+      api('getMemberProfile', no, idToken)
+        .then(p => p ? renderMemberFormWithData(p) : toast('查無此團員', true))
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    document.getElementById('memberForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!session.email) return toast('請先登入 Google 帳號', true);
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      if (!data.team) return toast('請選擇所屬團隊', true);
+      if (!data.name || !data.birthday || !data.phone) return toast('請填寫姓名、生日與聯絡電話', true);
+
+      const btn = e.target.querySelector('button[type=submit]');
+      setBusy(btn, true, '儲存中…');
+      api('saveMemberProfile', data, idToken)
+        .then(function (res) {
+          toast('資料已儲存，專屬學號：' + res.studentNo);
+          document.getElementById('displayStudentNo').innerText = res.studentNo;
+          document.getElementById('memberStudentNoHidden').value = res.studentNo;
+          loadLinkedMembers();
+          if (session.isStaff) loadAdminMembersList();
+        })
+        .catch(err => toast('儲存失敗：' + errMsg(err), true))
+        .finally(() => setBusy(btn, false));
+    });
+
+    function parseZipCode3() {
+      const addr = document.getElementById('memberAddress').value.trim();
+      const zipEl = document.getElementById('memberZip');
+      if (!addr) return toast('請先輸入地址', true);
+      const hit = Object.keys(TAIWAN_ZIP3).find(d => addr.includes(d));
+      if (hit) {
+        zipEl.value = TAIWAN_ZIP3[hit];
+      } else {
+        toast('找不到這個行政區的郵遞區號，請手動輸入', true);
+        zipEl.removeAttribute('readonly');
+        zipEl.focus();
+      }
+    }
+
+    // ==========================================
+    // 考核查詢
+    // ==========================================
+    function doQueryScore() {
+      const no = document.getElementById('queryStudentNoInput').value.trim();
+      const bday = document.getElementById('queryBirthdayInput').value;
+      if (!no) return toast('請輸入專屬學號', true);
+      if (!bday) return toast('請輸入團員生日', true);
+
+      const card = document.getElementById('queryResultCard');
+      api('queryScoreByStudentNo', no, bday)
+        .then(function (res) {
+          if (!res) {
+            card.classList.add('d-none');
+            return toast('學號或生日不正確，請確認後再試', true);
+          }
+          document.getElementById('resStudentName').textContent = res.name;
+          document.getElementById('resStudentTeam').textContent = res.team;
+          document.getElementById('resStudentNo').textContent = res.studentNo;
+          document.getElementById('resScore').textContent = res.evalScore;
+          document.getElementById('resNotes').textContent = res.evalNotes;
+          card.classList.remove('d-none');
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    // ==========================================
+    // 員工後台：活動表單
+    // ==========================================
+    function renderCategoryFields() {
+      const cat = document.getElementById('eventCategory').value;
+      const box = document.getElementById('dynamicFields');
+
+      if (cat === '商業演出') {
+        box.innerHTML = `
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">演出團隊</label>
+              <select class="form-select" name="teams">
+                ${ALL_TEAMS.slice().reverse().map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="col-md-8 mb-3">
+              <label class="form-label">參與人員姓名</label>
+              <input type="text" class="form-control" name="participants" placeholder="以逗號分隔，未定可留空">
+            </div>
+          </div>
+          <div class="tracker-box">
+            <h6 class="mb-3"><i class="bi bi-cash-stack me-1"></i>商演請款追蹤</h6>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">請款狀態</label>
+                <select class="form-select" id="track_invoiceStatus">
+                  <option value="未請款">未請款</option>
+                  <option value="請款單已送出/審核中">請款單已送出 / 審核中</option>
+                  <option value="已開立發票/勞報">已開立發票 / 勞報單</option>
+                  <option value="已撥款入帳 (完成)">已撥款入帳（完成）</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">演出款項總額 (NT$)</label>
+                <input type="number" class="form-control" id="track_invoiceAmount" min="0" placeholder="未確定可留空">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">請款備註 / 發票資訊</label>
+                <input type="text" class="form-control" id="track_invoiceNote" placeholder="例如：發票 AB12345678">
+              </div>
+            </div>
+          </div>`;
+      } else if (cat === '街舞賽事') {
+        const checks = ALL_TEAMS.map((t, i) => `
+          <div class="form-check form-check-inline my-1">
+            <input class="form-check-input team-check" type="checkbox" value="${esc(t)}" id="chk_${i}" onchange="onBattleTeamSelect()">
+            <label class="form-check-label fw-bold" for="chk_${i}" style="color:var(--mx-ink)">${esc(t)}</label>
+          </div>`).join('');
+
+        box.innerHTML = `
+          <div class="mb-3">
+            <label class="form-label d-block">參賽團隊（未定可留空）</label>
+            <div class="p-3 rounded" style="background:var(--mx-paper); border:1px solid var(--mx-sand)">${checks}</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">參與名單（勾選團隊後自動帶入，可再調整）</label>
+            <textarea class="form-control" id="battleParticipants" rows="2" placeholder="未定可留空"></textarea>
+          </div>
+
+          <div class="tracker-box">
+            <h6 class="mb-3"><i class="bi bi-calculator me-1"></i>賽前：報名費 / 保證金</h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">繳費狀態</label>
+                <select class="form-select" id="track_feeStatus">
+                  <option value="無需繳費">無需繳費（免費賽事）</option>
+                  <option value="待繳納 (未繳)">待繳納（未繳）</option>
+                  <option value="已繳納報名費">已繳納報名費</option>
+                  <option value="已繳保證金 (待退)">已繳保證金（待退）</option>
+                  <option value="保證金已全額退還 (完成)">保證金已全額退還（完成）</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">計費方式</label>
+                <select class="form-select" id="calc_mode" onchange="autoCalculateFee()">
+                  <option value="team">以「隊」計費（單隊金額 × 隊伍數）</option>
+                  <option value="person">以「人」計費（單人金額 × 人數）</option>
+                  <option value="manual">直接填寫總金額</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-4 mb-3">
+                <label class="form-label" id="lbl_unitPrice">單隊金額</label>
+                <input type="number" class="form-control" id="calc_unitPrice" min="0" placeholder="1500" oninput="autoCalculateFee()">
+              </div>
+              <div class="col-4 mb-3">
+                <label class="form-label" id="lbl_count">隊伍數</label>
+                <input type="number" class="form-control" id="calc_count" min="0" placeholder="3" oninput="autoCalculateFee()">
+              </div>
+              <div class="col-4 mb-3">
+                <label class="form-label">應繳總額</label>
+                <input type="number" class="form-control fw-bold" id="calc_totalFee" min="0" style="color:var(--mx-red)" readonly>
+              </div>
+            </div>
+            <div class="p-3 bg-white rounded" style="border:1px solid var(--mx-sand)">
+              <label class="form-label mb-2"><i class="bi bi-bank me-1"></i>主辦單位匯款帳戶</label>
+              <div class="row g-2">
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" id="bank_name" placeholder="銀行代碼與名稱"></div>
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" id="bank_branch" placeholder="分行名稱"></div>
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" id="bank_account" placeholder="帳號"></div>
+                <div class="col-12"><input type="text" class="form-control form-control-sm" id="bank_owner" placeholder="戶名 / 匯款備註"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tracker-box">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="m-0"><i class="bi bi-trophy-fill me-1"></i>賽後：成績與獎金</h6>
+              <button type="button" class="btn-mini" onclick="addBattleResultRow()"><i class="bi bi-plus-lg me-1"></i>新增獲獎隊伍</button>
+            </div>
+            <div id="battleResultsContainer"></div>
+          </div>`;
+      } else {
+        box.innerHTML = `
+          <div class="mb-3">
+            <label class="form-label">自訂說明</label>
+            <input type="text" class="form-control" id="customDetails" placeholder="其他活動相關說明">
+          </div>`;
+      }
+    }
+
+    function autoCalculateFee(keepTotal) {
+      const mode = document.getElementById('calc_mode').value;
+      const unitEl = document.getElementById('calc_unitPrice');
+      const countEl = document.getElementById('calc_count');
+      const totalEl = document.getElementById('calc_totalFee');
+
+      if (mode === 'manual') {
+        document.getElementById('lbl_unitPrice').innerText = '單價（不計）';
+        document.getElementById('lbl_count').innerText = '數量（不計）';
+        unitEl.disabled = countEl.disabled = true;
+        totalEl.readOnly = false;
+        if (keepTotal !== true) totalEl.focus();
+        return;
+      }
+      unitEl.disabled = countEl.disabled = false;
+      totalEl.readOnly = true;
+      document.getElementById('lbl_unitPrice').innerText = mode === 'team' ? '單隊金額' : '單人金額';
+      document.getElementById('lbl_count').innerText = mode === 'team' ? '隊伍數' : '人數';
+      if (keepTotal === true) return;
+      totalEl.value = ((parseFloat(unitEl.value) || 0) * (parseFloat(countEl.value) || 0)) || '';
+    }
+
+    function addBattleResultRow(data) {
+      data = data || {};
+      const id = 'res_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      const teams = ALL_TEAMS.filter(t => t !== '尚未確定 / 籌備中').concat(['個人代表']);
+      const opt = teams.map(t => `<option value="${esc(t)}" ${data.team === t ? 'selected' : ''}>${esc(t)}</option>`).join('');
+      const st = ['待撥款', '已入帳', '已發放團員', '無獎金'].map(s => `<option value="${s}" ${data.status === s ? 'selected' : ''}>${s}</option>`).join('');
+
+      document.getElementById('battleResultsContainer').insertAdjacentHTML('beforeend', `
+        <div class="result-row" id="${id}">
+          <div class="row g-2 align-items-end">
+            <div class="col-md-3"><label class="form-label small mb-1">獲獎團隊</label><select class="form-select form-select-sm res-team">${opt}</select></div>
+            <div class="col-md-3"><label class="form-label small mb-1">名次 / 獎項</label><input type="text" class="form-control form-control-sm res-rank" placeholder="冠軍" value="${esc(data.rank || '')}"></div>
+            <div class="col-md-3"><label class="form-label small mb-1">獎金 (NT$)</label><input type="number" min="0" class="form-control form-control-sm res-prize" value="${esc(data.prize || '')}"></div>
+            <div class="col-md-2"><label class="form-label small mb-1">獎金進度</label><select class="form-select form-select-sm res-status">${st}</select></div>
+            <div class="col-md-1 text-end"><button type="button" class="btn btn-sm btn-line" onclick="document.getElementById('${id}').remove()" title="刪除"><i class="bi bi-trash"></i></button></div>
+          </div>
+        </div>`);
+    }
+
+    function onBattleTeamSelect() {
+      const checked = Array.from(document.querySelectorAll('.team-check:checked')).map(el => el.value);
+      let names = [];
+      checked.forEach(t => { if (globalTeamMap[t]) names = names.concat(globalTeamMap[t]); });
+      document.getElementById('battleParticipants').value = Array.from(new Set(names)).join(', ');
+
+      if (document.getElementById('calc_mode').value === 'team') {
+        document.getElementById('calc_count').value = checked.filter(t => t !== '尚未確定 / 籌備中').length;
+        autoCalculateFee();
+      }
+    }
+
+    function renderStaffTable(events) {
+      const tbody = document.getElementById('eventTableBody');
+      if (!events.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color:var(--mx-muted)">目前沒有活動紀錄</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = events.map(e => {
+        const cf = e.customFields || {};
+        let status = '';
+        if (e.category === '商業演出') {
+          const s = cf.invoiceStatus || '未請款';
+          status = `<span class="tag ${s.includes('完成') ? 'tag-ink' : 'tag-soft'}">${esc(s)}</span>
+                    <span class="ms-1 fw-bold" style="color:${Number(cf.invoiceAmount) > 0 ? 'var(--mx-ink)' : 'var(--mx-red)'}">${esc(money(cf.invoiceAmount))}</span>`;
+        } else if (e.category === '街舞賽事') {
+          const fee = cf.feeStatus === '無需繳費' ? '免繳' : money(cf.totalFee);
+          status = `<span class="tag tag-gray">${esc(cf.feeStatus || '未繳')} · ${esc(fee)}</span>` +
+            (cf.battleResults || []).map(r => `<span class="tag tag-gold ms-1"><i class="bi bi-trophy-fill"></i>${esc(r.team)}：${esc(r.rank)}（${esc(money(r.prize))}）</span>`).join('');
+        } else {
+          status = '<span class="small" style="color:var(--mx-muted)">一般排程</span>';
+        }
+
+        const teamList = (e.teams || '').split(', ').filter(t => t.trim());
+        let teamHtml;
+        if (!teamList.length || e.teams === '尚未確定 / 籌備中') {
+          teamHtml = '<span class="tag tag-line">未定 / 籌備中</span>';
+        } else {
+          teamHtml = `<details class="team-details-dropdown">
+            <summary><i class="bi bi-people-fill me-1"></i>${esc(teamList[0])}${teamList.length > 1 ? ' 等 ' + teamList.length + ' 隊' : ''} ▾</summary>
+            <div class="team-dropdown-content">
+              <div class="fw-bold pb-1 mb-1" style="border-bottom:1px solid var(--mx-sand)">參賽團隊（${teamList.length} 隊）</div>
+              <div class="fw-bold mb-2">${esc(e.teams)}</div>
+              <div class="fw-bold pb-1 mb-1" style="border-bottom:1px solid var(--mx-sand); color:var(--mx-muted)">參與人員</div>
+              <div style="color:var(--mx-muted)">${esc(e.participants || '尚未填寫')}</div>
+            </div></details>`;
+        }
+
+        const timeStr = e.time && e.time !== '時間未定' ? e.time : '未定';
+        const past = e.date < todayStr();
+        return `<tr style="${past ? 'opacity:.62' : ''}">
+          <td style="white-space:nowrap;">
+            <span class="tag ${CAT_TAG[e.category] || 'tag-gray'} me-1">${esc(e.category)}</span>
+            <span class="tag ${cf.openForReg === 'no' ? 'tag-line' : 'tag-soft'} me-1">${cf.openForReg === 'no' ? '內部' : '公開'}</span>
+            <span class="title-single-line" title="${esc(e.title)}">${esc(e.title)}</span>
+          </td>
+          <td><div class="info-single-line"><b>${esc(e.date)}</b><span class="mx-1" style="color:var(--mx-mist)">|</span>${esc(timeStr)}<span class="mx-1" style="color:var(--mx-mist)">|</span><i class="bi bi-geo-alt" style="color:var(--mx-red)"></i> ${esc(e.location || '地點未定')}</div></td>
+          <td>${teamHtml}</td>
+          <td style="white-space:nowrap;">${status}</td>
+          <td style="text-align:center;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function editEvent(id) {
+      const ev = globalEvents.find(x => x.eventId === id);
+      if (!ev) return;
+      const collapseEl = document.getElementById('formCollapseArea');
+      bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false }).show();
+
+      const form = document.getElementById('staffEventForm');
+      document.getElementById('editEventId').value = ev.eventId;
+      document.getElementById('formTitle').textContent = '編輯：' + ev.title;
+      form.category.value = ev.category;
+      renderCategoryFields();
+
+      form.title.value = ev.title || '';
+      form.date.value = ev.date;
+      form.time.value = ev.time === '時間未定' ? '' : ev.time;
+      form.location.value = ev.location || '';
+      form.notes.value = ev.notes || '';
+      const cf = ev.customFields || {};
+      document.getElementById('openForRegSelect').value = cf.openForReg || 'yes';
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+
+      if (ev.category === '商業演出') {
+        if (form.teams) form.teams.value = ev.teams || '尚未確定 / 籌備中';
+        if (form.participants) form.participants.value = ev.participants || '';
+        set('track_invoiceStatus', cf.invoiceStatus || '未請款');
+        set('track_invoiceAmount', cf.invoiceAmount || '');
+        set('track_invoiceNote', cf.invoiceNote || '');
+      } else if (ev.category === '街舞賽事') {
+        const teams = (ev.teams || '').split(', ');
+        document.querySelectorAll('.team-check').forEach(chk => { chk.checked = teams.includes(chk.value); });
+        set('battleParticipants', ev.participants || '');
+        set('track_feeStatus', cf.feeStatus || '無需繳費');
+        set('calc_mode', cf.calcMode || 'team');
+        set('calc_unitPrice', cf.unitPrice || '');
+        set('calc_count', cf.count || '');
+        set('calc_totalFee', cf.totalFee || '');
+        autoCalculateFee(true);
+        const bank = cf.bankInfo || {};
+        set('bank_name', bank.name || ''); set('bank_branch', bank.branch || '');
+        set('bank_account', bank.account || ''); set('bank_owner', bank.owner || '');
+        (cf.battleResults || []).forEach(r => addBattleResultRow(r));
+      } else {
+        set('customDetails', cf.customDetails || '');
+      }
+      collapseEl.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetStaffForm() {
+      document.getElementById('staffEventForm').reset();
+      document.getElementById('editEventId').value = '';
+      document.getElementById('openForRegSelect').value = 'yes';
+      document.getElementById('formTitle').textContent = '活動登記與追蹤設定';
+      renderCategoryFields();
+    }
+
+    document.getElementById('staffEventForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const cat = form.category.value;
+      const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      const openForReg = document.getElementById('openForRegSelect').value;
+
+      if (!form.title.value.trim()) return toast('請填寫活動名稱', true);
+      if (!form.date.value) return toast('請選擇日期', true);
+
+      let teams = '尚未確定 / 籌備中', participants = '', customFields = { openForReg: openForReg };
+
+      // 保留原本的日曆同步 ID
+      const old = globalEvents.find(x => x.eventId === form.eventId.value);
+      if (old && old.customFields && old.customFields.calendarEventId) customFields.calendarEventId = old.customFields.calendarEventId;
+
+      if (cat === '商業演出') {
+        teams = form.teams ? form.teams.value : teams;
+        participants = form.participants ? form.participants.value.trim() : '';
+        Object.assign(customFields, {
+          invoiceStatus: val('track_invoiceStatus'),
+          invoiceAmount: val('track_invoiceAmount'),
+          invoiceNote: val('track_invoiceNote')
+        });
+      } else if (cat === '街舞賽事') {
+        const checked = Array.from(document.querySelectorAll('.team-check:checked')).map(el => el.value);
+        teams = checked.length ? checked : ['尚未確定 / 籌備中'];
+        participants = val('battleParticipants');
+        Object.assign(customFields, {
+          feeStatus: val('track_feeStatus'),
+          calcMode: val('calc_mode') || 'team',
+          unitPrice: val('calc_unitPrice'),
+          count: val('calc_count'),
+          totalFee: val('calc_totalFee'),
+          bankInfo: { name: val('bank_name'), branch: val('bank_branch'), account: val('bank_account'), owner: val('bank_owner') },
+          battleResults: Array.from(document.querySelectorAll('.result-row')).map(row => ({
+            team: row.querySelector('.res-team').value,
+            rank: row.querySelector('.res-rank').value.trim(),
+            prize: row.querySelector('.res-prize').value.trim(),
+            status: row.querySelector('.res-status').value
+          }))
+        });
+      } else {
+        customFields.customDetails = val('customDetails');
+      }
+
+      const payload = {
+        eventId: form.eventId.value,
+        category: cat,
+        title: form.title.value.trim(),
+        date: form.date.value,
+        time: form.time.value.trim(),
+        location: form.location.value.trim(),
+        teams: teams,
+        participants: participants,
+        notes: form.notes.value.trim(),
+        customFields: customFields
+      };
+
+      const btn = document.getElementById('btnSaveEvent');
+      setBusy(btn, true, '儲存中…');
+      api('saveEvent', payload, idToken)
+        .then(function (res) {
+          toast(res && res.calendarSynced ? '活動已儲存並同步到 Google 日曆' : '活動已儲存（日曆未同步）');
+          resetStaffForm();
+          loadEvents();
+        })
+        .catch(err => toast('儲存失敗：' + errMsg(err), true))
+        .finally(() => setBusy(btn, false));
+    });
+  </script>
+</body>
+</html>
