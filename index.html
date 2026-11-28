@@ -1333,7 +1333,10 @@
                 <div class="eyebrow">Member Roster</div>
                 <h4 class="fw-bold m-0">註冊名單與狀態</h4>
               </div>
-              <a class="small" href="https://docs.google.com/spreadsheets/d/1SfGz_whHFJZjSCZlQb7OkiDAShu39N7esknd5ycjWR4/edit#gid=660051442" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>開啟名單試算表（填本名、生日、組別）</a>
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button type="button" class="btn-mini" onclick="syncAlbumNow(this)" title="讓所有團員、家長帳號都能進活動相簿"><i class="bi bi-images me-1"></i>同步相簿權限</button>
+                <a class="small" href="https://docs.google.com/spreadsheets/d/1SfGz_whHFJZjSCZlQb7OkiDAShu39N7esknd5ycjWR4/edit#gid=660051442" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>開啟名單試算表（填本名、生日、組別）</a>
+              </div>
             </div>
             <div class="table-responsive">
               <table class="table align-middle mb-0 table-custom" style="min-width:720px">
@@ -1617,6 +1620,7 @@
       fitbookImport: ['rows', 'opts', 'idToken'],
       fitbookBind: ['fitbookName', 'rosterKey', 'idToken'],
       getFitbookSettings: ['idToken'],
+      syncAlbum: ['idToken'],
       listPractices: ['idToken'],
       savePractice: ['practice', 'idToken'],
       deletePractice: ['practiceId', 'idToken'],
@@ -2032,6 +2036,10 @@
             <ul class="mb-0 ps-3">${results || '<li style="color:var(--mx-muted)">尚未登記成績</li>'}</ul></div>`;
         }
       }
+      const albumUrl = ev.albumUrl || (ev.customFields && ev.customFields.album && ev.customFields.album.url) || '';
+      if (albumUrl) html += `
+        <a class="btn btn-ink w-100 mt-3" href="${esc(albumUrl)}" target="_blank" rel="noopener"><i class="bi bi-images me-2"></i>活動相簿：上傳／下載照片影片</a>
+        <div class="small text-center mt-2" style="color:var(--mx-muted)">請用登入本系統的同一個 Google 帳號開啟；大家上傳的檔案都看得到、可以下載。</div>`;
       document.getElementById('modalEventBody').innerHTML = html;
       bootstrap.Modal.getOrCreateInstance(document.getElementById('eventDetailModal')).show();
     }
@@ -3609,6 +3617,7 @@
           <td>${teamHtml}</td>
           <td style="white-space:nowrap;">${status}</td>
           <td style="text-align:center;white-space:nowrap;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button>
+            ${cf.album && cf.album.url ? `<a class="btn-mini ms-1 text-decoration-none" href="${esc(cf.album.url)}" target="_blank" rel="noopener" title="活動相簿"><i class="bi bi-images me-1"></i>相簿</a>` : ''}
             ${!past && !archived ? `<button class="btn-mini ms-1" onclick="sendConfirmMail('${esc(e.eventId)}', this)" title="依通知對象寄出參加確認信"><i class="bi bi-envelope-check me-1"></i>寄確認信</button>` : ''}
             ${archived
               ? `<button class="btn-mini ms-1" onclick="archiveEvent('${esc(e.eventId)}', false, this)" title="移回進行中"><i class="bi bi-arrow-counterclockwise me-1"></i>移回</button>`
@@ -3616,6 +3625,14 @@
             ${(cf.mailLog || []).length ? `<div class="small mt-1" style="color:var(--mx-muted)">已寄 ${esc(cf.mailLog[cf.mailLog.length - 1].at.slice(5, 16).replace('T', ' '))}</div>` : ''}</td>
         </tr>`;
       }).join('');
+    }
+
+    function syncAlbumNow(btn) {
+      setBusy(btn, true, '同步中…');
+      api('syncAlbum', idToken).then(r => {
+        toast(`相簿權限已同步：新增 ${r.added} 個帳號${r.removed ? `、移除 ${r.removed} 個` : ''}`);
+        (r.errors || []).slice(0, 3).forEach(e => toast('⚠ ' + e, true));
+      }).catch(err => toast(errMsg(err), true)).finally(() => setBusy(btn, false));
     }
 
     function sendConfirmMail(id, btn) {
