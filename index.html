@@ -594,6 +594,18 @@
     .staff-pane { display: none; }
     .staff-pane.on { display: block; }
     .staff-pane > .mx-card:first-child { margin-top: 0 !important; }
+    /* 星星公仔 */
+    @keyframes starBounce { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    .hero-star { position: absolute; right: calc(max(2%, calc(50% - 640px)) + 112px); bottom: 58px; width: 92px; height: auto; pointer-events: none; z-index: 0;
+      filter: drop-shadow(4px 4px 0 rgba(27, 20, 22, .35)); animation: starBounce 2.6s ease-in-out infinite; }
+    .gate-star { position: absolute; left: 6%; bottom: 0; width: 170px; height: auto; pointer-events: none; animation: starBounce 2.8s ease-in-out infinite; }
+    .busy-star { width: 76px; height: auto; animation: starBounce .9s ease-in-out infinite; filter: drop-shadow(3px 3px 0 rgba(27, 20, 22, .25)); }
+    @media (min-width: 769px) { .player-card { margin-right: 280px; } }
+    @media (max-width: 768px) {
+      .hero-star { width: 62px; bottom: auto; top: 30px; right: 104px; }
+      .gate-star { width: 96px; left: 2%; }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero-star, .gate-star, .busy-star { animation: none; } }
     #busyOverlay { position: fixed; inset: 0; z-index: 3000; background: rgba(27, 20, 22, .35); display: none; align-items: center; justify-content: center; }
     #busyOverlay.on { display: flex; }
     #busyOverlay .busy-card { background: #fff; border: 3px solid var(--mx-line); border-radius: 20px; box-shadow: 5px 5px 0 var(--mx-line); padding: 22px 30px; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 220px; }
@@ -649,6 +661,7 @@
   <!-- 入口：未登入 / 未註冊時只會看到這裡 -->
   <section class="gate" id="gate">
     <img src="https://michael0931107.github.io/mixcin-system/mixy.png" alt="" class="gate-mixy" aria-hidden="true">
+    <img src="https://michael0931107.github.io/mixcin-system/star_front.png" alt="" class="gate-star" aria-hidden="true">
     <div class="gate-card">
       <div class="gate-step on" id="gateLoading">
         <div class="text-center py-4" style="color:var(--mx-muted)">
@@ -720,6 +733,7 @@
   <!-- 深色主視覺 + 導覽 -->
   <section class="mx-hero">
     <img src="https://michael0931107.github.io/mixcin-system/mixy.png" alt="" class="hero-mixy" aria-hidden="true">
+    <img src="https://michael0931107.github.io/mixcin-system/star_front.png" alt="" class="hero-star" aria-hidden="true">
     <div class="container-xl px-3 px-md-4">
       <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
         <div>
@@ -1633,7 +1647,7 @@
 
   <!-- 處理中 -->
   <div id="busyOverlay" role="status" aria-live="polite">
-    <div class="busy-card"><span class="spinner-border" aria-hidden="true"></span><b id="busyText">處理中…</b><span class="small">請稍候，不要關閉頁面</span></div>
+    <div class="busy-card"><img src="https://michael0931107.github.io/mixcin-system/star_front.png" alt="" class="busy-star" aria-hidden="true"><b id="busyText">處理中…</b><span class="small">請稍候，不要關閉頁面</span></div>
   </div>
 
   <!-- 活動報名名單 -->
