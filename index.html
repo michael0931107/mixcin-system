@@ -703,7 +703,7 @@
       <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
         <div>
           <span class="hero-badge">MIXCIN REP CO.</span>
-          <h1 class="hero-title mt-3">競演團<em>大家庭</em></h1>
+          <h1 class="hero-title mt-3">競演團<em>基地</em></h1>
           <p class="hero-sub" id="heroSub">歡迎回來！</p>
         </div>
         <div class="player-card d-none" id="playerCard">
@@ -721,7 +721,7 @@
       </div>
 
       <ul class="nav mx-tabs" id="mainTab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-home" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" fill="#FFD84D"/><path d="M10 20v-5h4v5" fill="#fff"/></svg>布告欄</button></li>
+        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-home" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" fill="#FFD84D"/><path d="M10 20v-5h4v5" fill="#fff"/></svg>公佈大廳</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-tasks" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h10l-1.5 3.5L15 11H5" fill="#AF001A"/></svg>任務</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-booking" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3" fill="#fff"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.5-4.5" stroke="#AF001A"/></svg>課程預約</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button" id="calTabBtn"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3" fill="#FFD84D"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><circle cx="12" cy="15" r="2" fill="#AF001A"/></svg>活動日曆</button></li>
@@ -744,8 +744,8 @@
         <div class="sec-head">
           <div class="sec-no">00</div>
           <div>
-            <div class="eyebrow">Bulletin Board</div>
-            <h2 class="sec-title">布告欄</h2>
+            <div class="eyebrow">Main Lobby</div>
+            <h2 class="sec-title">公佈大廳</h2>
             <div class="sec-sub">最新任務、活動、討論和提到你的留言都在這裡。</div>
           </div>
         </div>
@@ -1619,6 +1619,7 @@
     // 呼叫 Apps Script 後端（doPost）
     const API_ARGS = {
       getSession: ['idToken'],
+      bootstrap: ['asNo', 'idToken'],
       registerMember: ['name', 'birthday', 'relation', 'idToken'],
       getHome: ['asNo', 'idToken'],
       getEvents: ['idToken'],
@@ -1740,7 +1741,7 @@
       fillTeamSelect(document.getElementById('memberTeamSelect'), MEMBER_TEAMS, '請選擇組別…');
       renderCategoryFields();
       resetRehearsals();
-      refreshIdentity();
+      fastStart();
       initGoogleLogin();
     });
 
@@ -1757,7 +1758,13 @@
           client_id: GOOGLE_CLIENT_ID,
           callback: function (resp) {
             idToken = resp.credential || '';
-            showGate('gateLoading');
+            const p = jwtPayload(idToken);
+            const c = readBootCache();
+            // 同一個帳號：先用上次的資料秒開大廳，背景再更新
+            if (!(p && c && c.email && String(p.email || '').toLowerCase() === c.email && paintFromCache(c))) {
+              bootPainted = false;
+              showGate('gateLoading');
+            }
             refreshIdentity();
           },
           auto_select: true
@@ -1777,6 +1784,9 @@
 
     function signOut() {
       idToken = '';
+      clearBootCache();
+      bootPainted = false;
+      bootSeq++;
       session = { email: '', isStaff: false, isMember: false, role: 'Guest', loginAvailable: session.loginAvailable };
       if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
       applyIdentityUI();
@@ -1801,23 +1811,86 @@
       });
     }
 
+    // ---------- 快速開啟：記住上一次的登入與首頁資料（只存在這台裝置，登出就清除） ----------
+    const BOOT_KEY = 'mx_boot_v1';
+    let bootPainted = false;   // 已經先用暫存畫出首頁
+    let bootSeq = 0;
+    function jwtPayload(t) {
+      try { return JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (e) { return null; }
+    }
+    function readBootCache() { try { return JSON.parse(localStorage.getItem(BOOT_KEY) || 'null'); } catch (e) { return null; } }
+    function saveBootCache(part) {
+      if (!GOOGLE_CLIENT_ID || !session.email) return;
+      try {
+        const c = readBootCache() || {};
+        const base = c.email === session.email ? c : {};
+        const next = Object.assign(base, part, { email: session.email, session: session, token: idToken, savedAt: Date.now() });
+        localStorage.setItem(BOOT_KEY, JSON.stringify(next));
+      } catch (e) { /* 無法儲存就略過 */ }
+    }
+    function clearBootCache() { try { localStorage.removeItem(BOOT_KEY); } catch (e) {} }
+
+    /** 用暫存資料先把首頁畫出來（之後連線拿到新資料會自動更新） */
+    function paintFromCache(c) {
+      if (!c || !c.session || !c.session.email) return false;
+      session = c.session;
+      bootPainted = true;
+      applyIdentityUI({ linked: c.linked || [], home: c.home || null, cached: true });
+      return true;
+    }
+
+    /** 程式一開啟：有還沒過期的登入就直接進大廳 */
+    function fastStart() {
+      if (!GOOGLE_CLIENT_ID) { refreshIdentity(); return; }
+      const c = readBootCache();
+      const p = c && c.token ? jwtPayload(c.token) : null;
+      if (p && p.email && String(p.email).toLowerCase() === c.email && p.exp * 1000 > Date.now() + 60000) {
+        idToken = c.token;
+        paintFromCache(c);
+        refreshIdentity();
+        return;
+      }
+      // 沒有可用的登入：等 Google 自動登入，太久沒回應就顯示登入按鈕
+      setTimeout(function () { if (!idToken && !session.email) applyIdentityUI(); }, 1800);
+    }
+
     function refreshIdentity() {
-      api('getSession', idToken)
-        .then(function (s) {
-          session = s || session;
+      const seq = ++bootSeq;
+      api('bootstrap', currentNo, idToken)
+        .then(function (b) {
+          if (seq !== bootSeq) return;
+          b = b || {};
+          const prevKey = session.email + '|' + session.role + '|' + session.isMember;
+          session = b.session || session;
           if (idToken && !session.email) {
             idToken = '';
+            clearBootCache();
+            bootPainted = false;
             toast('登入驗證失敗或已逾時，請重新登入', true);
+            applyIdentityUI();
+            return;
           }
-          applyIdentityUI();
+          const sameView = bootPainted && prevKey === session.email + '|' + session.role + '|' + session.isMember;
+          if (sameView) {
+            // 已經用暫存畫好了：只更新資料，不重新整理畫面
+            if (session.isMember) applyLinked(b.linked || []);
+            if (b.home) renderHome(b.home);
+            loadAfterHome();
+          } else {
+            applyIdentityUI({ linked: b.linked || [], home: b.home });
+          }
+          if (b.homeError) toast(b.homeError, true);
+          saveBootCache({ linked: b.linked || [], home: b.home });
         })
         .catch(function (err) {
+          if (seq !== bootSeq) return;
+          if (bootPainted) { toast('連線不穩，顯示的是上次的資料：' + errMsg(err), true); return; }
           showGate('gateLogin');
           toast('連線失敗：' + errMsg(err), true);
         });
     }
 
-    function applyIdentityUI() {
+    function applyIdentityUI(pre) {
       const loggedIn = !!session.email;
       const allowed = session.isStaff || session.isMember || session.isTeacher;
 
@@ -1847,10 +1920,11 @@
         return;
       }
       showGate(null);
-      startApp();
+      startApp(pre);
     }
 
-    function startApp() {
+    let staffLoaded = false;
+    function startApp(pre) {
       // 員工後台只對員工顯示
       document.getElementById('staffTabItem').classList.toggle('d-none', !session.isStaff);
       document.getElementById('rollcallTabItem').classList.toggle('d-none', !(session.isStaff || session.isTeacher));
@@ -1885,20 +1959,40 @@
       bootstrap.Tab.getOrCreateInstance(document.querySelector(`#mainTab [data-bs-target="${firstTab}"]`)).show();
       if (firstTab === '#tab-rollcall') loadRollcallSessions();
       window.scrollTo(0, 0);
-      loadEvents();
-      loadLinkedMembers().then(() => { loadHome(); loadDirectory(); });
-      if (session.isStaff) {
-        loadAdminMembersList();
-        loadRosterStatus();
-        loadStaffTools();
-        api('getTeamsAndMembers', idToken).then(m => { globalTeamMap = m || {}; }).catch(() => {});
+      if (pre) {
+        // 首頁資料已經一起拿到了，直接畫出來
+        if (session.isMember) applyLinked(pre.linked || []); else applyLinked([]);
+        renderHome(pre.home);
       }
+      staffLoaded = false;
+      if (pre && pre.cached) return;   // 暫存畫面：等連線回來再載其他分頁
+      if (pre) loadAfterHome();
+      else loadLinkedMembers().then(() => { loadHome(); loadAfterHome(); });
+    }
+
+    /** 大廳畫好之後，再慢慢載入其他分頁要用的資料 */
+    function loadAfterHome() {
+      loadEvents();
+      loadDirectory();
+      if (session.isStaff) api('getTeamsAndMembers', idToken).then(m => { globalTeamMap = m || {}; }).catch(() => {});
+      const active = document.querySelector('#mainTab .nav-link.active');
+      if (active && active.getAttribute('data-bs-target') === '#tab-staff') loadStaffArea();
+    }
+
+    // 員工後台的資料比較多，第一次打開後台時才載入
+    function loadStaffArea() {
+      if (staffLoaded || !session.isStaff) return;
+      staffLoaded = true;
+      loadAdminMembersList();
+      loadRosterStatus();
+      loadStaffTools();
       if (session.isAdmin) loadStaffList();
     }
 
     // 切換分頁時才載入該頁資料
     function onTabShown(id) {
       if (id === 'tab-home') loadHome();
+      if (id === 'tab-staff') loadStaffArea();
       if (id === 'tab-rollcall') loadRollcallSessions();
       if (id === 'tab-tasks') loadTasks();
       if (id === 'tab-family') loadDirectory();
@@ -2139,7 +2233,12 @@
     // ==========================================
     function loadLinkedMembers() {
       return api('getLinkedMembersForCurrentUser', idToken)
-        .then(list => {
+        .then(list => { applyLinked(list); saveBootCache({ linked: list }); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function applyLinked(list) {
+      {
           myLinkedList = list || [];
           if (!myLinkedList.some(m => m.studentNo === currentNo)) currentNo = myLinkedList[0] ? myLinkedList[0].studentNo : '';
           const many = myLinkedList.length > 1;
@@ -2151,8 +2250,7 @@
           updateHeroAndLabels();
           autoFillRegFormWithMember(me());
           renderCurrentProfile();
-        })
-        .catch(err => toast(errMsg(err), true));
+      }
     }
 
     function onChangeAs() {
@@ -2389,7 +2487,13 @@
     // ==========================================
     function loadHome() {
       api('getHome', currentNo, idToken)
-        .then(h => {
+        .then(h => { renderHome(h); saveBootCache({ home: h }); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function renderHome(h) {
+      if (!h) return;
+      {
           const m = me();
           document.getElementById('homePoints').innerText = m ? h.points : '—';
           renderPlayerCard(m ? h.level : null, m ? h.points : 0);
@@ -2435,8 +2539,7 @@
             <div class="lb-row"><span class="lb-rank">${i + 1}</span>${avatarHtml(r.avatar, r.name, 'avatar-sm')}
               <span>${esc(r.name)}</span><span class="lb-pts">${r.points}</span></div>`).join('')
             : '<div class="small" style="color:var(--mx-silver)">還沒有人獲得米幣</div>';
-        })
-        .catch(err => toast(errMsg(err), true));
+      }
     }
 
     // ---------- 我的排練（系統內通知） ----------
