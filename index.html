@@ -599,13 +599,28 @@
     .hero-star { position: absolute; right: calc(max(2%, calc(50% - 640px)) + 112px); bottom: 58px; width: 92px; height: auto; pointer-events: none; z-index: 0;
       filter: drop-shadow(4px 4px 0 rgba(27, 20, 22, .35)); animation: starBounce 2.6s ease-in-out infinite; }
     .gate-star { position: absolute; left: 6%; bottom: 0; width: 170px; height: auto; pointer-events: none; animation: starBounce 2.8s ease-in-out infinite; }
-    .busy-star { width: 76px; height: auto; animation: starBounce .9s ease-in-out infinite; filter: drop-shadow(3px 3px 0 rgba(27, 20, 22, .25)); }
+    /* 處理中：星星公仔跑步 */
+    .busy-runner { position: relative; width: 170px; height: 118px; }
+    .busy-run { position: absolute; left: 50%; bottom: 10px; width: 84px; height: 96px; margin-left: -42px;
+      background: url(https://michael0931107.github.io/mixcin-system/star_run.png) 0 0 / 672px 96px no-repeat; animation: runCycle .56s steps(8) infinite; }
+    @keyframes runCycle { to { background-position: -672px 0; } }
+    .busy-shadow { position: absolute; left: 50%; bottom: 4px; width: 66px; height: 12px; margin-left: -33px; border-radius: 50%; background: rgba(27, 20, 22, .18); animation: shadowPulse .28s ease-in-out infinite alternate; }
+    @keyframes shadowPulse { to { transform: scaleX(.8); opacity: .6; } }
+    .busy-runner .whoosh { position: absolute; height: 4px; border-radius: 4px; background: var(--mx-red); opacity: 0; animation: whoosh .7s linear infinite; }
+    .busy-runner .w1 { top: 34px; left: 8px; width: 26px; }
+    .busy-runner .w2 { top: 58px; right: 6px; width: 30px; animation-delay: .23s; }
+    .busy-runner .w3 { top: 80px; left: 14px; width: 20px; animation-delay: .46s; background: var(--mx-yellow); border: 1px solid var(--mx-line); }
+    @keyframes whoosh { 0% { opacity: 0; transform: translateY(-6px) scaleX(.4); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px) scaleX(1.2); } }
+    .busy-runner .dust { position: absolute; bottom: 6px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid var(--mx-line); opacity: 0; animation: dust .56s ease-out infinite; }
+    .busy-runner .d1 { left: 52px; }
+    .busy-runner .d2 { right: 52px; animation-delay: .28s; }
+    @keyframes dust { 0% { opacity: .9; transform: translateY(0) scale(.5); } 100% { opacity: 0; transform: translateY(-10px) scale(1.3); } }
     @media (min-width: 769px) { .player-card { margin-right: 280px; } }
     @media (max-width: 768px) {
       .hero-star { width: 62px; bottom: auto; top: 30px; right: 104px; }
       .gate-star { width: 96px; left: 2%; }
     }
-    @media (prefers-reduced-motion: reduce) { .hero-star, .gate-star, .busy-star { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .hero-star, .gate-star, .busy-run, .busy-runner i, .busy-shadow { animation: none; } }
     #busyOverlay { position: fixed; inset: 0; z-index: 3000; background: rgba(27, 20, 22, .35); display: none; align-items: center; justify-content: center; }
     #busyOverlay.on { display: flex; }
     #busyOverlay .busy-card { background: #fff; border: 3px solid var(--mx-line); border-radius: 20px; box-shadow: 5px 5px 0 var(--mx-line); padding: 22px 30px; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 220px; }
@@ -1647,7 +1662,7 @@
 
   <!-- 處理中 -->
   <div id="busyOverlay" role="status" aria-live="polite">
-    <div class="busy-card"><img src="https://michael0931107.github.io/mixcin-system/star_front.png" alt="" class="busy-star" aria-hidden="true"><b id="busyText">處理中…</b><span class="small">請稍候，不要關閉頁面</span></div>
+    <div class="busy-card"><div class="busy-runner" aria-hidden="true"><i class="whoosh w1"></i><i class="whoosh w2"></i><i class="whoosh w3"></i><div class="busy-shadow"></div><div class="busy-run"></div><i class="dust d1"></i><i class="dust d2"></i></div><b id="busyText">處理中…</b><span class="small">請稍候，不要關閉頁面</span></div>
   </div>
 
   <!-- 活動報名名單 -->
