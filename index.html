@@ -583,6 +583,12 @@
     body { background-image: none; line-height: 1.65; }
     .text-muted, .text-secondary { color: var(--mx-muted) !important; }
     .form-label { color: var(--mx-ink); font-weight: 700; }
+    #busyOverlay { position: fixed; inset: 0; z-index: 3000; background: rgba(27, 20, 22, .35); display: none; align-items: center; justify-content: center; }
+    #busyOverlay.on { display: flex; }
+    #busyOverlay .busy-card { background: #fff; border: 3px solid var(--mx-line); border-radius: 20px; box-shadow: 5px 5px 0 var(--mx-line); padding: 22px 30px; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 220px; }
+    #busyOverlay .spinner-border { color: var(--mx-red); width: 2.4rem; height: 2.4rem; border-width: .3rem; }
+    #busyOverlay b { font-size: calc(18px * var(--fs)); }
+    #busyOverlay .small { color: var(--mx-muted); }
     .qty-row { display: flex; align-items: center; gap: 8px; }
     .qty-row .btn-mini { width: 32px; height: 32px; padding: 0; font-weight: 900; font-size: 18px; line-height: 1; background: #fff; }
     .qty-row .btn-mini:disabled { opacity: .4; }
@@ -1569,6 +1575,29 @@
 
   <div id="toastBox"></div>
 
+  <!-- 處理中 -->
+  <div id="busyOverlay" role="status" aria-live="polite">
+    <div class="busy-card"><span class="spinner-border" aria-hidden="true"></span><b id="busyText">處理中…</b><span class="small">請稍候，不要關閉頁面</span></div>
+  </div>
+
+  <!-- 活動參加米幣 -->
+  <div class="modal fade" id="eventCoinModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-head-dark d-flex justify-content-between align-items-start">
+          <div><div class="small mb-1" style="opacity:.85">活動參加米幣</div><h5 class="fw-bold m-0" id="ecTitle"></h5></div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body px-4" id="ecBody"><div class="board-empty">載入名單中…</div></div>
+        <div class="modal-footer border-0 pt-0 d-flex justify-content-between">
+          <span class="small" id="ecCount"></span>
+          <div class="d-flex gap-2"><button type="button" class="btn btn-line" data-bs-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-mixcin" id="ecSaveBtn" onclick="saveEventCoinsNow()">發放米幣</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/locales-all.global.min.js"></script>
@@ -1644,6 +1673,29 @@
       return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
+    // 只是讀資料的動作不擋畫面；會寫入 / 送出的動作一律顯示「處理中」
+    const READ_ONLY_API = /^(get|list|my|bootstrap|fitbookPreview)/;
+    const BUSY_TEXT = {
+      saveShopItem: '商品儲存中…', redeemShopItem: '兌換中…', setRedemptionStatus: '更新兌換單…',
+      saveEvent: '活動儲存中…', sendEventConfirmation: '寄送確認信中…', setEventArchived: '更新活動中…',
+      saveEventCoins: '發放米幣中…', staffAddPoints: '發放米幣中…', saveRollCall: '送出點名中…',
+      fitbookImport: '匯入出席紀錄中…', fitbookBind: '綁定中…', submitRegistration: '報名送出中…',
+      registerMember: '註冊中…', sendMessage: '傳送中…', createPost: '發佈中…', deletePost: '刪除中…',
+      saveMemberProfile: '資料儲存中…', saveAvatar: '頭像上傳中…', syncAlbum: '同步相簿權限中…',
+      savePractice: '小團練儲存中…', deletePractice: '刪除中…', saveTask: '任務儲存中…', acceptTask: '承接任務中…'
+    };
+    let busyCount = 0, busyTimer = null;
+    function busyOn(text) {
+      busyCount++;
+      document.getElementById('busyText').textContent = text || '處理中…';
+      clearTimeout(busyTimer);
+      busyTimer = setTimeout(() => { if (busyCount > 0) document.getElementById('busyOverlay').classList.add('on'); }, 120);
+    }
+    function busyOff() {
+      busyCount = Math.max(0, busyCount - 1);
+      if (!busyCount) { clearTimeout(busyTimer); document.getElementById('busyOverlay').classList.remove('on'); }
+    }
+
     // 呼叫 Apps Script 後端（doPost）
     const API_ARGS = {
       getSession: ['idToken'],
@@ -1652,6 +1704,8 @@
       myRedemptions: ['asNo', 'idToken'],
       listRedemptions: ['idToken'],
       setRedemptionStatus: ['orderId', 'action', 'note', 'idToken'],
+      getEventCoins: ['eventId', 'idToken'],
+      saveEventCoins: ['eventId', 'keys', 'amount', 'idToken'],
       registerMember: ['name', 'birthday', 'relation', 'idToken'],
       getHome: ['asNo', 'idToken'],
       getEvents: ['idToken'],
@@ -1712,6 +1766,8 @@
     function api(fn, ...args) {
       const req = { action: fn };
       (API_ARGS[fn] || []).forEach((k, i) => { req[k] = args[i]; });
+      const busy = !READ_ONLY_API.test(fn);
+      if (busy) busyOn(BUSY_TEXT[fn]);
       // 用 text/plain 送出，避免跨網域預檢請求（Apps Script 不支援 OPTIONS）
       return fetch(CONFIG.GAS_URL, { method: 'POST', body: JSON.stringify(req), redirect: 'follow' })
         .then(r => {
@@ -1721,7 +1777,8 @@
         .then(res => {
           if (res && res.success === false && res.error) throw new Error(res.error);
           return res;
-        });
+        })
+        .finally(() => { if (busy) busyOff(); });
     }
 
     function toast(msg, isError) {
@@ -3874,6 +3931,7 @@
           <td style="white-space:nowrap;">${status}</td>
           <td style="text-align:center;white-space:nowrap;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button>
             ${cf.album && cf.album.url ? `<a class="btn-mini ms-1 text-decoration-none" href="${esc(cf.album.url)}" target="_blank" rel="noopener" title="活動相簿"><i class="bi bi-images me-1"></i>相簿</a>` : ''}
+            <button class="btn-mini ms-1" onclick="openEventCoins('${esc(e.eventId)}')" title="勾選有參加的團員發米幣"><i class="bi bi-coin me-1"></i>參加米幣</button>
             ${!past && !archived ? `<button class="btn-mini ms-1" onclick="sendConfirmMail('${esc(e.eventId)}', this)" title="依通知對象寄出參加確認信"><i class="bi bi-envelope-check me-1"></i>寄確認信</button>` : ''}
             ${archived
               ? `<button class="btn-mini ms-1" onclick="archiveEvent('${esc(e.eventId)}', false, this)" title="移回進行中"><i class="bi bi-arrow-counterclockwise me-1"></i>移回</button>`
@@ -3881,6 +3939,65 @@
             ${(cf.mailLog || []).length ? `<div class="small mt-1" style="color:var(--mx-muted)">已寄 ${esc(cf.mailLog[cf.mailLog.length - 1].at.slice(5, 16).replace('T', ' '))}</div>` : ''}</td>
         </tr>`;
       }).join('');
+    }
+
+    // ---------- 活動參加米幣 ----------
+    let ecCurrent = null;
+    function openEventCoins(eventId) {
+      document.getElementById('ecTitle').textContent = '';
+      document.getElementById('ecBody').innerHTML = '<div class="board-empty"><span class="spinner-border spinner-border-sm me-2"></span>載入名單中…</div>';
+      document.getElementById('ecCount').textContent = '';
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('eventCoinModal')).show();
+      api('getEventCoins', eventId, idToken).then(d => {
+        ecCurrent = d;
+        document.getElementById('ecTitle').textContent = `${d.event.date}　${d.event.title}`;
+        const first = !d.awardedCount;
+        const row = m => `
+          <label class="d-flex align-items-center gap-2 py-2 px-1 ec-row" data-name="${esc(m.name)}" style="border-bottom:1px solid var(--mx-sand);cursor:pointer">
+            <input type="checkbox" class="form-check-input m-0 ec-chk" style="width:22px;height:22px" value="${esc(m.key)}" ${(first ? m.registered : m.awarded) ? 'checked' : ''} onchange="ecCountUpdate()">
+            <span class="fw-bold flex-grow-1">${esc(m.name)}${m.registered ? ' <span class="tag tag-soft ms-1">有報名</span>' : ''}${m.awarded ? ' <span class="tag tag-gold ms-1">已發</span>' : ''}</span>
+            <span class="small">${groupHtml(m.group)}</span>
+          </label>`;
+        document.getElementById('ecBody').innerHTML = `
+          <div class="notice mb-3" style="font-size:calc(13px * var(--fs))"><i class="bi bi-info-circle-fill"></i><div>
+            ${first ? '有報名的團員已先幫你勾好，沒報名但有到的直接勾上。' : '這個活動已經發過米幣，修改勾選後再送出即可：新勾的會加、取消的會收回。'}</div></div>
+          <div class="row g-2 align-items-end mb-2">
+            <div class="col-5"><label class="form-label">每人米幣</label><input type="number" class="form-control" id="ecAmount" min="1" max="100" value="${d.amount}" oninput="ecCountUpdate()"></div>
+            <div class="col-7"><label class="form-label">搜尋</label><input type="search" class="form-control" placeholder="輸入姓名" oninput="ecFilter(this.value)"></div>
+          </div>
+          <div class="d-flex gap-1 mb-1"><button class="btn-mini" onclick="ecAll(true)">全選</button><button class="btn-mini" onclick="ecAll(false)">全不選</button><button class="btn-mini" onclick="ecRegistered()">只勾有報名的</button></div>
+          ${d.members.length ? d.members.map(row).join('') : '<div class="board-empty">名單是空的</div>'}`;
+        ecCountUpdate();
+      }).catch(err => { document.getElementById('ecBody').innerHTML = ''; toast(errMsg(err), true); });
+    }
+    function ecAll(v) { document.querySelectorAll('.ec-row:not(.d-none) .ec-chk').forEach(c => { c.checked = v; }); ecCountUpdate(); }
+    function ecRegistered() {
+      const reg = {}; (ecCurrent.members || []).forEach(m => { reg[m.key] = m.registered; });
+      document.querySelectorAll('.ec-chk').forEach(c => { c.checked = !!reg[c.value]; }); ecCountUpdate();
+    }
+    function ecFilter(q) {
+      q = (q || '').trim();
+      document.querySelectorAll('.ec-row').forEach(r => r.classList.toggle('d-none', !!q && !r.dataset.name.includes(q)));
+    }
+    function ecCountUpdate() {
+      const n = document.querySelectorAll('.ec-chk:checked').length;
+      const amt = Number((document.getElementById('ecAmount') || {}).value) || 0;
+      document.getElementById('ecCount').innerHTML = `已勾選 <b>${n}</b> 人，每人 +${amt} 米幣`;
+    }
+    function saveEventCoinsNow() {
+      if (!ecCurrent) return;
+      const keys = [...document.querySelectorAll('.ec-chk:checked')].map(c => c.value);
+      const amt = Number(document.getElementById('ecAmount').value) || 0;
+      const btn = document.getElementById('ecSaveBtn');
+      setBusy(btn, true, '發放中…');
+      api('saveEventCoins', ecCurrent.event.id, keys, amt, idToken).then(r => {
+        const parts = [];
+        if (r.added) parts.push(`${r.added} 人 +${amt}`);
+        if (r.updated) parts.push(`${r.updated} 人改成 ${amt}`);
+        if (r.removed) parts.push(`${r.removed} 人收回`);
+        toast(`完成！共 ${r.total} 人有參加米幣${parts.length ? '（' + parts.join('、') + '）' : ''}`);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('eventCoinModal')).hide();
+      }).catch(err => toast(errMsg(err), true)).finally(() => setBusy(btn, false));
     }
 
     function syncAlbumNow(btn) {
