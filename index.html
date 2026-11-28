@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>MIXCIN 競演團 | MIXCIN Rep Co.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2A3038">
+  <meta name="theme-color" content="#AF001A">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="MIXCIN">
@@ -21,7 +21,7 @@
     })();
   </script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
   <style>
@@ -483,6 +483,116 @@
       color: #F3DC8A; border-radius: 999px; padding: 4px 14px; font-weight: 700; letter-spacing: 1px;
     }
     .student-no-chip b { color: #fff; font-size: 17px; letter-spacing: 2px; }
+
+    /* ==========================================
+       THEME：街頭任務冒險（依 2026 MIXCIN 視覺識別手冊）
+       活力紅 #AF001A ＋ 明亮黃 #FFD84D ＋ 白，圓角、粗描邊、貼紙陰影
+       ========================================== */
+    :root {
+      --mx-ink: #1B1416; --mx-line: #1B1416;
+      --mx-charcoal: #AF001A; --mx-slate: #3B2C30; --mx-muted: #6B5A5E; --mx-silver: #9C8A8E; --mx-mist: #FFE3E6;
+      --mx-red: #AF001A; --mx-red-deep: #7D0013; --mx-red-soft: #FFE3E6;
+      --mx-paper: #FFF6E3; --mx-sand: #EAD9B5; --mx-card: #FFFFFF;
+      --mx-gold: #C48A00; --mx-yellow: #FFD84D;
+      --mx-radius: 20px; --mx-shadow: 4px 4px 0 #1B1416;
+    }
+    body {
+      font-family: 'Zen Maru Gothic', 'Noto Sans TC', system-ui, sans-serif;
+      background-color: #FFF6E3;
+      background-image: radial-gradient(#F1DDAE 1.4px, transparent 1.6px); background-size: 14px 14px;
+    }
+    .eyebrow { color: var(--mx-red); }
+    .mx-topbar { background: #fff; border-bottom: 3px solid var(--mx-line); }
+    .user-pill { border: 2px solid var(--mx-line); background: #fff; }
+    .btn-ghost { border: 2px solid var(--mx-line) !important; border-radius: 999px; background: #fff; color: var(--mx-ink); font-weight: 700; }
+
+    .mx-hero {
+      background-color: #AF001A;
+      background-image: radial-gradient(rgba(255, 216, 77, .28) 1.6px, transparent 1.8px); background-size: 12px 12px;
+      border-bottom: 3px solid var(--mx-line);
+    }
+    .mx-hero::after { content: none; }
+    .hero-mixy { position: absolute; right: max(2%, calc(50% - 640px)); bottom: 60px; width: 118px; height: auto; pointer-events: none; z-index: 0; filter: drop-shadow(4px 4px 0 rgba(27, 20, 22, .35)); }
+    .mx-hero .container-xl { position: relative; z-index: 1; }
+    .hero-badge { background: var(--mx-yellow); color: var(--mx-ink); border: 2.5px solid var(--mx-line); border-radius: 10px; box-shadow: 3px 3px 0 var(--mx-line); transform: rotate(-2deg); font-weight: 900; letter-spacing: .12em; font-size: 12px; }
+    .hero-title { text-shadow: 3px 3px 0 var(--mx-line); }
+    .hero-title em { color: var(--mx-yellow); }
+    .hero-sub { color: #FFE9EC; font-weight: 500; }
+    .player-card { background: #fff; color: var(--mx-ink); border: 3px solid var(--mx-line); border-radius: 20px; box-shadow: 4px 4px 0 var(--mx-line); padding: 12px 16px; min-width: 250px; margin-right: 180px; margin-bottom: 18px; }
+    .player-card .lv { background: var(--mx-red); color: #fff; font-weight: 900; font-size: 14px; border: 2px solid var(--mx-line); border-radius: 999px; padding: 1px 10px; }
+    .exp-bar { height: 14px; background: var(--mx-red-soft); border: 2px solid var(--mx-line); border-radius: 999px; overflow: hidden; }
+    .exp-bar > div { height: 100%; background: var(--mx-yellow); border-right: 2px solid var(--mx-line); border-radius: 999px; transition: width .6s; }
+    .coin-pill { display: inline-flex; align-items: center; gap: 5px; background: var(--mx-yellow); border: 2px solid var(--mx-line); border-radius: 999px; padding: 2px 10px 2px 3px; font-weight: 900; box-shadow: 2px 2px 0 var(--mx-line); }
+    .coin { width: 1.2em; height: 1.2em; vertical-align: -0.2em; flex: none; }
+
+    .mx-tabs { gap: 8px; padding-bottom: 10px; }
+    .mx-tabs .nav-link { background: #fff; color: var(--mx-ink); border: 2.5px solid var(--mx-line); border-radius: 14px; box-shadow: 3px 3px 0 var(--mx-line); padding: 7px 14px; font-weight: 900; display: inline-flex; align-items: center; gap: 6px; }
+    .mx-tabs .nav-link:hover { color: var(--mx-red); background: #fff; }
+    .mx-tabs .nav-link.active { background: var(--mx-yellow); color: var(--mx-ink); }
+    .mx-tabs .nav-link.active::before { content: none; }
+    .mx-tabs .nav-link .ico { width: 22px; height: 22px; flex: none; }
+    .mx-tabs .nav-link > i.bi { display: none; }
+
+    .sec-no { background: var(--mx-red); color: #fff; font-size: 26px; min-width: 54px; height: 54px; border: 3px solid var(--mx-line); border-radius: 16px; box-shadow: 3px 3px 0 var(--mx-line); display: flex; align-items: center; justify-content: center; letter-spacing: 0; transform: rotate(-4deg); line-height: 1; }
+    .sec-title { font-weight: 900; }
+
+    .mx-card, .stat-tile, .fam-card, .post-card, .soon-tile, .tracker-box { border: 3px solid var(--mx-line) !important; border-radius: var(--mx-radius) !important; box-shadow: var(--mx-shadow); }
+    .tracker-box { background: #FFFBEF; }
+    .mx-card-dark, .stat-tile.dark, .profile-hero {
+      background-color: var(--mx-red) !important; color: #fff;
+      background-image: radial-gradient(rgba(255, 216, 77, .25) 1.6px, transparent 1.8px); background-size: 12px 12px;
+      border: 3px solid var(--mx-line) !important; border-radius: var(--mx-radius); box-shadow: var(--mx-shadow);
+    }
+    .stat-tile .v { color: var(--mx-red); }
+    .stat-tile.dark .v { color: var(--mx-yellow); }
+    .avatar-xl { border: 3px solid var(--mx-line); background: var(--mx-yellow); color: var(--mx-ink); box-shadow: 3px 3px 0 var(--mx-line); }
+    .avatar { border: 2px solid var(--mx-line); }
+    .board-item { border-bottom: 2px dashed var(--mx-sand); }
+    .board-item .date { background: #fff; border: 2px solid var(--mx-line); border-radius: 12px; color: var(--mx-ink); }
+    .board-item .date b { color: var(--mx-red); }
+
+    .form-control, .form-select { border: 2px solid var(--mx-line); border-radius: 12px; }
+    .form-control:focus, .form-select:focus { border-color: var(--mx-red); box-shadow: 3px 3px 0 var(--mx-red); }
+    .form-check-input { border: 2px solid var(--mx-line); }
+
+    .btn-mixcin { background: var(--mx-red); border: 3px solid var(--mx-line); border-radius: 16px; box-shadow: 3px 3px 0 var(--mx-line); font-weight: 900; }
+    .btn-mixcin:hover, .btn-mixcin:focus { background: #C4001E; color: #fff; }
+    .btn-mixcin:active, .btn-line:active, .btn-mini:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--mx-line); }
+    .btn-mixcin:disabled { background: var(--mx-silver); box-shadow: none; }
+    .btn-ink { background: var(--mx-yellow); color: var(--mx-ink); border: 3px solid var(--mx-line); border-radius: 16px; box-shadow: 3px 3px 0 var(--mx-line); font-weight: 900; }
+    .btn-ink:hover { background: #FFE27A; color: var(--mx-ink); }
+    .btn-line { border: 2.5px solid var(--mx-line); color: var(--mx-ink); border-radius: 14px; }
+    .btn-line:hover { border-color: var(--mx-line); color: var(--mx-red); background: #FFFBEF; }
+    .btn-mini { border: 2px solid var(--mx-line); color: var(--mx-ink); border-radius: 10px; box-shadow: 2px 2px 0 var(--mx-line); }
+    .btn-mini:hover { background: var(--mx-yellow); color: var(--mx-ink); }
+
+    .tag { border: 2px solid var(--mx-line); border-radius: 8px; font-weight: 900; }
+    .tag-gold { background: var(--mx-yellow); color: var(--mx-ink); border-color: var(--mx-line); }
+    .tag-soft { background: var(--mx-red-soft); color: var(--mx-red-deep); }
+    .tag-ink { background: var(--mx-ink); }
+    .tag-line { border-color: var(--mx-line); color: var(--mx-slate); }
+    .notice { border: 2.5px solid var(--mx-line); border-left-width: 8px; border-radius: 14px; background: #FFFBEF; }
+
+    .modal-content { border: 3px solid var(--mx-line); border-radius: 22px; box-shadow: 5px 5px 0 var(--mx-line); }
+    .modal-head-dark { background: var(--mx-red); border-bottom: 3px solid var(--mx-line); }
+    .table-custom thead th { background: var(--mx-yellow) !important; color: var(--mx-ink) !important; border-bottom: 2px solid var(--mx-line) !important; }
+    .mx-toast { border: 2.5px solid var(--mx-line); border-radius: 14px; box-shadow: 3px 3px 0 var(--mx-line); font-weight: 700; }
+
+    .gate { background-color: var(--mx-red); background-image: radial-gradient(rgba(255, 216, 77, .28) 1.6px, transparent 1.8px); background-size: 12px 12px; }
+    .gate::after { content: none; }
+    .gate-mixy { position: absolute; right: 6%; bottom: 0; width: 220px; height: auto; pointer-events: none; }
+    .gate-card { border: 3px solid var(--mx-line); border-radius: 26px; box-shadow: 6px 6px 0 var(--mx-line); }
+    .lb-pts { color: var(--mx-red); }
+    .mx-card-dark .lb-row, .mx-card-dark .lb-row span:not(.avatar) { color: #fff; }
+    .mx-card-dark .lb-row { border-color: rgba(255, 255, 255, .25); }
+    .mx-card-dark .lb-pts, .mx-card-dark .lb-rank { color: var(--mx-yellow) !important; }
+    .mx-card-dark .board-head { color: #fff; }
+    .mx-hero { padding-top: 46px; }
+    @media (max-width: 768px) {
+      .hero-mixy { width: 92px; bottom: auto; top: 14px; right: 10px; }
+      .player-card { margin-right: 0; width: 100%; }
+      .gate-mixy { width: 120px; right: 2%; }
+    }
   </style>
 </head>
 <body>
@@ -510,6 +620,7 @@
 
   <!-- 入口：未登入 / 未註冊時只會看到這裡 -->
   <section class="gate" id="gate">
+    <img src="https://michael0931107.github.io/mixcin-system/mixy.png" alt="" class="gate-mixy" aria-hidden="true">
     <div class="gate-card">
       <div class="gate-step on" id="gateLoading">
         <div class="text-center py-4" style="color:var(--mx-muted)">
@@ -580,12 +691,21 @@
   <div id="appRoot" class="d-none">
   <!-- 深色主視覺 + 導覽 -->
   <section class="mx-hero">
+    <img src="https://michael0931107.github.io/mixcin-system/mixy.png" alt="" class="hero-mixy" aria-hidden="true">
     <div class="container-xl px-3 px-md-4">
       <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
         <div>
-          <span class="hero-badge">MIXCIN BOARD</span>
-          <h1 class="hero-title">競演團<em>大家庭</em></h1>
+          <span class="hero-badge">MIXCIN REP CO.</span>
+          <h1 class="hero-title mt-3">競演團<em>大家庭</em></h1>
           <p class="hero-sub" id="heroSub">歡迎回來！</p>
+        </div>
+        <div class="player-card d-none" id="playerCard">
+          <div class="d-flex align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2"><span class="lv" id="pcLv">Lv.1</span><b id="pcName">新手舞者</b></div>
+            <span class="coin-pill"><svg class="coin" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11.5" fill="#FFD84D" stroke="#1B1416" stroke-width="2"/><circle cx="13" cy="13" r="8" fill="#FFE98A" stroke="#C9A227" stroke-width="1.4"/><path d="M8.5 17V9.5l4.5 5 4.5-5V17" fill="none" stroke="#AF001A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="pcCoins">0</span></span>
+          </div>
+          <div class="exp-bar mt-2"><div id="pcBar" style="width:0%"></div></div>
+          <div class="d-flex justify-content-between small fw-bold mt-1" style="color:var(--mx-muted)"><span id="pcClasses">累積出席 0 堂</span><span id="pcNext"></span></div>
         </div>
         <div class="as-box d-none" id="asBox">
           <label class="small d-block mb-1" style="color:var(--mx-mist)">目前使用身分</label>
@@ -594,17 +714,17 @@
       </div>
 
       <ul class="nav mx-tabs" id="mainTab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-home" data-bs-toggle="tab" type="button"><i class="bi bi-grid-1x2-fill"></i>布告欄</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-tasks" data-bs-toggle="tab" type="button"><i class="bi bi-flag-fill"></i>任務</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-booking" data-bs-toggle="tab" type="button"><i class="bi bi-calendar-check-fill"></i>課程預約</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button" id="calTabBtn"><i class="bi bi-calendar3"></i>活動日曆</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-family" data-bs-toggle="tab" type="button"><i class="bi bi-people-fill"></i>大家庭</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-forum" data-bs-toggle="tab" type="button"><i class="bi bi-chat-square-text-fill"></i>討論區</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-dm" data-bs-toggle="tab" type="button"><i class="bi bi-envelope-heart-fill"></i>悄悄話<span class="nav-badge d-none" id="dmBadge"></span></button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-shop" data-bs-toggle="tab" type="button"><i class="bi bi-bag-heart-fill"></i>積分商店</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-member" data-bs-toggle="tab" type="button"><i class="bi bi-person-badge-fill"></i>我的檔案</button></li>
-        <li class="nav-item d-none" id="rollcallTabItem"><button class="nav-link" data-bs-target="#tab-rollcall" data-bs-toggle="tab" type="button"><i class="bi bi-clipboard-check-fill"></i>點名</button></li>
-        <li class="nav-item d-none" id="staffTabItem"><button class="nav-link" data-bs-target="#tab-staff" data-bs-toggle="tab" type="button"><i class="bi bi-shield-lock-fill"></i>員工後台</button></li>
+        <li class="nav-item"><button class="nav-link active" data-bs-target="#tab-home" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" fill="#FFD84D"/><path d="M10 20v-5h4v5" fill="#fff"/></svg>布告欄</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-tasks" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h10l-1.5 3.5L15 11H5" fill="#AF001A"/></svg>任務</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-booking" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3" fill="#fff"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.2 2.2 4.5-4.5" stroke="#AF001A"/></svg>課程預約</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-calendar" data-bs-toggle="tab" type="button" id="calTabBtn"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3" fill="#FFD84D"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><circle cx="12" cy="15" r="2" fill="#AF001A"/></svg>活動日曆</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-family" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="9" r="3.2" fill="#fff"/><circle cx="16.5" cy="9.5" r="2.7" fill="#FFD84D"/><path d="M2.5 19c.8-3.4 3-5 5.5-5s4.7 1.6 5.5 5zM14 18.5c.5-2.6 1.8-4 3.6-4 1.9 0 3.2 1.4 3.8 4z" fill="#AF001A"/></svg>大家庭</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-forum" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="#fff"/><path d="M8 10h8" stroke="#AF001A"/></svg>討論區</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-dm" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3" fill="#FFE3E6"/><path d="M3.5 8l8.5 6 8.5-6" stroke="#AF001A"/></svg>悄悄話<span class="nav-badge d-none" id="dmBadge"></span></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-shop" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6z" fill="#FFD84D"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>道具商店</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-target="#tab-member" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="#FFD84D"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="#AF001A"/></svg>我的檔案</button></li>
+        <li class="nav-item d-none" id="rollcallTabItem"><button class="nav-link" data-bs-target="#tab-rollcall" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="18" rx="3" fill="#fff"/><path d="M9 3.5h6v3H9z" fill="#FFD84D"/><path d="M8.5 13l2.2 2.2 4.5-4.5" stroke="#AF001A"/></svg>點名</button></li>
+        <li class="nav-item d-none" id="staffTabItem"><button class="nav-link" data-bs-target="#tab-staff" data-bs-toggle="tab" type="button"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B1416" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z" fill="#AF001A"/><path d="M9 12l2 2 4-4" stroke="#fff"/></svg>員工後台</button></li>
       </ul>
     </div>
   </section>
@@ -629,7 +749,7 @@
         </div>
 
         <div class="row g-3 mb-3">
-          <div class="col-6 col-lg-3"><div class="stat-tile"><div class="k">我的積分</div><div class="v" id="homePoints">—</div></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-tile"><div class="k">我的米幣</div><div class="v" id="homePoints">—</div></div></div>
           <div class="col-6 col-lg-3"><div class="stat-tile dark" onclick="goTab('tab-dm')"><div class="k">未讀悄悄話</div><div class="v" id="homeUnread">—</div></div></div>
           <div class="col-6 col-lg-3"><div class="stat-tile" onclick="goTab('tab-tasks')"><div class="k">進行中的任務</div><div class="v" id="homeTaskCount">—</div></div></div>
           <div class="col-6 col-lg-3"><div class="stat-tile"><div class="k">目前位階</div><div class="v" id="homeRank">—</div></div></div>
@@ -660,11 +780,11 @@
               <div id="homeMentions" class="board-list"></div>
             </div>
             <div class="mx-card-dark p-4 mb-3">
-              <div class="board-head light"><span><i class="bi bi-trophy-fill" style="color:var(--mx-gold)"></i>積分排行榜</span></div>
+              <div class="board-head light"><span><i class="bi bi-trophy-fill" style="color:var(--mx-gold)"></i>米幣排行榜</span></div>
               <div id="homeLeaderboard"></div>
             </div>
             <div class="row g-3">
-              <div class="col-6"><div class="soon-tile" onclick="goTab('tab-shop')"><i class="bi bi-bag-heart-fill"></i><b>積分商店</b><span>即將開放兌換</span></div></div>
+              <div class="col-6"><div class="soon-tile" onclick="goTab('tab-shop')"><i class="bi bi-bag-heart-fill"></i><b>道具商店</b><span>即將開放兌換</span></div></div>
               <div class="col-6"><div class="soon-tile locked"><i class="bi bi-shield-shaded"></i><b>公會</b><span>敬請期待</span></div></div>
             </div>
           </div>
@@ -678,7 +798,7 @@
           <div>
             <div class="eyebrow">Missions</div>
             <h2 class="sec-title">任務欄</h2>
-            <div class="sec-sub">承接任務、完成挑戰就能拿積分；承接後失敗會扣分，想清楚再接喔！</div>
+            <div class="sec-sub">承接任務、完成挑戰就能拿米幣；承接後失敗會扣分，想清楚再接喔！</div>
           </div>
         </div>
         <div class="row g-3">
@@ -707,7 +827,7 @@
             <div class="mx-card-dark p-4 h-100">
               <div class="eyebrow" style="color:var(--mx-gold)">FitBook · MIXCIN 雙星館</div>
               <h3 class="fw-bold mt-1 mb-2" style="color:#fff">預約常態課</h3>
-              <div class="mb-3" style="color:var(--mx-mist)">選好課程後用你的團員課卡預約，上課記得在現場<b style="color:#fff">簽到</b>，才會累積積分（每堂 +1）。</div>
+              <div class="mb-3" style="color:var(--mx-mist)">選好課程後用你的團員課卡預約，上課記得在現場<b style="color:#fff">簽到</b>，才會累積米幣（每堂 +1）。</div>
               <a class="btn btn-mixcin btn-lg px-4" href="https://www.fit-book.com.tw/mixcin/352" target="_blank" rel="noopener"><i class="bi bi-calendar-check me-2"></i>前往 FitBook 預約課程</a>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <a class="btn btn-line btn-sm" style="background:#fff" href="https://www.fit-book.com.tw/mixcin/member/reservation/352" target="_blank" rel="noopener"><i class="bi bi-list-check me-1"></i>我的預約</a>
@@ -720,17 +840,17 @@
           <div class="col-lg-5">
             <div class="mx-card p-4 mb-3">
               <div class="board-head"><span><i class="bi bi-people-fill" style="color:var(--mx-red)"></i>我的小團練（兩週內）</span></div>
-              <div class="small mb-2" style="color:var(--mx-muted)">小團練不用在 FitBook 預約，直接到場；老師點名後每堂 +1 分。</div>
+              <div class="small mb-2" style="color:var(--mx-muted)">小團練不用在 FitBook 預約，直接到場；老師點名後每堂 +1 米幣。</div>
               <div id="myPracticeList" class="board-list"><div class="board-empty">目前沒有排定的小團練</div></div>
             </div>
             <div class="mx-card p-4">
-              <div class="board-head"><span><i class="bi bi-stars" style="color:var(--mx-gold)"></i>上課積分怎麼算</span></div>
+              <div class="board-head"><span><i class="bi bi-stars" style="color:var(--mx-gold)"></i>上課米幣怎麼算</span></div>
               <ul class="small mb-0 ps-3" style="color:var(--mx-slate);line-height:1.9">
-                <li>用以下課卡上課並<b>簽到</b>，每堂 +1 分：<span id="bookingCards" class="fw-bold">—</span></li>
+                <li>用以下課卡上課並<b>簽到</b>，每堂 +1 米幣：<span id="bookingCards" class="fw-bold">—</span></li>
                 <li>一晚上三堂就是 +3，沒簽到不算分。</li>
                 <li>小團練由老師點名，出席每堂 +1。</li>
-                <li>積分由工作人員每週從 FitBook 匯入，可在「我的檔案」查看明細。</li>
-                <li>累積的積分可以到「積分商店」兌換課程或商品。</li>
+                <li>米幣由工作人員每週從 FitBook 匯入，可在「我的檔案」查看明細。</li>
+                <li>累積的米幣可以到「道具商店」兌換課程或商品。</li>
               </ul>
             </div>
           </div>
@@ -867,17 +987,17 @@
         </div>
       </div>
 
-      <!-- 積分商店 -->
+      <!-- 道具商店 -->
       <div class="tab-pane fade" id="tab-shop">
         <div class="sec-head">
           <div class="sec-no">06</div>
           <div>
             <div class="eyebrow">Point Shop</div>
-            <h2 class="sec-title">積分商店</h2>
-            <div class="sec-sub">上課、比賽、活動和任務都能累積積分，之後可以在這裡兌換商品。</div>
+            <h2 class="sec-title">道具商店</h2>
+            <div class="sec-sub">上課、比賽、活動和任務都能累積米幣，之後可以在這裡兌換商品。</div>
           </div>
         </div>
-        <div class="notice mb-3"><i class="bi bi-hourglass-split"></i><div><b>兌換功能即將開放！</b>先看看有哪些好東西，努力存積分吧。你目前有 <b id="shopPoints">—</b> 分。</div></div>
+        <div class="notice mb-3"><i class="bi bi-hourglass-split"></i><div><b>兌換功能即將開放！</b>先看看有哪些好東西，努力存米幣吧。你目前有 <b id="shopPoints">—</b> 分。</div></div>
         <div class="row g-3" id="shopGrid"></div>
       </div>
 
@@ -888,7 +1008,7 @@
           <div>
             <div class="eyebrow">My Profile</div>
             <h2 class="sec-title">我的檔案</h2>
-            <div class="sec-sub">個人資料、帳號綁定、積分紀錄與考核成績。</div>
+            <div class="sec-sub">個人資料、帳號綁定、米幣紀錄與考核成績。</div>
           </div>
         </div>
 
@@ -1021,7 +1141,7 @@
             <div class="mx-card-dark p-4 mb-3">
               <div class="eyebrow mb-1" style="color:var(--mx-mist)">Points</div>
               <div class="score-big" id="profilePoints">0</div>
-              <div class="small mt-1" style="color:var(--mx-mist)">積分紀錄</div>
+              <div class="small mt-1" style="color:var(--mx-mist)">米幣紀錄</div>
               <div id="pointHistory" class="mt-2"></div>
             </div>
 
@@ -1052,7 +1172,7 @@
           <div>
             <div class="eyebrow">Roll Call</div>
             <h2 class="sec-title">小團練點名</h2>
-            <div class="sec-sub">上完課勾選出席的團員再送出，每人自動 +1 分。勾錯可以重新點，系統會自動修正積分。</div>
+            <div class="sec-sub">上完課勾選出席的團員再送出，每人自動 +1 米幣。勾錯可以重新點，系統會自動修正米幣。</div>
           </div>
         </div>
         <div class="row g-3">
@@ -1267,7 +1387,7 @@
             <div class="mb-3">
               <div class="eyebrow">Small Group Practice</div>
               <h4 class="fw-bold m-0">小團練排程</h4>
-              <div class="small mt-1" style="color:var(--mx-muted)">設定每週固定時段，系統自動產生每一堂、登記到教室日曆，並寄日曆邀請給團員。老師在「點名」頁點名，出席每堂 +1 分。</div>
+              <div class="small mt-1" style="color:var(--mx-muted)">設定每週固定時段，系統自動產生每一堂、登記到教室日曆，並寄日曆邀請給團員。老師在「點名」頁點名，出席每堂 +1 米幣。</div>
             </div>
             <form id="practiceForm" class="tracker-box mb-3" onsubmit="savePracticeForm(event)">
               <input type="hidden" id="prId">
@@ -1321,17 +1441,17 @@
             <div id="fbResult" class="mt-3"></div>
           </div>
 
-          <!-- 積分發放 -->
+          <!-- 米幣發放 -->
           <div class="mx-card p-4 mt-4">
             <div class="mb-3">
               <div class="eyebrow">Points</div>
-              <h4 class="fw-bold m-0">積分發放</h4>
+              <h4 class="fw-bold m-0">米幣發放</h4>
               <div class="small mt-1" style="color:var(--mx-muted)">上課、比賽、活動都可以在這裡加分；輸入負數就是扣分。</div>
             </div>
             <div class="row g-2 align-items-end">
               <div class="col-md-4"><label class="form-label">團員</label><select class="form-select" id="ptStudent"></select></div>
               <div class="col-md-2"><label class="form-label">類別</label><select class="form-select" id="ptSource"><option>上課</option><option>比賽</option><option>活動</option><option>其他</option></select></div>
-              <div class="col-md-2"><label class="form-label">積分</label><input type="number" class="form-control" id="ptDelta" value="10"></div>
+              <div class="col-md-2"><label class="form-label">米幣</label><input type="number" class="form-control" id="ptDelta" value="10"></div>
               <div class="col-md-2"><label class="form-label">說明</label><input type="text" class="form-control" id="ptReason" maxlength="100" placeholder="11 月出席"></div>
               <div class="col-md-2"><button type="button" class="btn btn-mixcin w-100" onclick="giveP()">送出</button></div>
             </div>
@@ -1341,13 +1461,13 @@
           <div class="mx-card p-4 mt-4">
             <div class="mb-3">
               <div class="eyebrow">Shop Items</div>
-              <h4 class="fw-bold m-0">積分商店商品</h4>
+              <h4 class="fw-bold m-0">道具商店商品</h4>
               <div class="small mt-1" style="color:var(--mx-muted)">目前團員只能瀏覽，兌換功能尚未開放。</div>
             </div>
             <div class="row g-2 align-items-end mb-3">
               <input type="hidden" id="shopIdInput">
               <div class="col-md-4"><label class="form-label">商品名稱</label><input type="text" class="form-control" id="shopNameInput" maxlength="60"></div>
-              <div class="col-md-2"><label class="form-label">所需積分</label><input type="number" class="form-control" id="shopCostInput" min="0"></div>
+              <div class="col-md-2"><label class="form-label">所需米幣</label><input type="number" class="form-control" id="shopCostInput" min="0"></div>
               <div class="col-md-2"><label class="form-label">庫存（空白=不限）</label><input type="number" class="form-control" id="shopStockInput" min="0"></div>
               <div class="col-md-2"><label class="form-label">上架</label><select class="form-select" id="shopActiveInput"><option value="1">上架</option><option value="0">下架</option></select></div>
               <div class="col-md-2"><label class="form-label">圖片</label><input type="file" class="form-control" accept="image/*" id="shopImageInput"></div>
@@ -2030,6 +2150,19 @@
       onTabShown(active ? active.getAttribute('data-bs-target').slice(1) : 'tab-home');
     }
 
+    // 首頁玩家卡：等級（依累積出席堂數）＋ 米幣
+    function renderPlayerCard(lv, coins) {
+      const pc = document.getElementById('playerCard');
+      if (!lv) { pc.classList.add('d-none'); return; }
+      pc.classList.remove('d-none');
+      document.getElementById('pcLv').textContent = 'Lv.' + lv.lv;
+      document.getElementById('pcName').textContent = lv.name;
+      document.getElementById('pcCoins').textContent = Number(coins || 0).toLocaleString();
+      document.getElementById('pcBar').style.width = lv.progress + '%';
+      document.getElementById('pcClasses').textContent = `累積出席 ${lv.classes} 堂`;
+      document.getElementById('pcNext').textContent = lv.nextAt ? `再 ${lv.toNext} 堂升 Lv.${lv.lv + 1}` : '已達最高等級！';
+    }
+
     function updateHeroAndLabels() {
       const m = me();
       document.getElementById('heroSub').textContent = m
@@ -2077,6 +2210,8 @@
       document.getElementById('profileName').innerText = p.name || '—';
       document.getElementById('profileAvatar').innerHTML = p.avatar ? `<img src="${p.avatar.startsWith('data:image/') ? p.avatar : ''}" alt="">` : '<i class="bi bi-person-fill"></i>';
       const tags = [];
+      const lvInfo = p.level || ((me() && me().studentNo === p.studentNo) ? me().level : null);
+      if (lvInfo) tags.push(`<span class="tag tag-gold">Lv.${lvInfo.lv} ${esc(lvInfo.name)}</span>`);
       if (p.team) tags.push(`<span class="tag tag-red">${groupHtml(p.team)}</span>`);
       if (p.title) tags.push(`<span class="tag tag-gray">${esc(p.title)}</span>`);
       if (p.rank) tags.push(rankBadge(p.rank));
@@ -2170,7 +2305,7 @@
             <div class="d-flex justify-content-between small py-1" style="border-bottom:1px solid rgba(255,255,255,.08)">
               <span>${esc(h.reason)}<span style="color:var(--mx-silver)"> · ${esc(h.at.slice(5, 10))}</span></span>
               <b style="color:${h.delta >= 0 ? 'var(--mx-gold)' : 'var(--mx-red)'}">${h.delta > 0 ? '+' : ''}${h.delta}</b>
-            </div>`).join('') : '<div class="small" style="color:var(--mx-silver)">還沒有積分紀錄</div>';
+            </div>`).join('') : '<div class="small" style="color:var(--mx-silver)">還沒有米幣紀錄</div>';
         })
         .catch(() => {});
     }
@@ -2242,6 +2377,7 @@
         .then(h => {
           const m = me();
           document.getElementById('homePoints').innerText = m ? h.points : '—';
+          renderPlayerCard(m ? h.level : null, m ? h.points : 0);
           document.getElementById('homeUnread').innerText = m ? h.unreadMessages : '—';
           document.getElementById('homeRank').innerHTML = m && m.rank ? rankBadge(m.rank) : '<span style="font-size:15px;color:var(--mx-silver)">累積中</span>';
           setDmBadge(m ? h.unreadMessages : 0);
@@ -2283,7 +2419,7 @@
           document.getElementById('homeLeaderboard').innerHTML = h.leaderboard.length ? h.leaderboard.map((r, i) => `
             <div class="lb-row"><span class="lb-rank">${i + 1}</span>${avatarHtml(r.avatar, r.name, 'avatar-sm')}
               <span>${esc(r.name)}</span><span class="lb-pts">${r.points}</span></div>`).join('')
-            : '<div class="small" style="color:var(--mx-silver)">還沒有人獲得積分</div>';
+            : '<div class="small" style="color:var(--mx-silver)">還沒有人獲得米幣</div>';
         })
         .catch(err => toast(errMsg(err), true));
     }
@@ -2420,6 +2556,7 @@
           <div class="nm">${esc(m.name)}</div>
           <div class="meta">${[m.team, m.title].filter(Boolean).map(esc).join(' · ')}</div>
           <div class="d-flex gap-1 justify-content-center flex-wrap">
+            ${m.level ? `<span class="tag tag-gold">Lv.${m.level.lv}</span>` : ''}
             ${rankBadge(m.rank)}
             ${m.zodiac ? `<span class="tag tag-line">屬${esc(m.zodiac)}</span>` : ''}
             ${m.starSign ? `<span class="tag tag-line">${esc(m.starSign)}</span>` : ''}
@@ -2615,7 +2752,7 @@
     }
 
     // ==========================================
-    // 積分商店
+    // 道具商店
     // ==========================================
     function loadShop() {
       const m = me();
@@ -2640,7 +2777,7 @@
     }
 
     // ==========================================
-    // 員工後台：名單、員工、任務、積分、商店、公開設定、私訊申請
+    // 員工後台：名單、員工、任務、米幣、商店、公開設定、私訊申請
     // ==========================================
     function loadStaffTools() {
       loadStaffTasks();
@@ -2780,7 +2917,7 @@
 
     function resolveEntry(entryId, ok) {
       api('resolveTaskEntry', entryId, ok, idToken)
-        .then(res => { toast(`已結算（${res.delta > 0 ? '+' : ''}${res.delta} 分）`); loadStaffTasks(); })
+        .then(res => { toast(`已結算（${res.delta > 0 ? '+' : ''}${res.delta} 米幣）`); loadStaffTasks(); })
         .catch(err => toast(errMsg(err), true));
     }
 
@@ -2878,7 +3015,7 @@
     }
     function removePractice(id, btn) {
       const p = practiceCache.find(x => x.id === id);
-      if (!window.confirm(`確定刪除「${p ? p.title : ''}」？\n還沒上的堂數會取消，已點名的紀錄和積分會保留。`)) return;
+      if (!window.confirm(`確定刪除「${p ? p.title : ''}」？\n還沒上的堂數會取消，已點名的紀錄和米幣會保留。`)) return;
       setBusy(btn, true, '刪除中…');
       api('deletePractice', id, idToken).then(() => { toast('已刪除小團練'); loadPractices(); })
         .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
@@ -2946,14 +3083,14 @@
     function rcCount() {
       const n = document.querySelectorAll('.rc-chk:checked').length, all = document.querySelectorAll('.rc-chk').length;
       const el = document.getElementById('rcCountText');
-      if (el) el.innerHTML = `出席 <b>${n}</b> / ${all} 人（每人 +1 分）`;
+      if (el) el.innerHTML = `出席 <b>${n}</b> / ${all} 人（每人 +1 米幣）`;
     }
     function saveRollCallNow() {
       const keys = [...document.querySelectorAll('.rc-chk:checked')].map(c => c.value);
       const btn = document.getElementById('rcSaveBtn');
       setBusy(btn, true, '送出中…');
       api('saveRollCall', rcCurrent.id, keys, idToken).then(res => {
-        toast(`點名完成：出席 ${res.present} 人${res.added ? `，+${res.added} 人加分` : ''}${res.removed ? `，${res.removed} 人收回積分` : ''}`);
+        toast(`點名完成：出席 ${res.present} 人${res.added ? `，+${res.added} 人加分` : ''}${res.removed ? `，${res.removed} 人收回米幣` : ''}`);
         loadRollcallSessions(); openRollCall(rcCurrent.id);
       }).catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
     }
@@ -3056,7 +3193,7 @@
           <td><span class="tag ${FB_STATUS[x.status][1]}">${FB_STATUS[x.status][0]}</span> ${x.status === 'ok' ? `<b>${x.delta > 0 ? '+' : ''}${x.delta}</b>` : ''}</td></tr>`).join('');
       document.getElementById('fbResult').innerHTML = `
         <div class="d-flex flex-wrap gap-2 mb-3">
-          <span class="tag tag-gold">可發放 ${s.ok} 筆（共 ${s.points > 0 ? '+' : ''}${s.points} 分）</span>
+          <span class="tag tag-gold">可發放 ${s.ok} 筆（共 ${s.points > 0 ? '+' : ''}${s.points} 米幣）</span>
           <span class="tag tag-gray">已發過 ${s.done}</span><span class="tag tag-line">還沒上課 ${s.future}</span>
           ${s.unmatched ? `<span class="tag tag-soft">對不上名單 ${s.unmatched}</span>` : ''}
         </div>
@@ -3066,7 +3203,7 @@
             <thead><tr><th>日期</th><th>課程</th><th>FitBook 名稱</th><th>本名</th><th>簽到</th><th>結果</th></tr></thead><tbody>${list}</tbody></table></div>
         </details>
         <button type="button" class="btn btn-mixcin" id="fbImportBtn" onclick="fbImport()" ${s.ok ? '' : 'disabled'}>
-          <i class="bi bi-check2-circle me-1"></i>確認發放 ${s.ok} 筆積分</button>`;
+          <i class="bi bi-check2-circle me-1"></i>確認發放 ${s.ok} 筆米幣</button>`;
     }
     function fbBind(i, btn) {
       const u = fbLast.unmatched[i];
@@ -3082,7 +3219,7 @@
       setBusy(btn, true, '發放中…');
       api('fitbookImport', fbRows, fbOpts(), idToken)
         .then(res => {
-          toast(`已發放 ${res.added} 筆上課積分（共 ${res.points > 0 ? '+' : ''}${res.points} 分）`);
+          toast(`已發放 ${res.added} 筆上課米幣（共 ${res.points > 0 ? '+' : ''}${res.points} 米幣）`);
           if (res.unmatched) toast(`⚠ 還有 ${res.unmatched} 筆對不上名單，沒有發分`, true);
           loadRosterStatus();
           return fbPreview();
@@ -3090,13 +3227,13 @@
         .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
     }
 
-    // ---------- 積分發放 ----------
+    // ---------- 米幣發放 ----------
     function giveP() {
       const no = document.getElementById('ptStudent').value;
       const delta = document.getElementById('ptDelta').value;
       if (!no) return toast('請選擇團員', true);
       api('staffAddPoints', no, delta, document.getElementById('ptReason').value.trim(), document.getElementById('ptSource').value, idToken)
-        .then(() => { toast('積分已送出'); document.getElementById('ptReason').value = ''; })
+        .then(() => { toast('米幣已送出'); document.getElementById('ptReason').value = ''; })
         .catch(err => toast(errMsg(err), true));
     }
 
