@@ -583,6 +583,10 @@
     body { background-image: none; line-height: 1.65; }
     .text-muted, .text-secondary { color: var(--mx-muted) !important; }
     .form-label { color: var(--mx-ink); font-weight: 700; }
+    .qty-row { display: flex; align-items: center; gap: 8px; }
+    .qty-row .btn-mini { width: 32px; height: 32px; padding: 0; font-weight: 900; font-size: 18px; line-height: 1; background: #fff; }
+    .qty-row .btn-mini:disabled { opacity: .4; }
+    .qty-row b { min-width: 24px; text-align: center; font-size: calc(16px * var(--fs)); }
     /* 電腦版：分頁按鈕自動換行，全部看得到 */
     @media (min-width: 768px) {
       .mx-tabs { flex-wrap: wrap; overflow: visible; row-gap: 12px; padding-right: 130px; }
@@ -1004,8 +1008,14 @@
             <div class="sec-sub">上課、比賽、活動和任務都能累積米幣，之後可以在這裡兌換商品。</div>
           </div>
         </div>
-        <div class="notice mb-3"><i class="bi bi-hourglass-split"></i><div><b>兌換功能即將開放！</b>先看看有哪些好東西，努力存米幣吧。你目前有 <b id="shopPoints">—</b> 分。</div></div>
+        <div class="notice mb-3" id="shopNotice"><i class="bi bi-coin"></i><div><span id="shopNoticeText">載入中…</span> 你目前有 <b id="shopPoints">—</b> 米幣。</div></div>
         <div class="row g-3" id="shopGrid"></div>
+        <div class="mx-card p-4 mt-4">
+          <div class="eyebrow">My Orders</div>
+          <h4 class="fw-bold mb-1">我的兌換紀錄</h4>
+          <div class="small mb-3" style="color:var(--mx-muted)">兌換後米幣會立刻扣除；工作人員發卡後狀態會變成「已發卡」。如果無法發卡，米幣會自動退回。</div>
+          <div id="myRedeemList"><div class="board-empty">還沒有兌換紀錄</div></div>
+        </div>
       </div>
 
       <!-- 我的檔案 -->
@@ -1467,12 +1477,30 @@
             </div>
           </div>
 
+          <!-- 兌換單 -->
+          <div class="mx-card p-4 mt-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+              <div>
+                <div class="eyebrow">Redemptions</div>
+                <h4 class="fw-bold m-0">兌換單 <span class="tag tag-gold ms-1" id="redeemPendingCount">0</span></h4>
+                <div class="small mt-1" style="color:var(--mx-muted)">團員兌換時米幣已經扣好。在 FitBook 發完卡後按「已發卡」；發不出去按「退回」，系統會自動退米幣。</div>
+              </div>
+              <select class="form-select" style="width:auto" id="redeemFilter" onchange="renderStaffRedemptions()">
+                <option value="待發卡">只看待發卡</option><option value="">全部</option><option value="已發卡">已發卡</option><option value="已退回">已退回</option>
+              </select>
+            </div>
+            <div class="table-responsive"><table class="table table-custom align-middle mb-0">
+              <thead><tr><th>時間</th><th>團員</th><th>商品</th><th>數量</th><th>米幣</th><th>狀態</th><th></th></tr></thead>
+              <tbody id="redeemTableBody"><tr><td colspan="7" class="text-center py-3" style="color:var(--mx-muted)">載入中…</td></tr></tbody>
+            </table></div>
+          </div>
+
           <!-- 商店商品 -->
           <div class="mx-card p-4 mt-4">
             <div class="mb-3">
               <div class="eyebrow">Shop Items</div>
               <h4 class="fw-bold m-0">道具商店商品</h4>
-              <div class="small mt-1" style="color:var(--mx-muted)">目前團員只能瀏覽，兌換功能尚未開放。</div>
+              <div class="small mt-1" style="color:var(--mx-muted)">12/15 起團員可以用米幣兌換；庫存空白代表不限數量。</div>
             </div>
             <div class="row g-2 align-items-end mb-3">
               <input type="hidden" id="shopIdInput">
@@ -1620,6 +1648,10 @@
     const API_ARGS = {
       getSession: ['idToken'],
       bootstrap: ['asNo', 'idToken'],
+      redeemShopItem: ['itemId', 'qty', 'asNo', 'idToken'],
+      myRedemptions: ['asNo', 'idToken'],
+      listRedemptions: ['idToken'],
+      setRedemptionStatus: ['orderId', 'action', 'note', 'idToken'],
       registerMember: ['name', 'birthday', 'relation', 'idToken'],
       getHome: ['asNo', 'idToken'],
       getEvents: ['idToken'],
@@ -2872,26 +2904,100 @@
     // ==========================================
     // 道具商店
     // ==========================================
+    let shopState = { items: [], redeemOpen: false, startDate: '', qty: {} };
+    function myCoins() { const m = me(); return m ? (Number(m.points) || 0) : 0; }
+
     function loadShop() {
       const m = me();
-      document.getElementById('shopPoints').innerText = m ? (m.points || 0) : '—';
+      document.getElementById('shopPoints').innerText = m ? myCoins() : '—';
       api('listShopItems', idToken)
         .then(res => {
-          const items = res.items.filter(i => i.active);
-          document.getElementById('shopGrid').innerHTML = items.length ? items.map(i => `
+          shopState.items = res.items.filter(i => i.active);
+          shopState.redeemOpen = !!res.redeemOpen;
+          shopState.startDate = res.startDate || '';
+          document.getElementById('shopNoticeText').innerHTML = !m
+            ? '員工帳號只能瀏覽商品，兌換請用團員或家長帳號。'
+            : shopState.redeemOpen ? '<b>兌換已開放！</b>選好數量按「兌換」，米幣會立刻扣除。'
+            : `<b>兌換將在 ${esc(shopState.startDate.replace(/-/g, '/'))} 開放！</b>先看看有哪些好東西，努力存米幣吧。`;
+          renderShopGrid();
+        })
+        .catch(err => toast(errMsg(err), true));
+      loadMyRedemptions();
+    }
+
+    function renderShopGrid() {
+      const coins = myCoins(), m = me();
+      document.getElementById('shopGrid').innerHTML = shopState.items.length ? shopState.items.map(i => {
+        const maxStock = i.stock === '' ? 50 : Math.min(50, i.stock);
+        const q = Math.max(1, Math.min(shopState.qty[i.id] || 1, Math.max(1, maxStock)));
+        shopState.qty[i.id] = q;
+        const total = i.cost * q, lack = total - coins;
+        const soldOut = i.stock !== '' && i.stock <= 0;
+        let label = '兌換', ok = true;
+        if (!m) { label = '僅限團員兌換'; ok = false; }
+        else if (!shopState.redeemOpen) { label = (shopState.startDate ? shopState.startDate.slice(5).replace('-', '/') : '') + ' 開放'; ok = false; }
+        else if (soldOut) { label = '已換完'; ok = false; }
+        else if (lack > 0) { label = `還差 ${lack} 米幣`; ok = false; }
+        return `
             <div class="col-6 col-md-4 col-xl-3"><div class="shop-card">
               <div class="shop-img">${/^data:image\//.test(i.image || '') ? `<img src="${i.image}" alt="">` : '<i class="bi bi-gift"></i>'}</div>
               <div class="shop-body">
                 <div class="fw-bold">${esc(i.name)}</div>
                 <div class="small flex-grow-1" style="color:var(--mx-muted)">${esc(i.description)}</div>
                 <div class="d-flex justify-content-between align-items-center mt-2">
-                  <span class="shop-cost">${i.cost} 分</span>
+                  <span class="shop-cost">${i.cost} 米幣</span>
                   ${i.stock !== '' ? `<span class="small" style="color:var(--mx-muted)">剩 ${i.stock}</span>` : ''}
                 </div>
-                <button class="btn btn-line w-100 mt-2" disabled>${res.redeemOpen ? '兌換' : '即將開放'}</button>
-              </div></div></div>`).join('') : '<div class="board-empty">商品準備中，敬請期待！</div>';
+                <div class="qty-row mt-2">
+                  <button type="button" class="btn-mini" onclick="shopQty('${esc(i.id)}',-1)" ${q <= 1 ? 'disabled' : ''} aria-label="減少">−</button>
+                  <b>${q}</b>
+                  <button type="button" class="btn-mini" onclick="shopQty('${esc(i.id)}',1)" ${q >= maxStock ? 'disabled' : ''} aria-label="增加">＋</button>
+                  <span class="small ms-auto" style="color:var(--mx-muted)">共 ${total}</span>
+                </div>
+                <button class="btn ${ok ? 'btn-mixcin' : 'btn-line'} w-100 mt-2" ${ok ? `onclick="redeemItem('${esc(i.id)}', this)"` : 'disabled'}>${label}</button>
+              </div></div></div>`;
+      }).join('') : '<div class="board-empty">商品準備中，敬請期待！</div>';
+    }
+
+    function shopQty(id, d) {
+      shopState.qty[id] = Math.max(1, (shopState.qty[id] || 1) + d);
+      renderShopGrid();
+    }
+
+    function redeemItem(id, btn) {
+      const i = shopState.items.find(x => x.id === id);
+      const m = me();
+      if (!i || !m) return;
+      const q = shopState.qty[id] || 1, total = i.cost * q;
+      if (!confirm(`確定要幫 ${m.name} 兌換「${i.name}」×${q}，共 ${total} 米幣嗎？\n兌換後米幣會立刻扣除。`)) return;
+      setBusy(btn, true, '兌換中…');
+      api('redeemShopItem', id, q, currentNo, idToken)
+        .then(r => {
+          toast(`兌換成功！扣除 ${r.total} 米幣，工作人員會盡快發卡`);
+          m.points = r.balance;
+          shopState.qty[id] = 1;
+          document.getElementById('shopPoints').innerText = r.balance;
+          renderPlayerCard(m.level, r.balance);
+          const hp = document.getElementById('homePoints'); if (hp) hp.innerText = r.balance;
+          loadShop();
         })
-        .catch(err => toast(errMsg(err), true));
+        .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
+    }
+
+    const REDEEM_TAG = { '待發卡': 'tag-gold', '已發卡': 'tag-soft', '已退回': 'tag-gray' };
+    function loadMyRedemptions() {
+      const box = document.getElementById('myRedeemList');
+      if (!me()) { box.innerHTML = '<div class="board-empty">員工帳號沒有兌換紀錄</div>'; return; }
+      api('myRedemptions', currentNo, idToken)
+        .then(list => {
+          box.innerHTML = list.length ? list.map(r => `
+            <div class="board-item">${dateBox(r.createdAt.slice(0, 10))}
+              <div class="flex-grow-1"><b>${esc(r.itemName)} ×${r.qty}</b>
+                <div class="small" style="color:var(--mx-muted)">−${r.total} 米幣${r.status === '已退回' ? '（已退回）' : ''}${r.note ? ' · ' + esc(r.note) : ''}</div></div>
+              <span class="tag ${REDEEM_TAG[r.status] || 'tag-gray'}">${r.status === '已發卡' ? '課卡已發送' : esc(r.status)}</span>
+            </div>`).join('') : '<div class="board-empty">還沒有兌換紀錄</div>';
+        })
+        .catch(() => {});
     }
 
     // ==========================================
@@ -3358,12 +3464,51 @@
     // ---------- 商店商品 ----------
     let staffShopItems = [];
 
+    let staffRedemptions = [];
+    function loadStaffRedemptions() {
+      api('listRedemptions', idToken)
+        .then(list => { staffRedemptions = list || []; renderStaffRedemptions(); })
+        .catch(err => toast(errMsg(err), true));
+    }
+
+    function renderStaffRedemptions() {
+      const f = document.getElementById('redeemFilter').value;
+      const pending = staffRedemptions.filter(r => r.status === '待發卡').length;
+      document.getElementById('redeemPendingCount').innerText = pending;
+      const list = f ? staffRedemptions.filter(r => r.status === f) : staffRedemptions;
+      document.getElementById('redeemTableBody').innerHTML = list.length ? list.map(r => `
+        <tr><td class="small">${esc(r.createdAt.slice(0, 16).replace('T', ' '))}</td>
+          <td><b>${esc(r.name || '')}</b><div class="small" style="color:var(--mx-muted)">${esc(r.studentNo)}</div></td>
+          <td>${esc(r.itemName)}</td><td class="fw-bold">×${r.qty}</td><td>${r.total}</td>
+          <td><span class="tag ${REDEEM_TAG[r.status] || 'tag-gray'}">${esc(r.status)}</span>${r.handledBy ? `<div class="small" style="color:var(--mx-muted)">${esc(r.handledBy)}</div>` : ''}</td>
+          <td class="text-end text-nowrap">${r.status === '待發卡' ? `
+            <button class="btn btn-sm btn-mixcin" onclick="setRedeem('${esc(r.id)}','done',this)">已發卡</button>
+            <button class="btn btn-sm btn-line" onclick="setRedeem('${esc(r.id)}','refund',this)">退回</button>` : r.status === '已發卡' ? `
+            <button class="btn btn-sm btn-line" onclick="setRedeem('${esc(r.id)}','reopen',this)">改回待發卡</button>
+            <button class="btn btn-sm btn-line" onclick="setRedeem('${esc(r.id)}','refund',this)">退回</button>` : ''}</td></tr>`).join('')
+        : '<tr><td colspan="7" class="text-center py-3" style="color:var(--mx-muted)">沒有符合的兌換單</td></tr>';
+    }
+
+    function setRedeem(id, action, btn) {
+      const r = staffRedemptions.find(x => x.id === id);
+      if (!r) return;
+      const msg = action === 'done' ? `確認已在 FitBook 發給 ${r.name}「${r.itemName}」×${r.qty}？`
+        : action === 'refund' ? `確定退回 ${r.name} 的「${r.itemName}」×${r.qty}？會退還 ${r.total} 米幣。`
+        : '改回待發卡？';
+      if (!confirm(msg)) return;
+      setBusy(btn, true, '處理中…');
+      api('setRedemptionStatus', id, action, '', idToken)
+        .then(() => { toast(action === 'done' ? '已標記發卡' : action === 'refund' ? '已退回並退還米幣' : '已改回待發卡'); loadStaffRedemptions(); })
+        .catch(err => { toast(errMsg(err), true); setBusy(btn, false); });
+    }
+
     function loadStaffShop() {
+      loadStaffRedemptions();
       api('listShopItems', idToken)
         .then(res => {
           staffShopItems = res.items;
           document.getElementById('staffShopList').innerHTML = res.items.length ? res.items.map(i => `
-            <div class="acc-row"><span><b>${esc(i.name)}</b> <span class="tag tag-line ms-1">${i.cost} 分</span>
+            <div class="acc-row"><span><b>${esc(i.name)}</b> <span class="tag tag-line ms-1">${i.cost} 米幣</span>
               ${i.active ? '' : '<span class="tag tag-gray ms-1">下架</span>'}${i.stock !== '' ? `<span class="small ms-2" style="color:var(--mx-muted)">庫存 ${i.stock}</span>` : ''}</span>
               <button class="btn btn-sm btn-line" onclick="editShop('${esc(i.id)}')">編輯</button></div>`).join('') : '<div class="board-empty">還沒有商品</div>';
         })
