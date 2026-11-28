@@ -2669,7 +2669,7 @@
       setBusy(btn, true, '送出中…');
       api('submitRegistration', payload, idToken)
         .then(res => {
-          toast(res && res.duplicated ? '已經報名過這個活動了' : (res && res.mailed ? '報名成功！確認信已寄到您的信箱' : '報名成功！'));
+          toast(res && res.duplicated ? '已經報名過這個活動了' : (res && res.mailed ? '報名成功！等工作人員審核，收到確認信請留意信箱' : '報名成功！'));
           form.reset();
           autoFillRegFormWithMember(me());
         })
