@@ -2410,15 +2410,16 @@
     });
 
     // 大頭照：先在瀏覽器裁成正方形並壓縮
-    function shrinkImage(file, size, maxLen) {
+    function shrinkImage(file, size, maxLen, quality) {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
           const c = document.createElement('canvas');
           c.width = c.height = size;
           const s = Math.min(img.width, img.height);
-          c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-          let q = 0.82, out = c.toDataURL('image/jpeg', q);
+          const g = c.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+          g.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+          let q = quality || 0.82, out = c.toDataURL('image/jpeg', q);
           while (out.length > maxLen && q > 0.3) { q -= 0.1; out = c.toDataURL('image/jpeg', q); }
           URL.revokeObjectURL(img.src);
           out.length > maxLen ? reject(new Error('圖片太大，請換一張')) : resolve(out);
@@ -3537,7 +3538,7 @@
 
     function saveShop() {
       const file = document.getElementById('shopImageInput').files[0];
-      const imgP = file ? shrinkImage(file, 240, 44000) : Promise.resolve(editingShopImage);
+      const imgP = file ? shrinkImage(file, 720, 400000, 0.9) : Promise.resolve(editingShopImage);
       imgP.then(img => api('saveShopItem', {
         id: document.getElementById('shopIdInput').value,
         name: document.getElementById('shopNameInput').value.trim(),
