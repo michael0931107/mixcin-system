@@ -1376,13 +1376,13 @@
               <div>
                 <div class="eyebrow">Registrations</div>
                 <h4 class="fw-bold m-0">最新報名紀錄</h4>
-                <div class="small mt-1" style="color:var(--mx-muted)">團員從前台報名的紀錄都在這裡；要看單一活動的名單，按活動列表裡的「報名」。</div>
+                <div class="small mt-1" style="color:var(--mx-muted)">團員從前台報名的紀錄都在這裡；要審核（確認參加 / 婉拒），按活動總表裡的「報名」。</div>
               </div>
               <button type="button" class="btn-mini" onclick="loadRecentRegs()"><i class="bi bi-arrow-clockwise me-1"></i>重新整理</button>
             </div>
             <div class="table-responsive"><table class="table table-custom align-middle mb-0">
-              <thead><tr><th>報名時間</th><th>活動</th><th>團員</th><th>組別</th><th>電話</th><th>備註</th></tr></thead>
-              <tbody id="recentRegBody"><tr><td colspan="6" class="text-center py-3" style="color:var(--mx-muted)">載入中…</td></tr></tbody>
+              <thead><tr><th>報名時間</th><th>活動</th><th>團員</th><th>組別</th><th>電話</th><th>備註</th><th>狀態</th></tr></thead>
+              <tbody id="recentRegBody"><tr><td colspan="7" class="text-center py-3" style="color:var(--mx-muted)">載入中…</td></tr></tbody>
             </table></div>
           </div>
           </div>
@@ -1635,7 +1635,7 @@
 
   <!-- 活動報名名單 -->
   <div class="modal fade" id="regModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-head-dark d-flex justify-content-between align-items-start">
           <div><div class="small mb-1" style="opacity:.85">報名名單</div><h5 class="fw-bold m-0" id="regModalTitle"></h5></div>
@@ -1745,7 +1745,7 @@
     const BUSY_TEXT = {
       saveShopItem: '商品儲存中…', redeemShopItem: '兌換中…', setRedemptionStatus: '更新兌換單…',
       saveEvent: '活動儲存中…', sendEventConfirmation: '寄送確認信中…', setEventArchived: '更新活動中…',
-      saveEventCoins: '發放米幣中…', staffAddPoints: '發放米幣中…', saveRollCall: '送出點名中…',
+      saveEventCoins: '發放米幣中…', setRegistrationStatus: '更新報名狀態…', staffAddPoints: '發放米幣中…', saveRollCall: '送出點名中…',
       fitbookImport: '匯入出席紀錄中…', fitbookBind: '綁定中…', submitRegistration: '報名送出中…',
       registerMember: '註冊中…', sendMessage: '傳送中…', createPost: '發佈中…', deletePost: '刪除中…',
       saveMemberProfile: '資料儲存中…', saveAvatar: '頭像上傳中…', syncAlbum: '同步相簿權限中…',
@@ -1773,6 +1773,7 @@
       setRedemptionStatus: ['orderId', 'action', 'note', 'idToken'],
       getEventCoins: ['eventId', 'idToken'],
       getRegistrations: ['eventId', 'idToken'],
+      setRegistrationStatus: ['ids', 'status', 'notify', 'idToken'],
       saveEventCoins: ['eventId', 'keys', 'amount', 'idToken'],
       registerMember: ['name', 'birthday', 'relation', 'idToken'],
       getHome: ['asNo', 'idToken'],
@@ -2157,34 +2158,68 @@
       try { localStorage.setItem('mx_staff_pane', id); } catch (e) {}
     }
 
-    // ---------- 報名紀錄 ----------
+    // ---------- 報名紀錄與審核 ----------
+    const REG_TAG = { '待審核': 'tag-gold', '已確認': 'tag-soft', '未錄取': 'tag-gray' };
     function regRowHtml(r, withEvent) {
       return `<tr><td class="small text-nowrap">${esc(r.at)}</td>${withEvent ? `<td>${esc(r.eventTitle)}</td>` : ''}
-        <td class="fw-bold">${esc(r.name)}</td><td>${groupHtml(r.team)}</td><td class="text-nowrap">${esc(r.phone)}</td><td class="small">${esc(r.notes)}</td></tr>`;
+        <td class="fw-bold">${esc(r.name)}</td><td>${groupHtml(r.team)}</td><td class="text-nowrap">${esc(r.phone)}</td><td class="small">${esc(r.notes)}</td>
+        <td><span class="tag ${REG_TAG[r.status] || 'tag-gray'}">${esc(r.status)}</span></td></tr>`;
+    }
+    function regReviewRow(r) {
+      const btns = r.status === '待審核'
+        ? `<button class="btn btn-sm btn-mixcin" onclick="reviewRegs(['${esc(r.id)}'],'已確認')">確認參加</button>
+           <button class="btn btn-sm btn-line" onclick="reviewRegs(['${esc(r.id)}'],'未錄取')">婉拒</button>`
+        : `<button class="btn btn-sm btn-line" onclick="reviewRegs(['${esc(r.id)}'],'待審核')">改回待審</button>`;
+      return `<tr><td class="small text-nowrap">${esc(r.at)}</td><td class="fw-bold">${esc(r.name)}</td><td>${groupHtml(r.team)}</td>
+        <td class="text-nowrap">${esc(r.phone)}</td><td class="small">${esc(r.notes)}</td>
+        <td><span class="tag ${REG_TAG[r.status] || 'tag-gray'}">${esc(r.status)}</span>${r.reviewedBy && r.status !== '待審核' ? `<div class="small" style="color:var(--mx-muted)">${esc(r.reviewedBy)}</div>` : ''}</td>
+        <td class="text-end text-nowrap">${btns}</td></tr>`;
     }
     function loadRecentRegs() {
       api('getRegistrations', '', idToken).then(list => {
         document.getElementById('recentRegBody').innerHTML = list.length ? list.slice(0, 30).map(r => regRowHtml(r, true)).join('')
-          : '<tr><td colspan="6" class="text-center py-3" style="color:var(--mx-muted)">還沒有人報名</td></tr>';
-        const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
-        const n = list.filter(r => r.at.slice(0, 10) >= weekAgo).length;
-        const b = document.getElementById('snRegBadge');
-        b.textContent = n ? '新 ' + n : ''; b.classList.toggle('d-none', !n);
+          : '<tr><td colspan="7" class="text-center py-3" style="color:var(--mx-muted)">還沒有人報名</td></tr>';
       }).catch(err => toast(errMsg(err), true));
     }
+    let regModalEvent = '';
     function openRegs(eventId) {
+      regModalEvent = eventId;
       const ev = (globalEvents || []).find(e => e.eventId === eventId) || {};
       document.getElementById('regModalTitle').textContent = `${ev.date || ''}　${ev.title || ''}`;
       document.getElementById('regModalBody').innerHTML = '<div class="board-empty"><span class="spinner-border spinner-border-sm me-2"></span>載入中…</div>';
       bootstrap.Modal.getOrCreateInstance(document.getElementById('regModal')).show();
+      renderRegModal(eventId);
+    }
+    let regModalList = [];
+    function renderRegModal(eventId) {
       api('getRegistrations', eventId, idToken).then(list => {
+        regModalList = list;
+        const c = s => list.filter(r => r.status === s).length;
+        const pend = list.filter(r => r.status === '待審核').map(r => r.id);
         document.getElementById('regModalBody').innerHTML = list.length ? `
-          <div class="small mb-2" style="color:var(--mx-muted)">共 <b>${list.length}</b> 筆報名</div>
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <div class="small">共 <b>${list.length}</b> 筆：<span class="tag tag-gold">待審核 ${c('待審核')}</span> <span class="tag tag-soft">已確認 ${c('已確認')}</span> <span class="tag tag-gray">未錄取 ${c('未錄取')}</span></div>
+            <div class="d-flex align-items-center gap-2">
+              <label class="small d-flex align-items-center gap-1"><input type="checkbox" class="form-check-input m-0" id="regNotify" checked>審核結果寄通知信</label>
+              ${pend.length ? `<button class="btn btn-sm btn-mixcin" onclick='reviewRegs(${JSON.stringify(pend)},"已確認")'>待審核的全部確認（${pend.length}）</button>` : ''}
+            </div>
+          </div>
           <div class="table-responsive"><table class="table table-custom align-middle mb-0">
-            <thead><tr><th>報名時間</th><th>團員</th><th>組別</th><th>電話</th><th>備註</th></tr></thead>
-            <tbody>${list.map(r => regRowHtml(r, false)).join('')}</tbody></table></div>`
+            <thead><tr><th>報名時間</th><th>團員</th><th>組別</th><th>電話</th><th>備註</th><th>狀態</th><th></th></tr></thead>
+            <tbody>${list.map(regReviewRow).join('')}</tbody></table></div>`
           : '<div class="board-empty">這個活動還沒有人報名</div>';
       }).catch(err => { document.getElementById('regModalBody').innerHTML = ''; toast(errMsg(err), true); });
+    }
+    function reviewRegs(ids, status) {
+      const box = document.getElementById('regNotify');
+      const notify = box ? box.checked : false;
+      if (ids.length > 1 && !confirm(`確定把 ${ids.length} 筆報名都改成「${status}」？${notify ? '\n會寄通知信給家長。' : ''}`)) return;
+      api('setRegistrationStatus', ids, status, notify, idToken).then(r => {
+        toast(`已更新 ${r.changed} 筆為「${status}」${r.mailed ? `，寄出 ${r.mailed} 封通知信` : ''}`);
+        renderRegModal(regModalEvent);
+        loadRecentRegs();
+        loadEvents();
+      }).catch(err => toast(errMsg(err), true));
     }
 
     // 切換分頁時才載入該頁資料
@@ -2334,6 +2369,10 @@
             <div class="mt-2 fw-bold">成績與獎金</div>
             <ul class="mb-0 ps-3">${results || '<li style="color:var(--mx-muted)">尚未登記成績</li>'}</ul></div>`;
         }
+      }
+      if ((ev.myRegs || []).length) {
+        const txt = { '待審核': '已報名，等待工作人員確認', '已確認': '已確認參加！', '未錄取': '這次未能安排參加' };
+        html += row('我的報名', ev.myRegs.map(r => `<div><b>${esc(r.name)}</b> <span class="tag ${REG_TAG[r.status] || 'tag-gray'} ms-1">${esc(txt[r.status] || r.status)}</span></div>`).join(''));
       }
       const albumUrl = ev.albumUrl || (ev.customFields && ev.customFields.album && ev.customFields.album.url) || '';
       if (albumUrl) html += `
@@ -3986,6 +4025,9 @@
     function renderStaffTable(allEvents) {
       const tbody = document.getElementById('eventTableBody');
       renderEvFilterBar(allEvents);
+      const pendAll = allEvents.reduce((n, e) => n + (e.regPending || 0), 0);
+      const rb = document.getElementById('snRegBadge');
+      if (rb) { rb.textContent = pendAll ? '待審 ' + pendAll : ''; rb.classList.toggle('d-none', !pendAll); }
       const f = EV_FILTERS.find(x => x[0] === evFilter) || EV_FILTERS[0];
       const q = (document.getElementById('evSearch').value || '').trim().toLowerCase();
       let events = allEvents.filter(f[2]).filter(e => !q || (e.title + ' ' + (e.location || '') + ' ' + (e.teams || '')).toLowerCase().includes(q));
@@ -4041,7 +4083,7 @@
           <td style="white-space:nowrap;">${status}</td>
           <td style="text-align:center;white-space:nowrap;"><button class="btn-mini" onclick="editEvent('${esc(e.eventId)}')"><i class="bi bi-pencil-square me-1"></i>修正</button>
             ${cf.album && cf.album.url ? `<a class="btn-mini ms-1 text-decoration-none" href="${esc(cf.album.url)}" target="_blank" rel="noopener" title="活動相簿"><i class="bi bi-images me-1"></i>相簿</a>` : ''}
-            <button class="btn-mini ms-1" onclick="openRegs('${esc(e.eventId)}')" title="查看報名名單"><i class="bi bi-person-lines-fill me-1"></i>報名 ${e.regCount || 0}</button>
+            <button class="btn-mini ms-1" onclick="openRegs('${esc(e.eventId)}')" title="查看與審核報名" ${e.regPending ? 'style="background:var(--mx-yellow)"' : ''}><i class="bi bi-person-lines-fill me-1"></i>報名 ${e.regCount || 0}${e.regPending ? `・待審 ${e.regPending}` : ''}</button>
             <button class="btn-mini ms-1" onclick="openEventCoins('${esc(e.eventId)}')" title="勾選有參加的團員發米幣"><i class="bi bi-coin me-1"></i>參加米幣</button>
             ${!past && !archived ? `<button class="btn-mini ms-1" onclick="sendConfirmMail('${esc(e.eventId)}', this)" title="依通知對象寄出參加確認信"><i class="bi bi-envelope-check me-1"></i>寄確認信</button>` : ''}
             ${archived
@@ -4063,15 +4105,17 @@
         ecCurrent = d;
         document.getElementById('ecTitle').textContent = `${d.event.date}　${d.event.title}`;
         const first = !d.awardedCount;
+        const anyConfirmed = d.members.some(m => m.confirmed);
+        d.members.forEach(m => { m.preset = first ? (anyConfirmed ? m.confirmed : m.registered) : m.awarded; });
         const row = m => `
           <label class="d-flex align-items-center gap-2 py-2 px-1 ec-row" data-name="${esc(m.name)}" style="border-bottom:1px solid var(--mx-sand);cursor:pointer">
-            <input type="checkbox" class="form-check-input m-0 ec-chk" style="width:22px;height:22px" value="${esc(m.key)}" ${(first ? m.registered : m.awarded) ? 'checked' : ''} onchange="ecCountUpdate()">
-            <span class="fw-bold flex-grow-1">${esc(m.name)}${m.registered ? ' <span class="tag tag-soft ms-1">有報名</span>' : ''}${m.awarded ? ' <span class="tag tag-gold ms-1">已發</span>' : ''}</span>
+            <input type="checkbox" class="form-check-input m-0 ec-chk" style="width:22px;height:22px" value="${esc(m.key)}" ${m.preset ? 'checked' : ''} onchange="ecCountUpdate()">
+            <span class="fw-bold flex-grow-1">${esc(m.name)}${m.confirmed ? ' <span class="tag tag-soft ms-1">已確認</span>' : m.registered ? ' <span class="tag tag-line ms-1">有報名</span>' : ''}${m.awarded ? ' <span class="tag tag-gold ms-1">已發</span>' : ''}</span>
             <span class="small">${groupHtml(m.group)}</span>
           </label>`;
         document.getElementById('ecBody').innerHTML = `
           <div class="notice mb-3" style="font-size:calc(13px * var(--fs))"><i class="bi bi-info-circle-fill"></i><div>
-            ${first ? '有報名的團員已先幫你勾好，沒報名但有到的直接勾上。' : '這個活動已經發過米幣，修改勾選後再送出即可：新勾的會加、取消的會收回。'}</div></div>
+            ${first ? (anyConfirmed ? '已確認參加的團員已先幫你勾好，' : '有報名的團員已先幫你勾好，') + '沒報名但有到的直接勾上。' : '這個活動已經發過米幣，修改勾選後再送出即可：新勾的會加、取消的會收回。'}</div></div>
           <div class="row g-2 align-items-end mb-2">
             <div class="col-5"><label class="form-label">每人米幣</label><input type="number" class="form-control" id="ecAmount" min="1" max="100" value="${d.amount}" oninput="ecCountUpdate()"></div>
             <div class="col-7"><label class="form-label">搜尋</label><input type="search" class="form-control" placeholder="輸入姓名" oninput="ecFilter(this.value)"></div>
