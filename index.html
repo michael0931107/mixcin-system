@@ -2123,7 +2123,7 @@
         if (session.isMember) applyLinked(pre.linked || []); else applyLinked([]);
         renderHome(pre.home);
       }
-      staffLoaded = false;
+      staffLoaded = false; staffPaneLoaded = {};
       if (pre && pre.cached) return;   // 暫存畫面：等連線回來再載其他分頁
       if (pre) loadAfterHome();
       else loadLinkedMembers().then(() => { loadHome(); loadAfterHome(); });
@@ -2139,20 +2139,33 @@
     }
 
     // 員工後台的資料比較多，第一次打開後台時才載入
+    // 員工後台：打開哪一類才載入哪一類的資料，避免一次發十幾個請求
+    let staffPaneLoaded = {};
     function loadStaffArea() {
       if (staffLoaded || !session.isStaff) return;
       staffLoaded = true;
-      loadAdminMembersList();
-      loadRosterStatus();
-      loadStaffTools();
-      loadRecentRegs();
-      if (session.isAdmin) loadStaffList();
-      let last = ''; try { last = localStorage.getItem('mx_staff_pane') || ''; } catch (e) {}
-      if (last && !(last === 'admin' && !session.isAdmin)) showStaffPane(last);
+      staffPaneLoaded = {};
+      loadAdminMembersList();     // 團員下拉選單，多個分類共用
+      loadStaffRedemptions();     // 分類按鈕上的「待發」提醒
+      let last = 'events'; try { last = localStorage.getItem('mx_staff_pane') || 'events'; } catch (e) {}
+      if (last === 'admin' && !session.isAdmin) last = 'events';
+      showStaffPane(last);
+    }
+
+    function loadStaffPane(id) {
+      if (staffPaneLoaded[id] || !staffLoaded) return;
+      staffPaneLoaded[id] = true;
+      if (id === 'events') loadRecentRegs();
+      if (id === 'members') { loadRosterStatus(); loadConsentRequests(); loadPublicFields(); }
+      if (id === 'class') { loadFitbookSettings(); initPracticeForm(); loadPractices(); }
+      if (id === 'shop') loadStaffShop();
+      if (id === 'tasks') loadStaffTasks();
+      if (id === 'admin' && session.isAdmin) loadStaffList();
     }
 
     function showStaffPane(id) {
       if (!document.getElementById('sp-' + id)) id = 'events';
+      loadStaffPane(id);
       document.querySelectorAll('.staff-pane').forEach(p => p.classList.toggle('on', p.id === 'sp-' + id));
       document.querySelectorAll('#staffNav button').forEach(b => b.classList.toggle('on', b.dataset.sp === id));
       try { localStorage.setItem('mx_staff_pane', id); } catch (e) {}
@@ -3710,7 +3723,6 @@
     }
 
     function loadStaffShop() {
-      loadStaffRedemptions();
       api('listShopItems', idToken)
         .then(res => {
           staffShopItems = res.items;
