@@ -2,6 +2,9 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <title>MIXCIN 競演團 | MIXCIN Rep Co.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#AF001A">
@@ -1681,6 +1684,175 @@
     };
     const GOOGLE_CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID.trim();
 
+    // ==========================================
+    // Firebase 快速讀取層
+    // 團員端要看的資料由後台發布到 Firestore，這裡直接讀（約 0.2 秒）；
+    // 讀不到或出錯時自動改走原本的 Apps Script，畫面不受影響。
+    // ==========================================
+    const FIREBASE_CONFIG = {
+      apiKey: 'AIzaSyCpsZG8X_Q7cnr5sXZuVIAwaV8Q2yeiGOA',
+      authDomain: 'mixcin-rep.firebaseapp.com',
+      projectId: 'mixcin-rep',
+      storageBucket: 'mixcin-rep.firebasestorage.app',
+      messagingSenderId: '843065326334',
+      appId: '1:843065326334:web:aa14ebf70ca13bb49a83af'
+    };
+    window.FB_ON = !!(window.firebase && firebase.initializeApp);
+    let fbUser = null;
+    if (window.FB_ON) {
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        firebase.auth().onIdTokenChanged(u => { if (u) u.getIdToken().then(t => { if (fbUser) idToken = t; }); });
+      } catch (e) { window.FB_ON = false; }
+    }
+    function fbReady() { return window.FB_ON && !!fbUser; }
+
+    /** Google 一鍵登入拿到的憑證 → 登入 Firebase（之後會自動保持登入） */
+    function fbSignInWithGis(credential) {
+      return firebase.auth().signInWithCredential(firebase.auth.GoogleAuthProvider.credential(credential)).then(r => r.user);
+    }
+    /** 程式一開啟：Firebase 會記得上次登入，有的話直接拿來用 */
+    function fbCurrentUser() {
+      return new Promise(resolve => {
+        const off = firebase.auth().onAuthStateChanged(u => { off(); resolve(u); });
+      });
+    }
+    function fbSignOut() { fbUser = null; fsInvalidate(); try { return firebase.auth().signOut(); } catch (e) { return Promise.resolve(); } }
+
+    // ---------- 讀 Firestore ----------
+    let fsMemo = {};
+    function fsInvalidate() { fsMemo = {}; }
+    function fsDoc(path, maxAgeMs) {
+      const m = fsMemo[path];
+      if (m && Date.now() - m.at < (maxAgeMs || 4000)) return m.p;
+      const p = firebase.firestore().doc(path).get().then(s => {
+        if (!s.exists) throw new Error('no doc ' + path);
+        return s.data();
+      });
+      fsMemo[path] = { at: Date.now(), p };
+      p.catch(() => { delete fsMemo[path]; });
+      return p;
+    }
+    function fsAcct() { return fsDoc('acct/' + String(fbUser.email || '').toLowerCase()); }
+    function fsUsers(acct) { return Promise.all((acct.nos || []).map(no => fsDoc('u/' + no).catch(() => null))).then(l => l.filter(Boolean)); }
+    function fsPickNo(acct, asNo) { const nos = acct.nos || []; return nos.indexOf(asNo) >= 0 ? asNo : (nos[0] || ''); }
+
+    const avCache = {};
+    function fsFillAvatars(obj) {
+      const need = new Set();
+      (function walk(o) {
+        if (Array.isArray(o)) return o.forEach(walk);
+        if (o && typeof o === 'object') {
+          if (o.avatar === 1 && o.studentNo && !(o.studentNo in avCache)) need.add(o.studentNo);
+          Object.values(o).forEach(v => { if (v && typeof v === 'object') walk(v); });
+        }
+      })(obj);
+      return Promise.all([...need].map(no => fsDoc('av/' + no, 600000).then(d => { avCache[no] = d.data || ''; }).catch(() => { avCache[no] = ''; })))
+        .then(() => {
+          (function walk(o) {
+            if (Array.isArray(o)) return o.forEach(walk);
+            if (o && typeof o === 'object') {
+              if (o.avatar === 1) o.avatar = avCache[o.studentNo] || '';
+              Object.values(o).forEach(v => { if (v && typeof v === 'object') walk(v); });
+            }
+          })(obj);
+          return obj;
+        });
+    }
+    const clone = o => JSON.parse(JSON.stringify(o));
+
+    function fsLinked(acct, users) {
+      return users.map(u => Object.assign({}, u.profile, { relation: (acct.rel || {})[u.studentNo] || '本人', points: u.points, level: u.level }));
+    }
+    function fsRegsFor(users) {
+      const out = {};
+      users.forEach(u => (u.myRegs || []).forEach(r => { (out[r.eventId] = out[r.eventId] || []).push({ name: r.name, status: r.status }); }));
+      return out;
+    }
+
+    function fsBuildHome(acct, users, no, ev, posts, tasks, board) {
+      const u = users.find(x => x.studentNo === no) || null;
+      const today = todayStr();
+      const since = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 19);
+      const regs = fsRegsFor(users);
+      const mentions = [];
+      (posts.list || []).forEach(p => [p].concat(p.replies || []).forEach(x => {
+        if (no && x.createdAt >= since && (x.mentions || []).some(m => m.no === no)) mentions.push({ id: x.id, author: x.author, content: String(x.content).slice(0, 60), createdAt: x.createdAt });
+      }));
+      const status = (u && u.taskStatus) || {};
+      return {
+        points: u ? u.points : 0,
+        unreadMessages: u ? u.unread : 0,
+        mentions: mentions.slice(0, 5),
+        latestPosts: (posts.list || []).slice(0, 5).map(p => ({ id: p.id, author: p.author, tag: p.tag, content: String(p.content).slice(0, 80), replies: (p.replies || []).length, createdAt: p.createdAt })),
+        upcomingEvents: (ev.list || []).filter(e => e.date >= today).slice(0, 6).map(e => Object.assign({}, e, { myRegs: regs[e.eventId] || [] })),
+        myRehearsals: u ? (u.myRehearsals || []) : [],
+        scoringCards: board.scoringCards || [],
+        myPractices: u ? (u.myPractices || []) : [],
+        level: u ? u.level : null,
+        levels: board.levels || [],
+        openTasks: (tasks.list || []).filter(t => t.status === '開放').slice(0, 5).map(t => Object.assign({}, t, { myStatus: status[t.id] || '' })),
+        leaderboard: clone(board.leaderboard || []),
+        pendingConsent: acct.pendingConsent || 0
+      };
+    }
+
+    function fsHomeBundle(asNo) {
+      return fsAcct().then(acct => Promise.all([fsUsers(acct), fsDoc('v/events'), fsDoc('v/posts'), fsDoc('v/tasks'), fsDoc('v/board')])
+        .then(([users, ev, posts, tasks, board]) => {
+          if (acct.session.isMember && !users.length) throw new Error('user docs not published yet');
+          const no = fsPickNo(acct, asNo);
+          const home = fsBuildHome(acct, users, no, ev, posts, tasks, board);
+          return fsFillAvatars(home).then(h => ({ acct, users, home: h }));
+        }));
+    }
+
+    // 只放「讀資料」的動作；會寫入的動作一律走 Apps Script
+    const FS_READ = {
+      bootstrap: (asNo) => fsHomeBundle(asNo).then(b => ({ session: b.acct.session, linked: fsLinked(b.acct, b.users), home: b.home })),
+      getHome: (asNo) => fsHomeBundle(asNo).then(b => b.home),
+      getLinkedMembersForCurrentUser: () => fsAcct().then(acct => fsUsers(acct).then(users => fsLinked(acct, users))),
+      getEvents: () => fsAcct().then(acct => {
+        if (acct.session.isStaff) throw new Error('staff view');
+        return Promise.all([fsUsers(acct), fsDoc('v/events')]).then(([users, ev]) => {
+          const regs = fsRegsFor(users);
+          return clone(ev.list || []).map(e => Object.assign(e, { myRegs: regs[e.eventId] || [] }));
+        });
+      }),
+      getDirectory: () => fsDoc('v/directory').then(d => fsFillAvatars(clone(d))),
+      getPosts: (_tok, limit) => Promise.all([fsAcct(), fsDoc('v/posts')]).then(([acct, d]) => {
+        const nos = acct.nos || [];
+        const fix = p => Object.assign(p, {
+          canDelete: !!acct.session.isStaff || (p.authorKey && p.authorKey === acct.key),
+          mentionsMe: (p.mentions || []).some(m => nos.indexOf(m.no) >= 0)
+        });
+        const list = clone(d.list || []).slice(0, Number(limit) || 50).map(p => { fix(p); p.replies = (p.replies || []).map(fix); return p; });
+        return fsFillAvatars(list);
+      }),
+      listShopItems: () => fsAcct().then(acct => {
+        if (acct.session.isStaff) throw new Error('staff view');
+        return fsDoc('v/shop').then(d => {
+          const s = clone(d);
+          return Promise.all(s.items.map(i => i.image === 1
+            ? fsDoc('img/' + i.id, 600000).then(x => { i.image = x.data || ''; }).catch(() => { i.image = ''; })
+            : Promise.resolve())).then(() => s);
+        });
+      }),
+      listTasks: (asNo) => fsAcct().then(acct => {
+        if (acct.session.isStaff) throw new Error('staff view');
+        const no = fsPickNo(acct, asNo);
+        return Promise.all([fsDoc('v/tasks'), no ? fsDoc('u/' + no).catch(() => null) : Promise.resolve(null)]).then(([t, u]) => {
+          const st = (u && u.taskStatus) || {};
+          return clone(t.list || []).map(x => Object.assign(x, { myStatus: st[x.id] || '' }));
+        });
+      }),
+      getPointHistory: (no) => fsDoc('u/' + String(no || '').toUpperCase()).then(u => ({ balance: u.points, history: u.history || [] })),
+      myRedemptions: (asNo) => fsAcct().then(acct => {
+        const no = fsPickNo(acct, asNo);
+        return no ? fsDoc('u/' + no).then(u => u.redemptions || []) : [];
+      })
+    };
+
     // 組織架構：MIXCIN 競演團 MIXCIN Academy Repertory Company (MIXCIN Rep Co.)
     const DIVISIONS = [
       { name: '競技賽事部', abbr: 'COMP DIV', units: ['街舞組', 'K-POP組', '舞道修練組', 'Solo & Battle組'] },
@@ -1833,10 +2005,19 @@
     };
 
     function api(fn, ...args) {
+      // 讀資料：先走 Firebase（快），出錯再改走 Apps Script
+      if (FS_READ[fn] && fbReady()) {
+        return FS_READ[fn](...args).catch(err => { console.warn('[FS] fallback', fn, err && err.message); return gasApi(fn, ...args); });
+      }
+      return gasApi(fn, ...args);
+    }
+
+    async function gasApi(fn, ...args) {
       const req = { action: fn };
       (API_ARGS[fn] || []).forEach((k, i) => { req[k] = args[i]; });
+      if (fbUser && 'idToken' in req) { try { req.idToken = await fbUser.getIdToken(); } catch (e) { /* 用原本的 */ } }
       const busy = !READ_ONLY_API.test(fn);
-      if (busy) busyOn(BUSY_TEXT[fn]);
+      if (busy) { busyOn(BUSY_TEXT[fn]); if (window.FB_ON) fsInvalidate(); }
       // 用 text/plain 送出，避免跨網域預檢請求（Apps Script 不支援 OPTIONS）
       return fetch(CONFIG.GAS_URL, { method: 'POST', body: JSON.stringify(req), redirect: 'follow' })
         .then(r => {
@@ -1847,7 +2028,7 @@
           if (res && res.success === false && res.error) throw new Error(res.error);
           return res;
         })
-        .finally(() => { if (busy) busyOff(); });
+        .finally(() => { if (busy) { busyOff(); if (window.FB_ON) fsInvalidate(); } });
     }
 
     function toast(msg, isError) {
@@ -1915,6 +2096,15 @@
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: function (resp) {
+            if (window.FB_ON) {
+              showGate('gateLoading');
+              fbSignInWithGis(resp.credential || '').then(fbAfterLogin).catch(err => {
+                console.warn('Firebase 登入失敗，改用原本方式', err);
+                idToken = resp.credential || '';
+                refreshIdentity();
+              });
+              return;
+            }
             idToken = resp.credential || '';
             const p = jwtPayload(idToken);
             const c = readBootCache();
@@ -1928,7 +2118,7 @@
           auto_select: true
         });
         renderLoginButton();
-        if (!session.email) google.accounts.id.prompt();
+        if (!session.email && !(window.FB_ON && fbUser)) google.accounts.id.prompt();
       };
       document.head.appendChild(s);
     }
@@ -1941,6 +2131,7 @@
     }
 
     function signOut() {
+      if (window.FB_ON) fbSignOut();
       idToken = '';
       clearBootCache();
       bootPainted = false;
@@ -2000,6 +2191,14 @@
     /** 程式一開啟：有還沒過期的登入就直接進大廳 */
     function fastStart() {
       if (!GOOGLE_CLIENT_ID) { refreshIdentity(); return; }
+      if (window.FB_ON) {
+        // Firebase 會記住登入狀態：有的話直接進大廳，不用再等 Google 一鍵登入
+        fbCurrentUser().then(u => {
+          if (u) return fbAfterLogin(u);
+          setTimeout(function () { if (!fbUser && !session.email) applyIdentityUI(); }, 1800);
+        });
+        return;
+      }
       const c = readBootCache();
       const p = c && c.token ? jwtPayload(c.token) : null;
       if (p && p.email && String(p.email).toLowerCase() === c.email && p.exp * 1000 > Date.now() + 60000) {
@@ -2010,6 +2209,18 @@
       }
       // 沒有可用的登入：等 Google 自動登入，太久沒回應就顯示登入按鈕
       setTimeout(function () { if (!idToken && !session.email) applyIdentityUI(); }, 1800);
+    }
+
+    function fbAfterLogin(user) {
+      fbUser = user;
+      return user.getIdToken().then(t => {
+        idToken = t;
+        const c = readBootCache();
+        if (!(c && c.email && String(user.email || '').toLowerCase() === c.email && paintFromCache(c))) {
+          if (!bootPainted) showGate('gateLoading');
+        }
+        refreshIdentity();
+      });
     }
 
     function refreshIdentity() {
