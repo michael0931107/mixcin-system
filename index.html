@@ -2007,10 +2007,13 @@
     function api(fn, ...args) {
       // 讀資料：先走 Firebase（快），出錯再改走 Apps Script
       if (FS_READ[fn] && fbReady()) {
-        return FS_READ[fn](...args).catch(err => { console.warn('[FS] fallback', fn, err && err.message); return gasApi(fn, ...args); });
+        // 剛寫入的資料還在發布到 Firebase：等它好（最多 8 秒）再讀，確保看到最新的
+        const wait = pendingPublish ? Promise.race([pendingPublish, new Promise(r => setTimeout(r, 8000))]) : Promise.resolve();
+        return wait.then(() => FS_READ[fn](...args)).catch(err => { console.warn('[FS] fallback', fn, err && err.message); return gasApi(fn, ...args); });
       }
       return gasApi(fn, ...args);
     }
+    let pendingPublish = null;
 
     async function gasApi(fn, ...args) {
       const req = { action: fn };
@@ -2018,6 +2021,8 @@
       if (fbUser && 'idToken' in req) { try { req.idToken = await fbUser.getIdToken(); } catch (e) { /* 用原本的 */ } }
       const busy = !READ_ONLY_API.test(fn);
       if (busy) { busyOn(BUSY_TEXT[fn]); if (window.FB_ON) fsInvalidate(); }
+      const deferPub = window.FB_ON && fbUser && (busy || fn === 'getThread');
+      if (deferPub) req.deferPublish = true;
       // 用 text/plain 送出，避免跨網域預檢請求（Apps Script 不支援 OPTIONS）
       return fetch(CONFIG.GAS_URL, { method: 'POST', body: JSON.stringify(req), redirect: 'follow' })
         .then(r => {
@@ -2026,6 +2031,14 @@
         })
         .then(res => {
           if (res && res.success === false && res.error) throw new Error(res.error);
+          if (deferPub) {
+            // 背景把最新資料發布到 Firebase（不擋畫面）
+            const pub = Object.assign({}, req, { action: 'publishAfter', forAction: fn });
+            delete pub.deferPublish;
+            const p = fetch(CONFIG.GAS_URL, { method: 'POST', body: JSON.stringify(pub), redirect: 'follow' })
+              .catch(() => {}).then(() => { fsInvalidate(); if (pendingPublish === p) pendingPublish = null; });
+            pendingPublish = p;
+          }
           return res;
         })
         .finally(() => { if (busy) { busyOff(); if (window.FB_ON) fsInvalidate(); } });
